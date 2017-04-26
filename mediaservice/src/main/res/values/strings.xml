@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">MediaService</string>
+    <string name="start_service">start</string>
+    <string name="init_service">init</string>
+
+    <string name="pause">pause</string>
+
+    <string name="resume">resume</string>
+
+
+</resources>

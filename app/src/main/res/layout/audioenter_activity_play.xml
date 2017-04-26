@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:homest="http://schemas.android.com/apk/res-auto"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <RelativeLayout
+        android:id="@+id/play_actionbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/actionbar_size"
+        android:layout_alignParentTop="true"
+        android:background="@color/colorOrange"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="20dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/back" />
+
+
+        <TextView
+            android:id="@+id/audio_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/index_music"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/list_item_text_size_big" />
+
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_bar_size"
+        android:layout_alignParentBottom="true"
+        android:background="@color/bottomSheetNormalBackground">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <SeekBar
+                android:id="@+id/play_seek"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="100"
+                android:progressDrawable="@drawable/play_seekbar"
+                android:secondaryProgress="0"
+                android:thumb="@drawable/play_plybar_btn" />
+
+            <TextView
+                android:id="@+id/tv_play_currenttime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/play_seek"
+                android:text="00:00:00"
+                android:textColor="@color/colorWhite" />
+
+            <TextView
+                android:id="@+id/tv_play_totaltime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@id/play_seek"
+                android:text="00:00:00"
+                android:textColor="@color/colorWhite" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical">
+
+            <com.ragentek.homeset.audiocenter.view.widget.ImageWithText
+                android:id="@+id/image_playorpause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                homest:imagesrc="@drawable/player_play"
+                homest:text="@string/play" />
+
+            <com.ragentek.homeset.audiocenter.view.widget.ImageWithText
+                android:id="@+id/image_play_pre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/play_control_margin"
+                android:layout_toStartOf="@id/image_playorpause"
+                homest:imagesrc="@drawable/pre"
+                homest:text="@string/play_pre" />
+
+
+            <com.ragentek.homeset.audiocenter.view.widget.ImageWithText
+                android:id="@+id/image_play_next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/play_control_margin"
+                android:layout_toEndOf="@id/image_playorpause"
+                homest:imagesrc="@drawable/next"
+                homest:text="@string/play_next" />
+
+
+            <com.ragentek.homeset.audiocenter.view.widget.ImageWithText
+                android:id="@+id/image_fav"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/play_control_margin"
+                android:layout_toStartOf="@id/image_play_pre"
+                homest:imagesrc="@drawable/control_unfav"
+                homest:text="@string/my_favoriate" />
+
+            <com.ragentek.homeset.audiocenter.view.widget.ImageWithText
+                android:id="@+id/image_play_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/play_control_margin"
+                homest:imagesrc="@drawable/play_list"
+                homest:text="@string/play_list" />
+
+            <com.ragentek.homeset.audiocenter.view.widget.ImageWithText
+                android:id="@+id/image_play_mode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="30dp"
+                android:layout_toStartOf="@id/image_play_list"
+                android:visibility="gone"
+                homest:imagesrc="@drawable/cycle"
+                homest:text="@string/play_mode" />
+        </RelativeLayout>
+    </FrameLayout>
+
+
+    <LinearLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottom_bar"
+        android:layout_below="@id/play_actionbar"
+        android:orientation="horizontal"></LinearLayout>
+
+</RelativeLayout>
