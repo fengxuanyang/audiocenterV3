@@ -18,6 +18,7 @@ import java.util.List;
  */
 
 public class MusicToken extends AudioToken<MusicVO> {
+    private MusicVO currentMusic;
 
     MusicToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
         super(activity, mediaPlayer, item);
@@ -29,14 +30,23 @@ public class MusicToken extends AudioToken<MusicVO> {
     }
 
     @Override
-    protected void getPlayList(AudioToken.PlayListResultListener listener, PlayListItem listitem) {
+    protected void getPlayListAsync(AudioPlayListResultListener listener, PlayListItem item) {
+        MusicVO music = (MusicVO) item.getAudio();
+        currentMusic = music;
         List<PlayItem> list = new ArrayList<>();
-        PlayItem item = new PlayItem();
-        MusicVO music = (MusicVO) listitem.getAudio();
-        item.setPlayUrl(music.getPlay_url());
-        item.setCoverUrl(music.getCover_url());
-        item.setTitle(music.getSong_name());
-        list.add(item);
-        listener.onPlayListResult(list, music);
+        PlayItem playItem = new PlayItem();
+        playItem.setPlayUrl(music.getPlay_url());
+        playItem.setCoverUrl(music.getCover_url());
+        playItem.setTitle(music.getSong_name());
+        list.add(playItem);
+        listener.onPlayAudioListGet(PLAYLIST_RESULT_SUCCESS, list, music);
     }
+
+    @Override
+    protected MusicVO getPlayList() {
+
+        return currentMusic;
+    }
+
+
 }

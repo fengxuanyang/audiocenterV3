@@ -18,19 +18,26 @@ import java.util.List;
  * Created by xuanyang.feng on 2017/4/20.
  */
 
-public abstract class AudioToken<T> {
+public abstract class AudioToken<E> {
     private static final String TAG = "AudioToken";
-    MediaPlayerManager.MediaPlayerHandler mediaPlayerManager;
+    public static final int PLAYLIST_RESULT_ERROR_NET = -1;
+    public static final int PLAYLIST_RESULT_NONE = 0;
+    public static final int PLAYLIST_RESULT_SUCCESS = 1;
     FragmentActivity mActivity;
+    MediaPlayerManager.MediaPlayerHandler mediaPlayerManager;
     private PlayListItem currentPlayitem;
-    private PlayListResultListener mPlayListResultListener = new PlayListResultListener();
+    private AudioPlayListResultListener mPlayListResultListener;
     PlayBaseFragment fragment = null;
     int currentPlayIndex = 0;
     private AudioControl mAudioControl;
+    private IAudioDataChangerListener<E> mAudioDataChangerListener;
 
-    protected abstract PlayBaseFragment<T> getPlayFragment();
+    protected abstract PlayBaseFragment<E> getPlayFragment();
 
-    protected abstract void getPlayList(PlayListResultListener listener, PlayListItem item);
+    protected abstract void getPlayListAsync(AudioPlayListResultListener listener, PlayListItem item);
+
+    protected abstract E getPlayList();
+
 
     AudioToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
         mActivity = activity;
@@ -38,7 +45,6 @@ public abstract class AudioToken<T> {
         currentPlayitem = item;
         mAudioControl = new AudioControl();
     }
-
 
     public void show() {
         LogUtil.d(TAG, "show: " + this.getClass().getSimpleName());
@@ -56,7 +62,9 @@ public abstract class AudioToken<T> {
                 transaction.show(fragment).commit();
             }
         }
-//        getPlayList(mPlayListResultListener, currentPlayitem);
+        //TODO
+        mPlayListResultListener = new AudioPlayListResultListener();
+        getPlayListAsync(mPlayListResultListener, currentPlayitem);
     }
 
     public void hide() {
@@ -72,34 +80,17 @@ public abstract class AudioToken<T> {
         mediaPlayerManager.play(index);
     }
 
-    public void pause() {
-        mediaPlayerManager.pause();
-    }
 
-    public void resume() {
-        mediaPlayerManager.resume();
-    }
-
-    class PlayListResultListener {
-        void onPlayListResult(List<PlayItem> list, T audiouidata) {
+    class AudioPlayListResultListener {
+        void onPlayAudioListGet(int result, List<PlayItem> playlist, E audiouidata) {
             LogUtil.d(TAG, "onPlayListResult: " + currentPlayIndex);
-            mediaPlayerManager.setPlayList(list, currentPlayIndex);
+            mediaPlayerManager.addPlayList(playlist);
+            //TODO  play sellected
+            mAudioDataChangerListener.onGetData(result, audiouidata);
         }
     }
-
-    IAudioDataChangerListener mAudioDataChangerListener;
 
     class AudioControl implements IAudioControl {
-
-        @Override
-        public void playSellected() {
-
-        }
-
-        @Override
-        public T getData() {
-            return null;
-        }
 
 
         @Override
@@ -107,9 +98,15 @@ public abstract class AudioToken<T> {
             mAudioDataChangerListener = listener;
         }
 
+
         @Override
         public void playSellected(int position) {
+            playAudioSellected(position);
+        }
 
+        @Override
+        public void getDataAsync() {
+            getPlayListAsync(mPlayListResultListener, currentPlayitem);
         }
     }
 

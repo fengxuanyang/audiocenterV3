@@ -54,6 +54,8 @@ public abstract class PlayListToken {
     protected List<PlayListItem> wholePlayList;
     protected List<AudioToken> audioTokenList;
     private int currentPlayIndex = -1;
+    private int prePlayIndex = -1;
+
 
     abstract public void updateLocalPlayList(long id);
 
@@ -91,14 +93,14 @@ public abstract class PlayListToken {
 
     public List<PlayListItem> getData() {
         return wholePlayList;
-    }
+}
 
     public void playPre() {
         if (currentPlayIndex > 0) {
             currentPlayIndex--;
         }
         LogUtil.d(TAG, ": release" + currentPlayIndex);
-        showCurrentAudio();
+        switchAudioToken();
     }
 
     //TODO
@@ -107,12 +109,18 @@ public abstract class PlayListToken {
             currentPlayIndex++;
         }
         LogUtil.d(TAG, ": playNext" + currentPlayIndex);
-        showCurrentAudio();
+        switchAudioToken();
     }
 
-    private void showCurrentAudio() {
-        Log.d(TAG, "showCurrentAudio: " + audioTokenList.get(currentPlayIndex));
-        audioTokenList.get(currentPlayIndex).show();
+
+    private void switchAudioToken() {
+        if (prePlayIndex < 0) {
+            audioTokenList.get(currentPlayIndex).show();
+        } else {
+            audioTokenList.get(prePlayIndex).hide();
+            audioTokenList.get(currentPlayIndex).show();
+        }
+        prePlayIndex = currentPlayIndex;
     }
 
 
@@ -195,7 +203,7 @@ public abstract class PlayListToken {
             }
             if (currentPlayIndex == -1) {
                 currentPlayIndex = 1;
-                showCurrentAudio();
+                switchAudioToken();
             }
             for (OnDataChangeListTokenListener dataUpdataCall : mDataChangeCallBacks) {
                 dataUpdataCall.onGetData(PLAYLISTMANAGER_RESULT_SUCCESS, resultmessage);
@@ -223,12 +231,13 @@ public abstract class PlayListToken {
 
         @Override
         public void getDataAsync() {
-            //TODO
+            loadData(mPlayListLoadDataListener);
         }
 
         @Override
         public void playSellected(int position) {
-            //TODO
+            currentPlayIndex = position;
+            switchAudioToken();
         }
 
         @Override

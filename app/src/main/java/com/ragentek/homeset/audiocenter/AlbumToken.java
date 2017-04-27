@@ -1,8 +1,6 @@
 package com.ragentek.homeset.audiocenter;
 
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 
 import com.ragentek.homeset.audiocenter.model.bean.PlayItem;
 import com.ragentek.homeset.audiocenter.model.bean.PlayListItem;
@@ -11,7 +9,6 @@ import com.ragentek.homeset.audiocenter.service.MediaPlayerManager;
 import com.ragentek.homeset.audiocenter.utils.LogUtil;
 import com.ragentek.homeset.audiocenter.view.fragment.AlbumFragment;
 import com.ragentek.homeset.audiocenter.view.fragment.PlayBaseFragment;
-import com.ragentek.homeset.core.R;
 import com.ragentek.protocol.commons.audio.TrackVO;
 import com.ragentek.protocol.messages.http.audio.TrackResultVO;
 
@@ -20,7 +17,6 @@ import java.util.List;
 
 import rx.Subscriber;
 
-import static android.R.attr.tag;
 
 /**
  * Created by xuanyang.feng on 2017/4/20.
@@ -30,6 +26,7 @@ public class AlbumToken extends AudioToken<List<TrackVO>> {
     private static final String TAG = "AlbumToken";
     private int currentPage = 1;
     private static final int PAGE_COUNT = 20;
+    private List<TrackVO> wholePlayList;
 
     AlbumToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
         super(activity, mediaPlayer, item);
@@ -37,14 +34,13 @@ public class AlbumToken extends AudioToken<List<TrackVO>> {
 
     @Override
     protected PlayBaseFragment getPlayFragment() {
-        PlayBaseFragment mPlayBaseFragment = new AlbumFragment();
-
+        PlayBaseFragment mPlayBaseFragment = AlbumFragment.newInstances();
+        wholePlayList = new ArrayList<>();
         return mPlayBaseFragment;
     }
 
-
     @Override
-    public void getPlayList(final PlayListResultListener listener, PlayListItem item) {
+    public void getPlayListAsync(final AudioPlayListResultListener listener, PlayListItem item) {
         LogUtil.d(TAG, "loadData: ");
         Subscriber<TrackResultVO> getTagSubscriber = new Subscriber<TrackResultVO>() {
             @Override
@@ -73,7 +69,8 @@ public class AlbumToken extends AudioToken<List<TrackVO>> {
                             item.setTitle(trackvo.getTitle());
                             list.add(item);
                         }
-                        listener.onPlayListResult(list, tagResult.getTracks());
+                        wholePlayList.addAll(tagResult.getTracks());
+                        listener.onPlayAudioListGet(PLAYLIST_RESULT_SUCCESS, list, tagResult.getTracks());
                     }
                     currentPage++;
                 }
@@ -83,5 +80,10 @@ public class AlbumToken extends AudioToken<List<TrackVO>> {
         AudioCenterHttpManager.getInstance(mActivity).getTracks(getTagSubscriber, item.getId(), currentPage, PAGE_COUNT);
     }
 
-
+    @Override
+    protected List<TrackVO> getPlayList() {
+        return wholePlayList;
+    }
 }
+
+

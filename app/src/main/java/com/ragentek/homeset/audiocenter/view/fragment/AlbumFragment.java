@@ -2,6 +2,7 @@ package com.ragentek.homeset.audiocenter.view.fragment;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.ragentek.homeset.audiocenter.AudioToken;
 import com.ragentek.homeset.audiocenter.adapter.ListItemBaseAdapter;
 import com.ragentek.homeset.audiocenter.adapter.TrackListAdapter;
 import com.ragentek.homeset.audiocenter.model.bean.PlayItem;
@@ -48,7 +50,8 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>> {
     private ListItemBaseAdapter<List<TrackVO>, TrackListAdapter.AlbumItemAdapterViewHolder> mTrackListAdapter;
     private int currentPage = 1;
     public static final int PAGE_COUNT = 20;
-    private int pcurrentPlayIndext = 0;
+    private int currentPlayIndext = 0;
+    private List<TrackVO> wholePlayList;
 
     @BindView(R.id.tv_album_title)
     TextView mAlbumTitle;
@@ -58,6 +61,10 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>> {
     RecyclerView mRecyclerView;
     @BindView(R.id.swiperefresh_playlist)
     SwipeRefreshLayout mSwipeRefreshLayout;
+
+    public static AlbumFragment newInstances() {
+        return new AlbumFragment();
+    }
 
 
     @Nullable
@@ -71,81 +78,85 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>> {
         return view;
     }
 
-    private void updateView() {
-//        if (getPlaydata() != null) {
-//            mSwipeRefreshLayout.setRefreshing(false);
-//            mTrackListAdapter.setDatas(playdata);
-//            updateTitle();
-//            updateAlbumart();
-//        }
-    }
-
-    private void updateTitle() {
-        LogUtil.d(TAG, "updateTitle: ");
-
-//        mAlbumTitle.setText(playdata.get(pcurrentPlayIndext).getAlbum_title());
-        mAlbumTitle.getPaint().setFakeBoldText(true);
-    }
-
     private void inteView() {
-        mTrackListAdapter = new TrackListAdapter(this.getContext());
-        mRecyclerView.setHasFixedSize(true);
+        LogUtil.d(TAG, "inteView  >>: " + SystemClock.currentThreadTimeMillis());
+
         mSwipeRefreshLayout.setRefreshing(true);
-        mRecyclerView.addItemDecoration(new RecycleItemDecoration(getActivity(), RecycleItemDecoration.VERTICAL_LIST));
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        mTrackListAdapter = new TrackListAdapter(this.getContext());
         mTrackListAdapter.setOnItemClickListener(new ListItemBaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 LogUtil.d(TAG, "onItemClick: " + position);
-                pcurrentPlayIndext = position;
+                currentPlayIndext = position;
                 mTrackListAdapter.updateSellect(position);
-//                if (mAudioFragmentListener != null) {
-//                    mAudioFragmentListener.onPlayItemClick(position);
-//                }
+                mIAudioControl.playSellected(currentPlayIndext);
             }
         });
+
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.addItemDecoration(new RecycleItemDecoration(getActivity(), RecycleItemDecoration.VERTICAL_LIST));
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mTrackListAdapter);
         mRecyclerView.addOnScrollListener(new RecycleViewEndlessOnScrollListener() {
             @Override
             public void onLoadMore(int currentPage) {
-//                mAudioFragmentListener.onLoadMore();
+                mIAudioControl.getDataAsync();
             }
         });
+        LogUtil.d(TAG, "inteView  <<: " + SystemClock.currentThreadTimeMillis());
 
+    }
+
+    private void updateView() {
+        mSwipeRefreshLayout.setRefreshing(false);
+        mTrackListAdapter.setDatas(wholePlayList);
+        updateTitle();
+        updateAlbumart();
+    }
+
+    private void updateTitle() {
+        LogUtil.d(TAG, "updateTitle: ");
+        mAlbumTitle.setText(getCurrentPlayTrack().getAlbum_title());
+        mAlbumTitle.getPaint().setFakeBoldText(true);
+    }
+
+    private TrackVO getCurrentPlayTrack() {
+        return wholePlayList.get(currentPlayIndext);
     }
 
     private void updateAlbumart() {
-//        LogUtil.d(TAG, "updateAlbumart Uri: " + playdata.get(pcurrentPlayIndext).getCover_url());
-//        if (playdata.get(pcurrentPlayIndext).getCover_url() == null) {
-//            mSimpleDraweeView.setImageResource(R.drawable.placeholder_disk);
-//        } else {
-//            mSimpleDraweeView.setImageURI(Uri.parse(playdata.get(pcurrentPlayIndext).getCover_url()));
-//        }
+        if (wholePlayList.get(currentPlayIndext).getCover_url() == null) {
+            mSimpleDraweeView.setImageResource(R.drawable.placeholder_disk);
+        } else {
+            mSimpleDraweeView.setImageURI(Uri.parse(wholePlayList.get(currentPlayIndext).getCover_url()));
+        }
     }
 
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        LogUtil.d(TAG, "onResume: ");
-
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        LogUtil.d(TAG, "onCreate: " + this);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        LogUtil.d(TAG, "onActivityCreated: ");
-    }
 
     @Override
     void onDataChanged(int resultCode, List<TrackVO> data) {
+        switch (resultCode) {
+            case AudioToken.PLAYLIST_RESULT_SUCCESS: {
+                if (wholePlayList == null) {
+                    wholePlayList = data;
+                } else {
+                    wholePlayList.addAll(data);
+                }
+                updateView();
+            }
+            break;
+            case AudioToken.PLAYLIST_RESULT_NONE: {
+                //TODO
+            }
+            break;
+            case AudioToken.PLAYLIST_RESULT_ERROR_NET: {
+                //TODO
+            }
+            break;
+        }
+
 
     }
+
 }

@@ -4,9 +4,7 @@ import android.app.Activity;
 
 import com.ragentek.homeset.audiocenter.IAudioControl;
 import com.ragentek.homeset.audiocenter.IAudioDataChangerListener;
-import com.ragentek.homeset.audiocenter.service.MyMediaPlayerControl;
 
-import java.util.List;
 
 /**
  * Created by xuanyang.feng on 2017/2/8.
@@ -15,6 +13,7 @@ import java.util.List;
 public abstract class PlayBaseFragment<T> extends BaseFragment {
     IAudioControl mIAudioControl;
 
+    abstract void onDataChanged(int resultCode, T data);
 
     public void setAudioControl(IAudioControl control) {
         mIAudioControl = control;
@@ -29,9 +28,6 @@ public abstract class PlayBaseFragment<T> extends BaseFragment {
         });
 
     }
-
-
-    abstract void onDataChanged(int resultCode, T data);
 
 
 }
