@@ -93,7 +93,7 @@ public abstract class PlayListToken {
 
     public List<PlayListItem> getData() {
         return wholePlayList;
-}
+    }
 
     public void playPre() {
         if (currentPlayIndex > 0) {
@@ -108,12 +108,15 @@ public abstract class PlayListToken {
         if (currentPlayIndex < audioTokenList.size()) {
             currentPlayIndex++;
         }
+        //TODO  nnext
+//        int nnext = currentPlayIndex + 1;
         LogUtil.d(TAG, ": playNext" + currentPlayIndex);
         switchAudioToken();
     }
 
 
     private void switchAudioToken() {
+        //TODO show sate fragment
         if (prePlayIndex < 0) {
             audioTokenList.get(currentPlayIndex).show();
         } else {
@@ -209,7 +212,6 @@ public abstract class PlayListToken {
                 dataUpdataCall.onGetData(PLAYLISTMANAGER_RESULT_SUCCESS, resultmessage);
             }
         }
-
     }
 
     private class IPlayListControlHandle implements IPlayListControl {

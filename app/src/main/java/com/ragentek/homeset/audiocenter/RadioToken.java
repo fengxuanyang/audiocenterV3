@@ -18,7 +18,6 @@ import java.util.List;
  */
 
 public class RadioToken extends AudioToken<RadioVO> {
-    private int currentPlayIndex = 0;
 
     RadioToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
         super(activity, mediaPlayer, item);
@@ -30,7 +29,7 @@ public class RadioToken extends AudioToken<RadioVO> {
     }
 
     @Override
-    protected void getPlayList(PlayListResultListener listener, PlayListItem listitem) {
+    protected void getPlayListAsync(AudioPlayListResultListener listener, PlayListItem listitem) {
         List<PlayItem> list = new ArrayList<>();
         PlayItem item = new PlayItem();
         RadioVO radio = (RadioVO) listitem.getAudio();
@@ -38,6 +37,8 @@ public class RadioToken extends AudioToken<RadioVO> {
         item.setCoverUrl(radio.getCover_url());
         item.setTitle(radio.getName());
         list.add(item);
-        listener.onPlayListResult(list, radio);
+        listener.onPlayAudioListGet(PLAYLIST_RESULT_SUCCESS, list, radio);
     }
+
+
 }

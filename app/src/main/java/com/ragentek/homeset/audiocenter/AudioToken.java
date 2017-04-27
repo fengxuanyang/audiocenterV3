@@ -8,15 +8,10 @@ import com.ragentek.homeset.audiocenter.model.bean.PlayItem;
 import com.ragentek.homeset.audiocenter.model.bean.PlayListItem;
 import com.ragentek.homeset.audiocenter.service.MediaPlayerManager;
 import com.ragentek.homeset.audiocenter.utils.LogUtil;
-import com.ragentek.homeset.audiocenter.view.fragment.AlbumFragment;
 import com.ragentek.homeset.audiocenter.view.fragment.PlayBaseFragment;
 import com.ragentek.homeset.core.R;
 
 import java.util.List;
-
-/**
- * Created by xuanyang.feng on 2017/4/20.
- */
 
 public abstract class AudioToken<E> {
     private static final String TAG = "AudioToken";
@@ -24,20 +19,17 @@ public abstract class AudioToken<E> {
     public static final int PLAYLIST_RESULT_NONE = 0;
     public static final int PLAYLIST_RESULT_SUCCESS = 1;
     FragmentActivity mActivity;
-    MediaPlayerManager.MediaPlayerHandler mediaPlayerManager;
+    private MediaPlayerManager.MediaPlayerHandler mediaPlayerManager;
     private PlayListItem currentPlayitem;
     private AudioPlayListResultListener mPlayListResultListener;
     PlayBaseFragment fragment = null;
-    int currentPlayIndex = 0;
+    private int currentPlayIndex = 0;
     private AudioControl mAudioControl;
     private IAudioDataChangerListener<E> mAudioDataChangerListener;
 
     protected abstract PlayBaseFragment<E> getPlayFragment();
 
-    protected abstract void getPlayListAsync(AudioPlayListResultListener listener, PlayListItem item);
-
-    protected abstract E getPlayList();
-
+    protected abstract void getPlayListAsync(AudioPlayListResultListener listener, PlayListItem listitem);
 
     AudioToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
         mActivity = activity;
@@ -46,11 +38,12 @@ public abstract class AudioToken<E> {
         mAudioControl = new AudioControl();
     }
 
-    public void show() {
+    void show() {
         LogUtil.d(TAG, "show: " + this.getClass().getSimpleName());
         Fragment view = mActivity.getSupportFragmentManager().findFragmentByTag(this.getClass().getSimpleName());
         FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
         if (view == null) {
+            //TODO
             fragment = getPlayFragment();
             fragment.setAudioControl(mAudioControl);
             transaction.replace(R.id.fragment_container, fragment, this.getClass().getSimpleName()).commit();
@@ -67,7 +60,7 @@ public abstract class AudioToken<E> {
         getPlayListAsync(mPlayListResultListener, currentPlayitem);
     }
 
-    public void hide() {
+    void hide() {
         LogUtil.d(TAG, "hide: " + this.getClass().getSimpleName());
         FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
         Fragment view = mActivity.getSupportFragmentManager().findFragmentByTag(this.getClass().getSimpleName());
@@ -76,7 +69,7 @@ public abstract class AudioToken<E> {
         }
     }
 
-    public void playAudioSellected(int index) {
+    private void playAudioSellected(int index) {
         mediaPlayerManager.play(index);
     }
 
@@ -90,7 +83,7 @@ public abstract class AudioToken<E> {
         }
     }
 
-    class AudioControl implements IAudioControl {
+    private class AudioControl implements IAudioControl {
 
 
         @Override

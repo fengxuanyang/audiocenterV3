@@ -32,7 +32,7 @@ public class RadioPlayListToken extends PlayListToken {
 
 
     @Override
-    protected void loadData(IPlayListLoadListener listener) {
+    public void loadData(IPlayListLoadListener listener) {
 
     }
 

@@ -6,5 +6,4 @@ package com.ragentek.homeset.audiocenter;
 
 public interface IAudioDataChangerListener<T> {
     void onGetData(int resultCode, T data);
-
 }

@@ -22,20 +22,19 @@ import rx.Subscriber;
  * Created by xuanyang.feng on 2017/4/20.
  */
 
-public class AlbumToken extends AudioToken<List<TrackVO>> {
+class AlbumToken extends AudioToken<List<TrackVO>> {
     private static final String TAG = "AlbumToken";
     private int currentPage = 1;
     private static final int PAGE_COUNT = 20;
-    private List<TrackVO> wholePlayList;
 
     AlbumToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
         super(activity, mediaPlayer, item);
     }
 
     @Override
-    protected PlayBaseFragment getPlayFragment() {
-        PlayBaseFragment mPlayBaseFragment = AlbumFragment.newInstances();
-        wholePlayList = new ArrayList<>();
+    protected PlayBaseFragment<List<TrackVO>> getPlayFragment() {
+        //TODO
+        PlayBaseFragment<List<TrackVO>> mPlayBaseFragment = AlbumFragment.newInstances();
         return mPlayBaseFragment;
     }
 
@@ -55,6 +54,7 @@ public class AlbumToken extends AudioToken<List<TrackVO>> {
 
             @Override
             public void onNext(TrackResultVO tagResult) {
+                //TODO fail
                 LogUtil.d(TAG, "onNext : " + tagResult);
                 if (tagResult != null) {
                     List<PlayItem> list = new ArrayList<>();
@@ -69,7 +69,6 @@ public class AlbumToken extends AudioToken<List<TrackVO>> {
                             item.setTitle(trackvo.getTitle());
                             list.add(item);
                         }
-                        wholePlayList.addAll(tagResult.getTracks());
                         listener.onPlayAudioListGet(PLAYLIST_RESULT_SUCCESS, list, tagResult.getTracks());
                     }
                     currentPage++;
@@ -78,11 +77,6 @@ public class AlbumToken extends AudioToken<List<TrackVO>> {
         };
 
         AudioCenterHttpManager.getInstance(mActivity).getTracks(getTagSubscriber, item.getId(), currentPage, PAGE_COUNT);
-    }
-
-    @Override
-    protected List<TrackVO> getPlayList() {
-        return wholePlayList;
     }
 }
 

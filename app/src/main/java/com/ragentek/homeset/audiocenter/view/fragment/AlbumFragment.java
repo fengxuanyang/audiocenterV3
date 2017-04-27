@@ -74,13 +74,12 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>> {
         View view = inflater.inflate(R.layout.audioenter_fragment_album_detail, container, false);
         ButterKnife.bind(this, view);
         inteView();
-        updateView();
+//        updateView();
         return view;
     }
 
     private void inteView() {
         LogUtil.d(TAG, "inteView  >>: " + SystemClock.currentThreadTimeMillis());
-
         mSwipeRefreshLayout.setRefreshing(true);
         mTrackListAdapter = new TrackListAdapter(this.getContext());
         mTrackListAdapter.setOnItemClickListener(new ListItemBaseAdapter.OnItemClickListener() {
