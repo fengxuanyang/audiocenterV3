@@ -21,17 +21,22 @@ import java.util.List;
 public abstract class AudioToken<T> {
     private static final String TAG = "AudioToken";
     MediaPlayerManager.MediaPlayerHandler mediaPlayerManager;
-    private String fragmentTag = this.getClass().getSimpleName();
     FragmentActivity mActivity;
     private PlayListItem currentPlayitem;
     private PlayListResultListener mPlayListResultListener = new PlayListResultListener();
     PlayBaseFragment fragment = null;
     int currentPlayIndex = 0;
+    private AudioControl mAudioControl;
+
+    protected abstract PlayBaseFragment<T> getPlayFragment();
+
+    protected abstract void getPlayList(PlayListResultListener listener, PlayListItem item);
 
     AudioToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
         mActivity = activity;
         mediaPlayerManager = mediaPlayer;
         currentPlayitem = item;
+        mAudioControl = new AudioControl();
     }
 
 
@@ -41,22 +46,7 @@ public abstract class AudioToken<T> {
         FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
         if (view == null) {
             fragment = getPlayFragment();
-            fragment.setAudioFragmentListener(new PlayBaseFragment.AudioFragmentListener() {
-                @Override
-                public void onPlayItemClick(int position) {
-                    LogUtil.d(TAG, "onPlayItemClick: " + position);
-
-                    mediaPlayerManager.play(position);
-                    currentPlayIndex = position;
-                }
-
-                @Override
-                public void onLoadMore() {
-                    LogUtil.d(TAG, "onLoadMore: ");
-                    getPlayList(mPlayListResultListener, currentPlayitem);
-
-                }
-            });
+            fragment.setAudioControl(mAudioControl);
             transaction.replace(R.id.fragment_container, fragment, this.getClass().getSimpleName()).commit();
         } else {
             fragment = (PlayBaseFragment) view;
@@ -66,7 +56,7 @@ public abstract class AudioToken<T> {
                 transaction.show(fragment).commit();
             }
         }
-        getPlayList(mPlayListResultListener, currentPlayitem);
+//        getPlayList(mPlayListResultListener, currentPlayitem);
     }
 
     public void hide() {
@@ -94,12 +84,33 @@ public abstract class AudioToken<T> {
         void onPlayListResult(List<PlayItem> list, T audiouidata) {
             LogUtil.d(TAG, "onPlayListResult: " + currentPlayIndex);
             mediaPlayerManager.setPlayList(list, currentPlayIndex);
-            fragment.setPlaydata(audiouidata);
         }
     }
 
-    protected abstract PlayBaseFragment<T> getPlayFragment();
+    IAudioDataChangerListener mAudioDataChangerListener;
 
-    protected abstract void getPlayList(PlayListResultListener listener, PlayListItem item);
+    class AudioControl implements IAudioControl {
+
+        @Override
+        public void playSellected() {
+
+        }
+
+        @Override
+        public T getData() {
+            return null;
+        }
+
+
+        @Override
+        public void setDataChangerListener(IAudioDataChangerListener listener) {
+            mAudioDataChangerListener = listener;
+        }
+
+        @Override
+        public void playSellected(int position) {
+
+        }
+    }
 
 }

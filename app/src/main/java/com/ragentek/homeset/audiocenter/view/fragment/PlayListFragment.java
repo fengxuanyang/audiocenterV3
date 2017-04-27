@@ -14,11 +14,10 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import com.ragentek.homeset.audiocenter.PlayListControl;
+import com.ragentek.homeset.audiocenter.IPlayListControl;
 import com.ragentek.homeset.audiocenter.PlayListToken;
 import com.ragentek.homeset.audiocenter.adapter.ListItemBaseAdapter;
 import com.ragentek.homeset.audiocenter.adapter.PlayListAdapter;
-import com.ragentek.homeset.audiocenter.model.bean.PlayListDetail;
 import com.ragentek.homeset.audiocenter.model.bean.PlayListItem;
 import com.ragentek.homeset.audiocenter.utils.LogUtil;
 import com.ragentek.homeset.audiocenter.view.widget.RecycleViewEndlessOnScrollListener;
@@ -44,8 +43,9 @@ public class PlayListFragment extends DialogFragment {
     public static final String TAG_PLAYINDEX = "playindex";
     private int playindex;
     private PlayListAdapter mPlayListAdapter;
-    private PlayListControl mPlayListControl = new NULLPlayListControl();
+    private IPlayListControl mIPlayListControl = new NULLIPlayListControl();
     private List<PlayListItem> currentPlaylist = new ArrayList<>();
+
 
     @BindView(R.id.rv_playlist)
     RecyclerView playlistRV;
@@ -61,13 +61,14 @@ public class PlayListFragment extends DialogFragment {
         Bundle b = new Bundle();
         b.putInt(PlayListFragment.TAG_PLAYINDEX, playindex);
         fragment.setArguments(b);
+
         return fragment;
     }
 
-    public void setPlayControl(PlayListControl control) {
+    public void setPlayControl(IPlayListControl control) {
         LogUtil.d(TAG, "");
-        mPlayListControl = control;
-        mPlayListControl.addDataListener(new PlayListToken.OnDataChangeListTokenListener() {
+        mIPlayListControl = control;
+        mIPlayListControl.addDataListener(new PlayListToken.OnDataChangeListTokenListener() {
             @Override
             public void onDataUpdate(int resultCode, PlayListItem item) {
 
@@ -75,9 +76,10 @@ public class PlayListFragment extends DialogFragment {
 
             @Override
             public void onGetData(int resultCode, List<PlayListItem> data) {
-                if (data.size() > 0) {
+                //playListAdapter == null also  means  fragment not init
+                if (mPlayListAdapter != null && data.size() > 0) {
                     currentPlaylist.addAll(data);
-                    mPlayListAdapter.addDatas(currentPlaylist);
+                    mPlayListAdapter.addDatas(data);
                 }
             }
         });
@@ -124,16 +126,18 @@ public class PlayListFragment extends DialogFragment {
                 LogUtil.d(TAG, "onRefresh: ");
             }
         });
+        currentPlaylist = mIPlayListControl.getData();
         mPlayListAdapter = new PlayListAdapter(mContext, playindex);
-//        currentPlaylist.clear();
-        if (mPlayListControl.getData().size() == currentPlaylist.size()) {
+        if (currentPlaylist == null) {
+            //TODO data error wait for
+
+        } else if (currentPlaylist.size() == 0) {
+            //TODO none data
+
+        } else {
+            mPlayListAdapter.setDatas(currentPlaylist);
         }
 
-
-//        currentPlaylist.addAll();
-        if (mPlayListControl.getLoadDatastate() == IDLE && currentPlaylist.size() > 0) {
-            mPlayListAdapter.addDatas(currentPlaylist);
-        }
         playlistRV.setHasFixedSize(true);
         final LinearLayoutManager mLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         playlistRV.setLayoutManager(mLayoutManager);
@@ -143,7 +147,7 @@ public class PlayListFragment extends DialogFragment {
             public void onItemClick(View view, int position) {
                 //update the playlist view
                 mPlayListAdapter.updateSellect(position);
-                mPlayListControl.playSellected(position);
+                mIPlayListControl.playSellected(position);
 
             }
         });
@@ -152,7 +156,7 @@ public class PlayListFragment extends DialogFragment {
             @Override
             public void onLoadMore(int currentPage) {
                 swipeRefresh.setRefreshing(true);
-                mPlayListControl.getDataAsync();
+                mIPlayListControl.getDataAsync();
             }
         });
     }
@@ -160,7 +164,7 @@ public class PlayListFragment extends DialogFragment {
     @OnClick(R.id.tv_close)
     void closeFragment() {
         LogUtil.d(TAG, "closeFragment: ");
-        mPlayListControl.closePlaylistFragment();
+        mIPlayListControl.closePlaylistFragment();
     }
 
 
@@ -181,7 +185,7 @@ public class PlayListFragment extends DialogFragment {
     }
 
 
-    private class NULLPlayListControl implements PlayListControl {
+    private class NULLIPlayListControl implements IPlayListControl {
 
         @Override
         public void addDataListener(PlayListToken.OnDataChangeListTokenListener listener) {

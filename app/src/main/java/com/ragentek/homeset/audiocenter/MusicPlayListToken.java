@@ -32,13 +32,13 @@ public class MusicPlayListToken extends PlayListToken {
 
 
     @Override
-    protected void loadData(IPlayListLoadListener listener) {
-        getTAGMusic(listener);
+    public void updateLocalPlayList(long id) {
+
     }
 
     @Override
-    public void updateLocalPlayList(long id) {
-
+    public void loadData(IPlayListLoadListener listener) {
+        getTAGMusic(listener);
     }
 
 

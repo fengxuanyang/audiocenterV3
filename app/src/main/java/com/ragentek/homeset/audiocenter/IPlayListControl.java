@@ -9,7 +9,7 @@ import java.util.List;
  * Created by xuanyang.feng on 2017/4/24.
  */
 
-public interface PlayListControl {
+public interface IPlayListControl {
     void addDataListener(PlayListToken.OnDataChangeListTokenListener listener);
 
     void removeDataListener(PlayListToken.OnDataChangeListTokenListener listener);

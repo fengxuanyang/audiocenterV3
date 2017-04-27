@@ -14,6 +14,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ragentek.homeset.audiocenter.model.bean.PlayListItem;
 import com.ragentek.homeset.audiocenter.model.bean.TagDetail;
 import com.ragentek.homeset.audiocenter.service.MediaPlayerManager;
 import com.ragentek.homeset.audiocenter.utils.AudioCenterUtils;
@@ -27,6 +28,8 @@ import com.ragentek.homeset.core.task.event.PushAudioFavEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
+import java.util.List;
 
 
 public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View.OnClickListener {
@@ -73,7 +76,7 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
 
     //TODO
     private void initPlayToken() {
-        PlayListTokenFactory.getPlayListToken()
+//        PlayListTokenFactory.getPlayListToken()
     }
 
 
@@ -118,13 +121,22 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
         mMediaPlayerManager.init();
     }
 
-    PlayListToken mPlayListToken;
 
     private void serviceInitReady() {
         mediaPlayerHandler = MediaPlayerManager.getInstance(AudioPlayActivityV3.this).geMediaPlayerHandler();
         mPlayListToken = PlayListTokenFactory.getPlayListToken(this, mTagDetail, mediaPlayerHandler);
+        mPlayListToken.addDataChangeListener(new PlayListToken.OnDataChangeListTokenListener() {
+            @Override
+            public void onDataUpdate(int resultCode, PlayListItem item) {
+
+            }
+
+            @Override
+            public void onGetData(int resultCode, List<PlayListItem> data) {
+
+            }
+        });
         mPlayListToken.init();
-//        mPlayListToken.showPlayList();
     }
 
     private void initView() {

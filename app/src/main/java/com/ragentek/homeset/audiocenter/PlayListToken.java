@@ -1,6 +1,7 @@
 package com.ragentek.homeset.audiocenter;
 
-import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -48,7 +49,7 @@ public abstract class PlayListToken {
     private PlayListLoadDataListener mPlayListLoadDataListener;
     private List<OnDataChangeListTokenListener> mDataChangeCallBacks;
     private PlayListFragment mPlayListFragment;
-    private PlayListControlHandle mPlayListControlHandle;
+    private IPlayListControlHandle mPlayListControlHandle;
 
     protected List<PlayListItem> wholePlayList;
     protected List<AudioToken> audioTokenList;
@@ -75,19 +76,18 @@ public abstract class PlayListToken {
         mDataChangeCallBacks = new ArrayList<OnDataChangeListTokenListener>();
         wholePlayList = new ArrayList<>();
         audioTokenList = new ArrayList<>();
-        mPlayListControlHandle = new PlayListControlHandle();
+        mPlayListControlHandle = new IPlayListControlHandle();
         mPlayListLoadDataListener = new PlayListLoadDataListener();
         loadData(mPlayListLoadDataListener);
     }
 
-    public void addDataChangeListener(OnDataChangeListTokenListener callBack) {
+    public void addDataChangeListener(@NonNull OnDataChangeListTokenListener callBack) {
         mDataChangeCallBacks.add(callBack);
     }
 
-    public void removeDataChangeListener(OnDataChangeListTokenListener callBack) {
+    public void removeDataChangeListener(@NonNull OnDataChangeListTokenListener callBack) {
         mDataChangeCallBacks.remove(callBack);
     }
-
 
     public List<PlayListItem> getData() {
         return wholePlayList;
@@ -101,7 +101,7 @@ public abstract class PlayListToken {
         showCurrentAudio();
     }
 
-
+    //TODO
     public void playNext() {
         if (currentPlayIndex < audioTokenList.size()) {
             currentPlayIndex++;
@@ -111,7 +111,6 @@ public abstract class PlayListToken {
     }
 
     private void showCurrentAudio() {
-        Log.d(TAG, "showCurrentAudio: " + currentPlayIndex);
         Log.d(TAG, "showCurrentAudio: " + audioTokenList.get(currentPlayIndex));
         audioTokenList.get(currentPlayIndex).show();
     }
@@ -162,6 +161,7 @@ public abstract class PlayListToken {
 
             @Override
             public void onNext(String result) {
+                //TODO
                 LogUtil.d(TAG, "onNext result: " + result + ",item2BeChanged:" + item2BeChanged);
                 item2BeChanged.updateFav();
                 for (OnDataChangeListTokenListener dataUpdataCall : mDataChangeCallBacks) {
@@ -204,7 +204,7 @@ public abstract class PlayListToken {
 
     }
 
-    private class PlayListControlHandle implements PlayListControl {
+    private class IPlayListControlHandle implements IPlayListControl {
 
         @Override
         public void addDataListener(OnDataChangeListTokenListener listener) {
@@ -223,12 +223,12 @@ public abstract class PlayListToken {
 
         @Override
         public void getDataAsync() {
-            getDataAsync();
+            //TODO
         }
 
         @Override
         public void playSellected(int position) {
-
+            //TODO
         }
 
         @Override

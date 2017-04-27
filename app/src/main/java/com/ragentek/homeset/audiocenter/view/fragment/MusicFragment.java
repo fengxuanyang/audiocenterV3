@@ -46,6 +46,9 @@ public class MusicFragment extends PlayBaseFragment<List<MusicVO>> {
     @BindView(R.id.swiperefresh_playlist)
     SwipeRefreshLayout mSwipeRefreshLayout;
 
+    public static MusicFragment newInstances() {
+        return new MusicFragment();
+    }
 
     @Nullable
     @Override
@@ -53,36 +56,37 @@ public class MusicFragment extends PlayBaseFragment<List<MusicVO>> {
         LogUtil.d(TAG, "onCreateView: ");
         View view = inflater.inflate(R.layout.audioenter_fragment_album_detail, container, false);
         ButterKnife.bind(this, view);
+        mIAudioControl.getData();
         inteView();
-        if (getPlaydata() != null) {
-            currentPlayIndex = 0;
-            updateTitle();
-            updateAlbumart();
-        }
+//        if (getPlaydata() != null) {
+//            currentPlayIndex = 0;
+//            updateTitle();
+//            updateAlbumart();
+//        }
         return view;
     }
 
+//
+//    @Override
+//    public void setInnerSellected(int index) {
+//        currentPlayIndex = index;
+//        updateTitle();
+//        mTrackListAdapter.updateSellect(currentPlayIndex);
+//    }
+//
+//    @Override
+//    void onDataChanged(List<MusicVO> playdata) {
+//        updateTitle();
+//        updateAlbumart();
+//
+//    }
 
-    @Override
-    public void setInnerSellected(int index) {
-        currentPlayIndex = index;
-        updateTitle();
-        mTrackListAdapter.updateSellect(currentPlayIndex);
-    }
 
-    @Override
-    void onDataChanged(List<MusicVO> playdata) {
-        updateTitle();
-        updateAlbumart();
-
-    }
-
-
-    private void updateTitle() {
-        LogUtil.d(TAG, "updateTitle: ");
-        mAlbumTitle.setText(playdata.get(currentPlayIndex).getAlbum_name());
-        mAlbumTitle.getPaint().setFakeBoldText(true);
-    }
+//    private void updateTitle() {
+//        LogUtil.d(TAG, "updateTitle: ");
+//        mAlbumTitle.setText(playdata.get(currentPlayIndex).getAlbum_name());
+//        mAlbumTitle.getPaint().setFakeBoldText(true);
+//    }
 
     private void inteView() {
         mTrackListAdapter = new MusicListAdapter(this.getContext());
@@ -100,27 +104,33 @@ public class MusicFragment extends PlayBaseFragment<List<MusicVO>> {
         });
 
         mRecyclerView.setAdapter(mTrackListAdapter);
-        mRecyclerView.addOnScrollListener(new RecycleViewEndlessOnScrollListener() {
-            @Override
-            public void onLoadMore(int currentPage) {
-                PlayListFragment.PlayListListener listListener = (PlayListFragment.PlayListListener) getActivity();
-                listListener.onLoadMore();
-                mSwipeRefreshLayout.setRefreshing(true);
-            }
-        });
+//        mRecyclerView.addOnScrollListener(new RecycleViewEndlessOnScrollListener() {
+//            @Override
+//            public void onLoadMore(int currentPage) {
+//                PlayListFragment.PlayListListener listListener = (PlayListFragment.PlayListListener) getActivity();
+//                listListener.onLoadMore();
+//                mSwipeRefreshLayout.setRefreshing(true);
+//            }
+//        });
     }
 
 
     private void updateAlbumart() {
-        String cover = playdata.get(currentPlayIndex).getCover_url();
-        LogUtil.d(TAG, "updateAlbumart coverUri: " + cover);
-        if (cover == null) {
-            mSimpleDraweeView.setImageResource(R.drawable.placeholder_disk);
-        } else {
-            mSimpleDraweeView.setImageURI(Uri.parse(cover));
-        }
+//        String cover = playdata.get(currentPlayIndex).getCover_url();
+//        LogUtil.d(TAG, "updateAlbumart coverUri: " + cover);
+//        if (cover == null) {
+//            mSimpleDraweeView.setImageResource(R.drawable.placeholder_disk);
+//        } else {
+//            mSimpleDraweeView.setImageURI(Uri.parse(cover));
+//        }
     }
 
+    @Override
+    void onDataChanged(int resultCode, List<MusicVO> data) {
 
+    }
 }
+
+
+
 

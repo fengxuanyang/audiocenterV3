@@ -18,7 +18,6 @@ import java.util.List;
  */
 
 public class MusicToken extends AudioToken<MusicVO> {
-    private int currentPlayIndex = 0;
 
     MusicToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
         super(activity, mediaPlayer, item);
@@ -26,7 +25,7 @@ public class MusicToken extends AudioToken<MusicVO> {
 
     @Override
     protected PlayBaseFragment getPlayFragment() {
-        return new MusicFragment();
+        return MusicFragment.newInstances();
     }
 
     @Override

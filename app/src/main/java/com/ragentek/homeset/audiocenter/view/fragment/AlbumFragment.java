@@ -60,19 +60,6 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>> {
     SwipeRefreshLayout mSwipeRefreshLayout;
 
 
-    @Override
-    public void setInnerSellected(int index) {
-        pcurrentPlayIndext = index;
-    }
-
-    @Override
-    void onDataChanged(List<TrackVO> playdata) {
-        LogUtil.d(TAG, "onDataChanged: ");
-        updateView();
-        currentPage = 1;
-    }
-
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -85,18 +72,18 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>> {
     }
 
     private void updateView() {
-        if (getPlaydata() != null) {
-            mSwipeRefreshLayout.setRefreshing(false);
-            mTrackListAdapter.setDatas(playdata);
-            updateTitle();
-            updateAlbumart();
-        }
+//        if (getPlaydata() != null) {
+//            mSwipeRefreshLayout.setRefreshing(false);
+//            mTrackListAdapter.setDatas(playdata);
+//            updateTitle();
+//            updateAlbumart();
+//        }
     }
 
     private void updateTitle() {
         LogUtil.d(TAG, "updateTitle: ");
 
-        mAlbumTitle.setText(playdata.get(pcurrentPlayIndext).getAlbum_title());
+//        mAlbumTitle.setText(playdata.get(pcurrentPlayIndext).getAlbum_title());
         mAlbumTitle.getPaint().setFakeBoldText(true);
     }
 
@@ -113,28 +100,28 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>> {
                 LogUtil.d(TAG, "onItemClick: " + position);
                 pcurrentPlayIndext = position;
                 mTrackListAdapter.updateSellect(position);
-                if (mAudioFragmentListener != null) {
-                    mAudioFragmentListener.onPlayItemClick(position);
-                }
+//                if (mAudioFragmentListener != null) {
+//                    mAudioFragmentListener.onPlayItemClick(position);
+//                }
             }
         });
         mRecyclerView.setAdapter(mTrackListAdapter);
         mRecyclerView.addOnScrollListener(new RecycleViewEndlessOnScrollListener() {
             @Override
             public void onLoadMore(int currentPage) {
-                mAudioFragmentListener.onLoadMore();
+//                mAudioFragmentListener.onLoadMore();
             }
         });
 
     }
 
     private void updateAlbumart() {
-        LogUtil.d(TAG, "updateAlbumart Uri: " + playdata.get(pcurrentPlayIndext).getCover_url());
-        if (playdata.get(pcurrentPlayIndext).getCover_url() == null) {
-            mSimpleDraweeView.setImageResource(R.drawable.placeholder_disk);
-        } else {
-            mSimpleDraweeView.setImageURI(Uri.parse(playdata.get(pcurrentPlayIndext).getCover_url()));
-        }
+//        LogUtil.d(TAG, "updateAlbumart Uri: " + playdata.get(pcurrentPlayIndext).getCover_url());
+//        if (playdata.get(pcurrentPlayIndext).getCover_url() == null) {
+//            mSimpleDraweeView.setImageResource(R.drawable.placeholder_disk);
+//        } else {
+//            mSimpleDraweeView.setImageURI(Uri.parse(playdata.get(pcurrentPlayIndext).getCover_url()));
+//        }
     }
 
 
@@ -158,21 +145,7 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>> {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        LogUtil.d(TAG, "onStop: ");
-    }
+    void onDataChanged(int resultCode, List<TrackVO> data) {
 
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        LogUtil.d(TAG, "onDetach: ");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        LogUtil.d(TAG, "onDestroy: " + this);
     }
 }
