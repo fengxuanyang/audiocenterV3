@@ -9,6 +9,7 @@ import com.ragentek.homeset.audiocenter.service.MediaPlayerManager;
 import com.ragentek.homeset.audiocenter.utils.LogUtil;
 import com.ragentek.homeset.audiocenter.view.fragment.AlbumFragment;
 import com.ragentek.homeset.audiocenter.view.fragment.PlayBaseFragment;
+import com.ragentek.protocol.commons.audio.BaseAudioVO;
 import com.ragentek.protocol.commons.audio.TrackVO;
 import com.ragentek.protocol.messages.http.audio.TrackResultVO;
 
@@ -22,7 +23,7 @@ import rx.Subscriber;
  * Created by xuanyang.feng on 2017/4/20.
  */
 
-public class AlbumToken extends AudioToken {
+public class AlbumToken extends AudioToken<BaseAudioVO, AlbumToken.AlbumAudioControl> {
     private static final String TAG = "AlbumToken";
     private int currentPage = 1;
     private static final int PAGE_COUNT = 20;

@@ -15,9 +15,6 @@ public class BaseFragment extends Fragment {
 
     public Activity mActivity;
 
-    public static BaseFragment newInstence() {
-        return new BaseFragment();
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

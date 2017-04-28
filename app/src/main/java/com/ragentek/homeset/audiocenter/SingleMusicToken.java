@@ -5,8 +5,8 @@ import android.support.v4.app.FragmentActivity;
 import com.ragentek.homeset.audiocenter.model.bean.PlayItem;
 import com.ragentek.homeset.audiocenter.model.bean.PlayListItem;
 import com.ragentek.homeset.audiocenter.service.MediaPlayerManager;
-import com.ragentek.homeset.audiocenter.view.fragment.MusicFragment;
 import com.ragentek.homeset.audiocenter.view.fragment.PlayBaseFragment;
+import com.ragentek.homeset.audiocenter.view.fragment.SingleMusicFragment;
 import com.ragentek.protocol.commons.audio.MusicVO;
 
 import java.util.ArrayList;
@@ -18,31 +18,46 @@ import java.util.List;
 
 public class SingleMusicToken extends AudioToken<MusicVO, SingleMusicToken.SingleMusicAudioControl> {
 
+    private MusicVO mMusicVO;
+
+    private MediaPlayerManager.MediaPlayerHandler mMediaPlayer;
+    private int currentPlayIndext = 1;
+
     SingleMusicToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
         super(activity, mediaPlayer, item);
+        mMediaPlayer = mediaPlayer;
+        mMusicVO = (MusicVO) item.getAudio();
     }
 
     @Override
     protected PlayBaseFragment getPlayFragment() {
-        return new SingleMusicToken();
+        SingleMusicFragment sing = SingleMusicFragment.newInstence();
+        sing.setAudioControl(new SingleMusicAudioControl());
+        return sing;
     }
 
-    protected void getPlayListAsync(AudioPlayListResultListener listener, PlayListItem listitem) {
+    @Override
+    protected void playAudio(int index) {
         List<PlayItem> list = new ArrayList<>();
         PlayItem item = new PlayItem();
-        MusicVO music = (MusicVO) listitem.getAudio();
-        item.setPlayUrl(music.getPlay_url());
-        item.setCoverUrl(music.getCover_url());
-        item.setTitle(music.getSong_name());
-        list.add(item);
-        listener.onPlayAudioListGet(PLAYLIST_RESULT_SUCCESS, list, music);
+        item.setPlayUrl(mMusicVO.getPlay_url());
+        item.setCoverUrl(mMusicVO.getCover_url());
+        item.setTitle(mMusicVO.getSong_name());
+        mMediaPlayer.setPlayList(list, currentPlayIndext);
+        mMediaPlayer.setPlayList(list, currentPlayIndext);
     }
 
-    class SingleMusicAudioControl implements IAudioControl {
+
+    public class SingleMusicAudioControl implements IAudioControl {
 
         @Override
         public void setDataChangerListener(PlayBaseFragment.IAudioDataChangerListener mListener) {
 
         }
 
+        public MusicVO getData() {
+            return mMusicVO;
+
+        }
     }
+}

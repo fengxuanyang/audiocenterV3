@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.ragentek.homeset.audiocenter.IAudioControl;
+import com.ragentek.homeset.audiocenter.RadioToken;
 import com.ragentek.homeset.audiocenter.model.bean.PlayItem;
 import com.ragentek.homeset.audiocenter.utils.LogUtil;
 import com.ragentek.homeset.core.R;
@@ -27,7 +28,7 @@ import butterknife.ButterKnife;
  * for  the  category of radio;
  */
 
-public class RadioFragment extends PlayBaseFragment<RadioVO, RadioFragment.RadioAudioControl> {
+public class RadioFragment extends PlayBaseFragment<RadioVO, RadioToken.RadioAudioControl> {
     private static final String TAG = "MusicFragment";
     private int currentPlayIndex = 0;
 
@@ -81,12 +82,5 @@ public class RadioFragment extends PlayBaseFragment<RadioVO, RadioFragment.Radio
         currentRadioVO = data;
     }
 
-    public class RadioAudioControl implements IAudioControl {
 
-
-        @Override
-        public void setDataChangerListener(PlayBaseFragment.IAudioDataChangerListener listener) {
-        }
-
-    }
 }

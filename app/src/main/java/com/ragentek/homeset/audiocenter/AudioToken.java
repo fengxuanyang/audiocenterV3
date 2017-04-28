@@ -10,10 +10,11 @@ import com.ragentek.homeset.audiocenter.service.MediaPlayerManager;
 import com.ragentek.homeset.audiocenter.utils.LogUtil;
 import com.ragentek.homeset.audiocenter.view.fragment.PlayBaseFragment;
 import com.ragentek.homeset.core.R;
+import com.ragentek.protocol.commons.audio.BaseAudioVO;
 
 import java.util.List;
 
-public abstract class AudioToken {
+public abstract class AudioToken<M extends BaseAudioVO, S> {
     private static final String TAG = "AudioToken";
     public static final int PLAYLIST_RESULT_ERROR_NET = -1;
     public static final int PLAYLIST_RESULT_NONE = 0;

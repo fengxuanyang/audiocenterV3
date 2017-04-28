@@ -1,7 +1,6 @@
 package com.ragentek.homeset.audiocenter;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -14,6 +13,7 @@ import com.ragentek.homeset.audiocenter.service.MediaPlayerManager;
 import com.ragentek.homeset.audiocenter.utils.Constants;
 import com.ragentek.homeset.audiocenter.utils.LogUtil;
 import com.ragentek.homeset.audiocenter.view.fragment.PlayListFragment;
+import com.ragentek.protocol.commons.audio.BaseAudioVO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +51,7 @@ public abstract class PlayListToken {
     private IPlayListControlHandle mPlayListControlHandle;
 
     protected List<PlayListItem> wholePlayList;
-    protected List<AudioToken> audioTokenList;
+    protected List<AudioToken<BaseAudioVO, S>> audioTokenList;
     private int currentPlayIndex = -1;
     private int prePlayIndex = -1;
 
@@ -199,7 +199,7 @@ public abstract class PlayListToken {
         public void onLoadData(int resultCode, List<PlayListItem> resultmessage) {
             wholePlayList.addAll(resultmessage);
             for (PlayListItem item : resultmessage) {
-                AudioToken mtoken = AudioTokenFactory.getAudioToken(mActivity, item, mMediaPlayerManager);
+                AudioToken<BaseAudioVO, S> mtoken = AudioTokenFactory.getAudioToken(mActivity, item, mMediaPlayerManager);
                 Log.d(TAG, "onLoadData: " + mtoken);
                 audioTokenList.add(mtoken);
             }

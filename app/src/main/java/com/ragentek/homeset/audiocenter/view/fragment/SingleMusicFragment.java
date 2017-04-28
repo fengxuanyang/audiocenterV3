@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.ragentek.homeset.audiocenter.IAudioControl;
+import com.ragentek.homeset.audiocenter.SingleMusicToken;
 import com.ragentek.homeset.audiocenter.model.bean.PlayItem;
 import com.ragentek.homeset.audiocenter.utils.LogUtil;
 import com.ragentek.homeset.core.R;
@@ -27,9 +28,8 @@ import butterknife.ButterKnife;
  * Created by xuanyang.feng on 2017/3/14.
  * * for  the  favorite of  music
  */
-public class SingleMusicFragment extends PlayBaseFragment<MusicVO,  SingleMusicAudioControl> {
+public class SingleMusicFragment extends PlayBaseFragment<MusicVO, SingleMusicToken.SingleMusicAudioControl> {
     private static final String TAG = "SingleMusicFragment";
-    private MusicVO currentMusicOV;
     @BindView(R.id.tv_music_album)
     TextView albumText;
     @BindView(R.id.tv_music_singer)
@@ -43,6 +43,9 @@ public class SingleMusicFragment extends PlayBaseFragment<MusicVO,  SingleMusicA
     @BindView(R.id.progress_music_load)
     ProgressBar mProgressBar;
 
+    public static SingleMusicFragment newInstence() {
+        return new SingleMusicFragment();
+    }
 
     @Nullable
     @Override
@@ -56,29 +59,20 @@ public class SingleMusicFragment extends PlayBaseFragment<MusicVO,  SingleMusicA
     }
 
     private void initView() {
-        updateData();
-        updateView();
+        updateView(mIAudioControl.getData());
     }
 
-    private void updateData() {
-        List<PlayItem> list = new ArrayList<>();
-        PlayItem item = new PlayItem();
-        item.setPlayUrl(playdata.getPlay_url());
-        item.setCoverUrl(playdata.getCover_url());
-        item.setTitle(playdata.getSong_name());
-        list.add(item);
-    }
-
-    private void updateView() {
-        albumText.setText(playdata.getAlbum_name());
-        musicName.setText(playdata.getSong_name());
-        singerText.setText(playdata.getSinger_name());
-        if (playdata.getCover_url() == null) {
+    private void updateView(MusicVO music) {
+        albumText.setText(music.getAlbum_name());
+        musicName.setText(music.getSong_name());
+        singerText.setText(music.getSinger_name());
+        if (music.getCover_url() == null) {
             mSimpleDraweeView.setImageResource(R.drawable.placeholder_disk);
         } else {
-            mSimpleDraweeView.setImageURI(Uri.parse(playdata.getCover_url()));
+            mSimpleDraweeView.setImageURI(Uri.parse(music.getCover_url()));
         }
     }
+
 
     @Override
     public void onStart() {
@@ -99,8 +93,7 @@ public class SingleMusicFragment extends PlayBaseFragment<MusicVO,  SingleMusicA
 
     @Override
     void onDataChanged(int resultCode, MusicVO data) {
-        currentMusicOV = data;
-        updateView();
+        updateView(data);
     }
 
 
