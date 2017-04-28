@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.ragentek.homeset.audiocenter.IAudioControl;
 import com.ragentek.homeset.audiocenter.model.bean.PlayItem;
 import com.ragentek.homeset.audiocenter.utils.LogUtil;
 import com.ragentek.homeset.core.R;
@@ -26,8 +27,9 @@ import butterknife.ButterKnife;
  * Created by xuanyang.feng on 2017/3/14.
  * * for  the  favorite of  music
  */
-public class SingleMusicFragment extends PlayBaseFragment<MusicVO> {
+public class SingleMusicFragment extends PlayBaseFragment<MusicVO,  SingleMusicAudioControl> {
     private static final String TAG = "SingleMusicFragment";
+    private MusicVO currentMusicOV;
     @BindView(R.id.tv_music_album)
     TextView albumText;
     @BindView(R.id.tv_music_singer)
@@ -96,14 +98,10 @@ public class SingleMusicFragment extends PlayBaseFragment<MusicVO> {
     }
 
     @Override
-    public void setInnerSellected(int index) {
-
-    }
-
-    @Override
-    public void onDataChanged(MusicVO playdata) {
-        Log.d(TAG, "onDataChanged: ");
+    void onDataChanged(int resultCode, MusicVO data) {
+        currentMusicOV = data;
         updateView();
-        updateData();
     }
+
+
 }

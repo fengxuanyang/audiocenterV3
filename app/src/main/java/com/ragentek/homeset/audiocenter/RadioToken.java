@@ -17,10 +17,15 @@ import java.util.List;
  * Created by xuanyang.feng on 2017/4/21.
  */
 
-public class RadioToken extends AudioToken<RadioVO> {
+public class RadioToken extends AudioToken {
+    private MediaPlayerManager.MediaPlayerHandler mMediaPlayer;
+    private PlayListItem mPlayListItem;
+    private int currentPlayIndext = 1;
 
     RadioToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
         super(activity, mediaPlayer, item);
+        mMediaPlayer = mediaPlayer;
+        mPlayListItem = item;
     }
 
     @Override
@@ -29,15 +34,15 @@ public class RadioToken extends AudioToken<RadioVO> {
     }
 
     @Override
-    protected void getPlayListAsync(AudioPlayListResultListener listener, PlayListItem listitem) {
+    protected void playAudio(int index) {
         List<PlayItem> list = new ArrayList<>();
         PlayItem item = new PlayItem();
-        RadioVO radio = (RadioVO) listitem.getAudio();
+        RadioVO radio = (RadioVO) mPlayListItem.getAudio();
         item.setPlayUrl(radio.getPlay_url());
         item.setCoverUrl(radio.getCover_url());
         item.setTitle(radio.getName());
         list.add(item);
-        listener.onPlayAudioListGet(PLAYLIST_RESULT_SUCCESS, list, radio);
+        mMediaPlayer.setPlayList(list, currentPlayIndext);
     }
 
 

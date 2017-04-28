@@ -10,5 +10,4 @@ import java.util.List;
 
 public interface IPlayListLoadListener {
     void onLoadData(int resultCode, List<PlayListItem> resultmessage);
-
 }

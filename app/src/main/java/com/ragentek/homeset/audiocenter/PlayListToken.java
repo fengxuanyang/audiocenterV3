@@ -26,7 +26,6 @@ import rx.Subscriber;
 
 public abstract class PlayListToken {
     private static final String TAG = PlayListToken.class.getSimpleName();
-
     public static final String PLAYLIST_FRAGMENT_TAG = "playlist";
 
     /**
@@ -118,10 +117,10 @@ public abstract class PlayListToken {
     private void switchAudioToken() {
         //TODO show sate fragment
         if (prePlayIndex < 0) {
-            audioTokenList.get(currentPlayIndex).show();
+            audioTokenList.get(currentPlayIndex).showView();
         } else {
             audioTokenList.get(prePlayIndex).hide();
-            audioTokenList.get(currentPlayIndex).show();
+            audioTokenList.get(currentPlayIndex).showView();
         }
         prePlayIndex = currentPlayIndex;
     }

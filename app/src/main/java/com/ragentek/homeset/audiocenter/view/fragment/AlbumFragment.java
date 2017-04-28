@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.ragentek.homeset.audiocenter.AlbumToken;
 import com.ragentek.homeset.audiocenter.AudioToken;
 import com.ragentek.homeset.audiocenter.adapter.ListItemBaseAdapter;
 import com.ragentek.homeset.audiocenter.adapter.TrackListAdapter;
@@ -46,7 +47,7 @@ import rx.Subscriber;
  * public static final int HISTORY = 9
  */
 
-public class AlbumFragment extends PlayBaseFragment<List<TrackVO>> {
+public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.AlbumAudioControl> {
     private ListItemBaseAdapter<List<TrackVO>, TrackListAdapter.AlbumItemAdapterViewHolder> mTrackListAdapter;
     private int currentPage = 1;
     public static final int PAGE_COUNT = 20;
@@ -63,7 +64,8 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>> {
     SwipeRefreshLayout mSwipeRefreshLayout;
 
     public static AlbumFragment newInstances() {
-        return new AlbumFragment();
+        AlbumFragment fragment = new AlbumFragment();
+        return fragment;
     }
 
 
@@ -74,7 +76,6 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>> {
         View view = inflater.inflate(R.layout.audioenter_fragment_album_detail, container, false);
         ButterKnife.bind(this, view);
         inteView();
-//        updateView();
         return view;
     }
 
@@ -100,7 +101,7 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>> {
         mRecyclerView.addOnScrollListener(new RecycleViewEndlessOnScrollListener() {
             @Override
             public void onLoadMore(int currentPage) {
-                mIAudioControl.getDataAsync();
+                mIAudioControl.getMoreData();
             }
         });
         LogUtil.d(TAG, "inteView  <<: " + SystemClock.currentThreadTimeMillis());

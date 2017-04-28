@@ -10,6 +10,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.ragentek.homeset.audiocenter.IAudioControl;
 import com.ragentek.homeset.audiocenter.model.bean.PlayItem;
 import com.ragentek.homeset.audiocenter.utils.LogUtil;
 import com.ragentek.homeset.core.R;
@@ -26,7 +27,7 @@ import butterknife.ButterKnife;
  * for  the  category of radio;
  */
 
-public class RadioFragment extends PlayBaseFragment<RadioVO> {
+public class RadioFragment extends PlayBaseFragment<RadioVO, RadioFragment.RadioAudioControl> {
     private static final String TAG = "MusicFragment";
     private int currentPlayIndex = 0;
 
@@ -40,23 +41,9 @@ public class RadioFragment extends PlayBaseFragment<RadioVO> {
     @BindView(R.id.progress_music_load)
     ProgressBar mProgressBar;
 
-
-    @Override
-    public void setInnerSellected(int index) {
-        currentPlayIndex = index;
-        updateData();
-    }
-
-    @Override
-    void onDataChanged(RadioVO playdata) {
-        updateData();
-        updateView();
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        LogUtil.d(TAG, "onCreate: " + this);
+    public static RadioFragment newInstances() {
+        RadioFragment fragment = new RadioFragment();
+        return fragment;
     }
 
     @Nullable
@@ -65,22 +52,12 @@ public class RadioFragment extends PlayBaseFragment<RadioVO> {
         View view = inflater.inflate(R.layout.audioenter_fragment_radio_detail, container, false);
         ButterKnife.bind(this, view);
         updateView();
-        updateData();
         return view;
     }
 
-    private void updateData() {
-        List<PlayItem> list = new ArrayList<>();
-        PlayItem item = new PlayItem();
-        item.setPlayUrl(playdata.getPlay_url());
-        item.setCoverUrl(playdata.getCover_url());
-        item.setTitle(playdata.getName());
-        list.add(item);
-    }
-
     private void updateView() {
-        if (playdata != null) {
-            radioNameTV.setText(playdata.getName());
+        if (currentRadioVO != null) {
+            radioNameTV.setText(currentRadioVO.getName());
             updateAlbumart();
         } else {
             mSimpleDraweeView.setImageResource(R.drawable.placeholder_disk);
@@ -90,27 +67,26 @@ public class RadioFragment extends PlayBaseFragment<RadioVO> {
 
 
     private void updateAlbumart() {
-        if (playdata.getCover_url() == null) {
+        if (currentRadioVO.getCover_url() == null) {
             mSimpleDraweeView.setImageResource(R.drawable.placeholder_disk);
         } else {
-            mSimpleDraweeView.setImageURI(Uri.parse(playdata.getCover_url()));
+            mSimpleDraweeView.setImageURI(Uri.parse(currentRadioVO.getCover_url()));
         }
     }
 
+    private RadioVO currentRadioVO;
+
     @Override
-    public void onStart() {
-        super.onStart();
+    void onDataChanged(int resultCode, RadioVO data) {
+        currentRadioVO = data;
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
+    public class RadioAudioControl implements IAudioControl {
 
-    @Override
-    public void onDestroy() {
-        LogUtil.d(TAG, "onDestroy: " + this);
 
-        super.onDestroy();
+        @Override
+        public void setDataChangerListener(PlayBaseFragment.IAudioDataChangerListener listener) {
+        }
+
     }
 }

@@ -13,39 +13,33 @@ import com.ragentek.homeset.core.R;
 
 import java.util.List;
 
-public abstract class AudioToken<E> {
+public abstract class AudioToken {
     private static final String TAG = "AudioToken";
     public static final int PLAYLIST_RESULT_ERROR_NET = -1;
     public static final int PLAYLIST_RESULT_NONE = 0;
     public static final int PLAYLIST_RESULT_SUCCESS = 1;
     FragmentActivity mActivity;
-    private MediaPlayerManager.MediaPlayerHandler mediaPlayerManager;
-    private PlayListItem currentPlayitem;
-    private AudioPlayListResultListener mPlayListResultListener;
+
+
     PlayBaseFragment fragment = null;
     private int currentPlayIndex = 0;
-    private AudioControl mAudioControl;
-    private IAudioDataChangerListener<E> mAudioDataChangerListener;
 
-    protected abstract PlayBaseFragment<E> getPlayFragment();
+    protected abstract PlayBaseFragment getPlayFragment();
 
-    protected abstract void getPlayListAsync(AudioPlayListResultListener listener, PlayListItem listitem);
+    protected abstract void playAudio(int index);
+
 
     AudioToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
         mActivity = activity;
-        mediaPlayerManager = mediaPlayer;
-        currentPlayitem = item;
-        mAudioControl = new AudioControl();
     }
 
-    void show() {
+    public void showView() {
         LogUtil.d(TAG, "show: " + this.getClass().getSimpleName());
         Fragment view = mActivity.getSupportFragmentManager().findFragmentByTag(this.getClass().getSimpleName());
         FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
         if (view == null) {
             //TODO
             fragment = getPlayFragment();
-            fragment.setAudioControl(mAudioControl);
             transaction.replace(R.id.fragment_container, fragment, this.getClass().getSimpleName()).commit();
         } else {
             fragment = (PlayBaseFragment) view;
@@ -56,11 +50,17 @@ public abstract class AudioToken<E> {
             }
         }
         //TODO
-        mPlayListResultListener = new AudioPlayListResultListener();
-        getPlayListAsync(mPlayListResultListener, currentPlayitem);
     }
 
-    void hide() {
+    public void startPlay() {
+        playAudio(0);
+    }
+
+    public void startPlay(int indext) {
+        playAudio(indext);
+    }
+
+    public void hide() {
         LogUtil.d(TAG, "hide: " + this.getClass().getSimpleName());
         FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
         Fragment view = mActivity.getSupportFragmentManager().findFragmentByTag(this.getClass().getSimpleName());
@@ -69,38 +69,5 @@ public abstract class AudioToken<E> {
         }
     }
 
-    private void playAudioSellected(int index) {
-        mediaPlayerManager.play(index);
-    }
-
-
-    class AudioPlayListResultListener {
-        void onPlayAudioListGet(int result, List<PlayItem> playlist, E audiouidata) {
-            LogUtil.d(TAG, "onPlayListResult: " + currentPlayIndex);
-            mediaPlayerManager.addPlayList(playlist);
-            //TODO  play sellected
-            mAudioDataChangerListener.onGetData(result, audiouidata);
-        }
-    }
-
-    private class AudioControl implements IAudioControl {
-
-
-        @Override
-        public void setDataChangerListener(IAudioDataChangerListener listener) {
-            mAudioDataChangerListener = listener;
-        }
-
-
-        @Override
-        public void playSellected(int position) {
-            playAudioSellected(position);
-        }
-
-        @Override
-        public void getDataAsync() {
-            getPlayListAsync(mPlayListResultListener, currentPlayitem);
-        }
-    }
 
 }

@@ -9,21 +9,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.ragentek.homeset.audiocenter.MusicToken;
 import com.ragentek.homeset.audiocenter.adapter.ListItemBaseAdapter;
 import com.ragentek.homeset.audiocenter.adapter.MusicListAdapter;
-import com.ragentek.homeset.audiocenter.model.bean.PlayItem;
 import com.ragentek.homeset.audiocenter.utils.LogUtil;
 import com.ragentek.homeset.audiocenter.view.widget.RecycleItemDecoration;
 import com.ragentek.homeset.audiocenter.view.widget.RecycleViewEndlessOnScrollListener;
 import com.ragentek.homeset.core.R;
 import com.ragentek.protocol.commons.audio.MusicVO;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,7 +29,7 @@ import butterknife.ButterKnife;
  * Created by xuanyang.feng on 2017/3/14.
  * for  the  category of music
  */
-public class MusicFragment extends PlayBaseFragment<List<MusicVO>> {
+public class MusicFragment extends PlayBaseFragment<MusicVO, MusicToken.MusicAudioControl> {
     private static final String TAG = "MusicFragment";
     private ListItemBaseAdapter mTrackListAdapter;
     private int currentPlayIndex = 0;
@@ -47,7 +44,8 @@ public class MusicFragment extends PlayBaseFragment<List<MusicVO>> {
     SwipeRefreshLayout mSwipeRefreshLayout;
 
     public static MusicFragment newInstances() {
-        return new MusicFragment();
+        MusicFragment fragment = new MusicFragment();
+        return fragment;
     }
 
     @Nullable
@@ -56,37 +54,23 @@ public class MusicFragment extends PlayBaseFragment<List<MusicVO>> {
         LogUtil.d(TAG, "onCreateView: ");
         View view = inflater.inflate(R.layout.audioenter_fragment_album_detail, container, false);
         ButterKnife.bind(this, view);
-        mIAudioControl.getData();
         inteView();
-//        if (getPlaydata() != null) {
-//            currentPlayIndex = 0;
-//            updateTitle();
-//            updateAlbumart();
-//        }
+        updateView(mIAudioControl.getPlayData());
         return view;
     }
 
-//
-//    @Override
-//    public void setInnerSellected(int index) {
-//        currentPlayIndex = index;
-//        updateTitle();
-//        mTrackListAdapter.updateSellect(currentPlayIndex);
-//    }
-//
-//    @Override
-//    void onDataChanged(List<MusicVO> playdata) {
-//        updateTitle();
-//        updateAlbumart();
-//
-//    }
+    private void updateView(MusicVO music) {
+        String cover = music.getCover_url();
+        LogUtil.d(TAG, "updateAlbumart coverUri: " + cover);
+        if (cover == null) {
+            mSimpleDraweeView.setImageResource(R.drawable.placeholder_disk);
+        } else {
+            mSimpleDraweeView.setImageURI(Uri.parse(cover));
+        }
+        mAlbumTitle.setText(music.getAlbum_name());
+        mAlbumTitle.getPaint().setFakeBoldText(true);
+    }
 
-
-//    private void updateTitle() {
-//        LogUtil.d(TAG, "updateTitle: ");
-//        mAlbumTitle.setText(playdata.get(currentPlayIndex).getAlbum_name());
-//        mAlbumTitle.getPaint().setFakeBoldText(true);
-//    }
 
     private void inteView() {
         mTrackListAdapter = new MusicListAdapter(this.getContext());
@@ -104,31 +88,23 @@ public class MusicFragment extends PlayBaseFragment<List<MusicVO>> {
         });
 
         mRecyclerView.setAdapter(mTrackListAdapter);
-//        mRecyclerView.addOnScrollListener(new RecycleViewEndlessOnScrollListener() {
-//            @Override
-//            public void onLoadMore(int currentPage) {
+        mRecyclerView.addOnScrollListener(new RecycleViewEndlessOnScrollListener() {
+            @Override
+            public void onLoadMore(int currentPage) {
 //                PlayListFragment.PlayListListener listListener = (PlayListFragment.PlayListListener) getActivity();
 //                listListener.onLoadMore();
 //                mSwipeRefreshLayout.setRefreshing(true);
-//            }
-//        });
+            }
+        });
     }
 
-
-    private void updateAlbumart() {
-//        String cover = playdata.get(currentPlayIndex).getCover_url();
-//        LogUtil.d(TAG, "updateAlbumart coverUri: " + cover);
-//        if (cover == null) {
-//            mSimpleDraweeView.setImageResource(R.drawable.placeholder_disk);
-//        } else {
-//            mSimpleDraweeView.setImageURI(Uri.parse(cover));
-//        }
-    }
 
     @Override
-    void onDataChanged(int resultCode, List<MusicVO> data) {
-
+    void onDataChanged(int resultCode, MusicVO data) {
+        updateView(data);
     }
+
+
 }
 
 

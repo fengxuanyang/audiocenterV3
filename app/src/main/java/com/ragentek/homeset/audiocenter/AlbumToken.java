@@ -22,25 +22,50 @@ import rx.Subscriber;
  * Created by xuanyang.feng on 2017/4/20.
  */
 
-class AlbumToken extends AudioToken<List<TrackVO>> {
+public class AlbumToken extends AudioToken {
     private static final String TAG = "AlbumToken";
     private int currentPage = 1;
     private static final int PAGE_COUNT = 20;
+    private PlayBaseFragment.IAudioDataChangerListener<List<TrackVO>> mIAudioDataChangerListener;
+    private MediaPlayerManager.MediaPlayerHandler mMediaPlayer;
+    private PlayListItem mPlayListItem;
+    private int currentPlayIndext;
+    private boolean waitingForPlay = true;
+    private List<TrackVO> wholeTracks;
+
 
     AlbumToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
         super(activity, mediaPlayer, item);
+        mMediaPlayer = mediaPlayer;
+        mPlayListItem = item;
     }
 
+
     @Override
-    protected PlayBaseFragment<List<TrackVO>> getPlayFragment() {
+    protected PlayBaseFragment<List<TrackVO>, AlbumAudioControl> getPlayFragment() {
+        AlbumAudioControl mAlbumAudioControl = new AlbumAudioControl();
+        wholeTracks = new ArrayList<>();
         //TODO
-        PlayBaseFragment<List<TrackVO>> mPlayBaseFragment = AlbumFragment.newInstances();
-        return mPlayBaseFragment;
+        AlbumFragment albumFragment = AlbumFragment.newInstances();
+        albumFragment.setAudioControl(mAlbumAudioControl);
+        return albumFragment;
     }
 
     @Override
-    public void getPlayListAsync(final AudioPlayListResultListener listener, PlayListItem item) {
-        LogUtil.d(TAG, "loadData: ");
+    protected void playAudio(int index) {
+        if (wholeTracks.size() > index) {
+            mMediaPlayer.play(index);
+        } else {
+            getPlayListAsync();
+        }
+        currentPlayIndext = index;
+    }
+
+
+    private void getPlayListAsync() {
+        LogUtil.d(TAG, "getPlayListAsync: ");
+        waitingForPlay = true;
+
         Subscriber<TrackResultVO> getTagSubscriber = new Subscriber<TrackResultVO>() {
             @Override
             public void onCompleted() {
@@ -69,15 +94,42 @@ class AlbumToken extends AudioToken<List<TrackVO>> {
                             item.setTitle(trackvo.getTitle());
                             list.add(item);
                         }
-                        listener.onPlayAudioListGet(PLAYLIST_RESULT_SUCCESS, list, tagResult.getTracks());
+                        wholeTracks.addAll(tagResult.getTracks());
+                        mIAudioDataChangerListener.onGetData(PLAYLIST_RESULT_SUCCESS, tagResult.getTracks());
+                        mMediaPlayer.addPlayList(list);
+                        if (waitingForPlay) {
+                            mMediaPlayer.play(currentPlayIndext);
+                            waitingForPlay = false;
+                        }
                     }
                     currentPage++;
                 }
             }
         };
 
-        AudioCenterHttpManager.getInstance(mActivity).getTracks(getTagSubscriber, item.getId(), currentPage, PAGE_COUNT);
+        AudioCenterHttpManager.getInstance(mActivity).getTracks(getTagSubscriber, mPlayListItem.getId(), currentPage, PAGE_COUNT);
     }
+
+
+    public class AlbumAudioControl implements IAudioControl {
+
+
+        public void playSellected(int position) {
+            mMediaPlayer.play(position);
+        }
+
+        public void getMoreData() {
+            getPlayListAsync();
+        }
+
+
+        @Override
+        public void setDataChangerListener(PlayBaseFragment.IAudioDataChangerListener listener) {
+            mIAudioDataChangerListener = listener;
+        }
+    }
+
+
 }
 
 

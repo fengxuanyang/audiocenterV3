@@ -17,28 +17,47 @@ import java.util.List;
  * Created by xuanyang.feng on 2017/4/21.
  */
 
-class MusicToken extends AudioToken<MusicVO> {
+public class MusicToken extends AudioToken {
+    private MediaPlayerManager.MediaPlayerHandler mMediaPlayer;
+    private PlayListItem mPlayListItem;
+    private int currentPage = 1;
+    private MusicVO currentMusic;
 
     MusicToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
         super(activity, mediaPlayer, item);
+        mMediaPlayer = mediaPlayer;
+        mPlayListItem = item;
     }
 
     @Override
     protected PlayBaseFragment getPlayFragment() {
-        return MusicFragment.newInstances();
+        MusicFragment fragment = MusicFragment.newInstances();
+        fragment.setAudioControl(new MusicAudioControl());
+        return fragment;
     }
 
     @Override
-    protected void getPlayListAsync(AudioPlayListResultListener listener, PlayListItem item) {
-        MusicVO music = (MusicVO) item.getAudio();
+    protected void playAudio(int index) {
+        currentMusic = (MusicVO) mPlayListItem.getAudio();
         List<PlayItem> list = new ArrayList<>();
         PlayItem playItem = new PlayItem();
-        playItem.setPlayUrl(music.getPlay_url());
-        playItem.setCoverUrl(music.getCover_url());
-        playItem.setTitle(music.getSong_name());
+        playItem.setPlayUrl(currentMusic.getPlay_url());
+        playItem.setCoverUrl(currentMusic.getCover_url());
+        playItem.setTitle(currentMusic.getSong_name());
         list.add(playItem);
-        listener.onPlayAudioListGet(PLAYLIST_RESULT_SUCCESS, list, music);
+        mMediaPlayer.setPlayList(list, currentPage);
     }
 
+    public class MusicAudioControl implements IAudioControl {
 
+
+        @Override
+        public void setDataChangerListener(PlayBaseFragment.IAudioDataChangerListener listener) {
+        }
+
+        public MusicVO getPlayData() {
+            return currentMusic;
+        }
+
+    }
 }
