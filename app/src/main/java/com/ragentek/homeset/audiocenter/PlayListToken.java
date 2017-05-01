@@ -47,13 +47,15 @@ public abstract class PlayListToken {
 
     private PlayListLoadDataListener mPlayListLoadDataListener;
     private List<OnDataChangeListTokenListener> mDataChangeCallBacks;
+
     private PlayListFragment mPlayListFragment;
     private IPlayListControlHandle mPlayListControlHandle;
 
     protected List<PlayListItem> wholePlayList;
-    protected List<AudioToken<BaseAudioVO, S>> audioTokenList;
+    protected List<AudioToken> audioTokenList;
     private int currentPlayIndex = -1;
     private int prePlayIndex = -1;
+    public static final int DEFAULT_PLAY_INDEX = 0;
 
 
     abstract public void updateLocalPlayList(long id);
@@ -70,15 +72,16 @@ public abstract class PlayListToken {
         mMediaPlayerManager = handler;
         mTagDetail = tag;
         mActivity = activity;
-    }
-
-    public void init() {
-        LogUtil.d(TAG, ": init");
         mDataChangeCallBacks = new ArrayList<OnDataChangeListTokenListener>();
         wholePlayList = new ArrayList<>();
         audioTokenList = new ArrayList<>();
         mPlayListControlHandle = new IPlayListControlHandle();
         mPlayListLoadDataListener = new PlayListLoadDataListener();
+    }
+
+    public void init() {
+        LogUtil.d(TAG, ": init");
+
         loadData(mPlayListLoadDataListener);
     }
 
@@ -98,7 +101,7 @@ public abstract class PlayListToken {
         if (currentPlayIndex > 0) {
             currentPlayIndex--;
         }
-        LogUtil.d(TAG, ": release" + currentPlayIndex);
+        LogUtil.d(TAG, ": playPre  currentPlayIndex：" + currentPlayIndex);
         switchAudioToken();
     }
 
@@ -108,13 +111,13 @@ public abstract class PlayListToken {
             currentPlayIndex++;
         }
         //TODO  nnext
-//        int nnext = currentPlayIndex + 1;
         LogUtil.d(TAG, ": playNext" + currentPlayIndex);
         switchAudioToken();
     }
 
 
     private void switchAudioToken() {
+        Log.d(TAG, "switchAudioToken: " + currentPlayIndex);
         //TODO show sate fragment
         if (prePlayIndex < 0) {
             audioTokenList.get(currentPlayIndex).showView();
@@ -122,7 +125,9 @@ public abstract class PlayListToken {
             audioTokenList.get(prePlayIndex).hide();
             audioTokenList.get(currentPlayIndex).showView();
         }
+        audioTokenList.get(currentPlayIndex).startPlay();
         prePlayIndex = currentPlayIndex;
+
     }
 
 
@@ -130,27 +135,26 @@ public abstract class PlayListToken {
         LogUtil.d(TAG, "showPlayList");
         Fragment fragment = mActivity.getSupportFragmentManager().findFragmentByTag(PLAYLIST_FRAGMENT_TAG);
         FragmentTransaction ft = mActivity.getSupportFragmentManager().beginTransaction();
+        LogUtil.d(TAG, "showPlayList  fragment:" + fragment);
+
         if (fragment != null) {
             mPlayListFragment = (PlayListFragment) fragment;
             ft.show(mPlayListFragment).commit();
         } else {
             mPlayListFragment = PlayListFragment.newInstance(currentPlayIndex);
             mPlayListFragment.setPlayControl(mPlayListControlHandle);
-            ft.add(mPlayListFragment, PLAYLIST_FRAGMENT_TAG).commit();
+            ft.add(mPlayListFragment, PLAYLIST_FRAGMENT_TAG).show(mPlayListFragment).commit();
         }
     }
 
-    public void hidePlayList() {
-        LogUtil.d(TAG, "hidePlayList");
-        hideFragment(PLAYLIST_FRAGMENT_TAG);
-    }
 
     private void hideFragment(String tag) {
         Fragment fragment = mActivity.getSupportFragmentManager().findFragmentByTag(tag);
-        LogUtil.d(TAG, "showPlayList ::" + fragment);
+        LogUtil.d(TAG, "hideFragment ::" + fragment);
         FragmentTransaction ft = mActivity.getSupportFragmentManager().beginTransaction();
         if (fragment != null) {
-            ft.hide(fragment).commit();
+//            ft.remove(fragment).hide()
+            ft.remove(fragment).hide(fragment).commit();
         }
     }
 
@@ -199,12 +203,12 @@ public abstract class PlayListToken {
         public void onLoadData(int resultCode, List<PlayListItem> resultmessage) {
             wholePlayList.addAll(resultmessage);
             for (PlayListItem item : resultmessage) {
-                AudioToken<BaseAudioVO, S> mtoken = AudioTokenFactory.getAudioToken(mActivity, item, mMediaPlayerManager);
+                AudioToken mtoken = AudioTokenFactory.getAudioToken(mActivity, item, mMediaPlayerManager);
                 Log.d(TAG, "onLoadData: " + mtoken);
                 audioTokenList.add(mtoken);
             }
             if (currentPlayIndex == -1) {
-                currentPlayIndex = 1;
+                currentPlayIndex = DEFAULT_PLAY_INDEX;
                 switchAudioToken();
             }
             for (OnDataChangeListTokenListener dataUpdataCall : mDataChangeCallBacks) {
@@ -232,6 +236,7 @@ public abstract class PlayListToken {
 
         @Override
         public void getDataAsync() {
+            LogUtil.d(TAG, ": getDataAsync");
             loadData(mPlayListLoadDataListener);
         }
 

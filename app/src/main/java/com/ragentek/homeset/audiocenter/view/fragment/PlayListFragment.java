@@ -119,7 +119,7 @@ public class PlayListFragment extends DialogFragment {
     }
 
     private void initView() {
-        LogUtil.d(TAG, "initView: ");
+        LogUtil.d(TAG, "initView: " + playindex);
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -137,6 +137,7 @@ public class PlayListFragment extends DialogFragment {
         } else {
             mPlayListAdapter.setDatas(currentPlaylist);
         }
+        mPlayListAdapter.updateSellect(playindex);
 
         playlistRV.setHasFixedSize(true);
         final LinearLayoutManager mLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
@@ -145,6 +146,7 @@ public class PlayListFragment extends DialogFragment {
         mPlayListAdapter.setOnItemClickListener(new ListItemBaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
+                playindex = position;
                 //update the playlist view
                 mPlayListAdapter.updateSellect(position);
                 mIPlayListControl.playSellected(position);

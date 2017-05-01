@@ -4,9 +4,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.os.RemoteException;
-import android.util.Log;
 
 import com.ragentek.homeset.audiocenter.IMediaPlayerListener;
 import com.ragentek.homeset.audiocenter.IMediaService;
@@ -45,10 +47,28 @@ public class MediaPlayerManager {
 
     private static MediaPlayerManager mMediaPlayerManager;
     IMediaService mMediaService;
+    private static final int SERVICE_CONNECTED = 1;
+    private IMediaPlayerListener mlistener;
+
+    private Handler mainLhanler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            try {
+                LogUtil.d(TAG, "handleMessage : " + Thread.currentThread().getName());
+
+                mMediaService.setMediaPlayerListener(mlistener);
+                mMediaService.init();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    };
 
     private MediaPlayerManager(Context context) {
         this.weakContext = new WeakReference<Context>(context.getApplicationContext());
-        bindMediaService();
+//        bindMediaService();
+
     }
 
     public static MediaPlayerManager getInstance(Context context) {
@@ -62,36 +82,15 @@ public class MediaPlayerManager {
         return mMediaPlayerManager;
     }
 
-    public void setMediaPlayerListener(final IMediaPlayerListener listener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                do {
-                    Log.d(TAG, "run mIsMediaServiceBound: " + mIsMediaServiceBound);
-                } while (!mIsMediaServiceBound);
-                try {
-                    mMediaService.setMediaPlayerListener(listener);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
 
-            }
-        }).start();
-    }
-
-
-    public void init() {
+    public void init(final IMediaPlayerListener listener) {
+        LogUtil.d(TAG, "init " + mIsMediaServiceBound);
+        mlistener = listener;
         if (mIsMediaServiceBound) {
-            try {
-                mMediaService.init();
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-            mIsMediaServiceInit = true;
+            mainLhanler.sendEmptyMessage(SERVICE_CONNECTED);
         } else {
-            LogUtil.e(TAG, "MediaPlayerManager is not  bound complete");
+            bindMediaService();
         }
-
     }
 
     public void release() {
@@ -101,6 +100,8 @@ public class MediaPlayerManager {
     }
 
     public MediaPlayerHandler geMediaPlayerHandler() {
+        LogUtil.d(TAG, "geMediaPlayerHandler mIsMediaServiceBound:" + mIsMediaServiceBound);
+
         if (mIsMediaServiceBound) {
             return mMediaPlayerhandler;
         } else {
@@ -118,7 +119,6 @@ public class MediaPlayerManager {
     private void bindMediaService() {
         LogUtil.d(TAG, "bindMediaService: ");
         Intent intent = new Intent().setComponent(MEDIA_SERVICE_COMPONENT);
-        weakContext.get().startService(intent);
         weakContext.get().bindService(intent, mMediaServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -139,6 +139,8 @@ public class MediaPlayerManager {
             mMediaService = IMediaService.Stub.asInterface(service);
             mMediaPlayerhandler = new MediaPlayerHandler(mMediaService);
             mIsMediaServiceBound = true;
+            mainLhanler.sendEmptyMessage(SERVICE_CONNECTED);
+
             LogUtil.d(TAG, "onServiceConnected: " + mIsMediaServiceBound);
 
         }
@@ -280,5 +282,8 @@ public class MediaPlayerManager {
     }
 
 
+    public interface ServiceBindCallBack {
+        void onMediaServiceBinded();
+    }
 }
 

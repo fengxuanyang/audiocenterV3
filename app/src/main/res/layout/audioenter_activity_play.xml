@@ -150,6 +150,6 @@
         android:layout_height="match_parent"
         android:layout_above="@id/bottom_bar"
         android:layout_below="@id/play_actionbar"
-        android:orientation="horizontal"></LinearLayout>
+        android:orientation="horizontal" />
 
 </RelativeLayout>

@@ -100,11 +100,16 @@ public class MusicFragment extends PlayBaseFragment<MusicVO, MusicToken.MusicAud
 
 
     @Override
-    void onDataChanged(int resultCode, MusicVO data) {
-        updateView(data);
+    IAudioDataChangerListener<MusicVO> getIAudioDataChangerListener() {
+        return mIAudioDataChangerListener;
     }
 
-
+    IAudioDataChangerListener<MusicVO> mIAudioDataChangerListener = new IAudioDataChangerListener<MusicVO>() {
+        @Override
+        public void onGetData(int resultCode, MusicVO data) {
+            updateView(data);
+        }
+    };
 }
 
 

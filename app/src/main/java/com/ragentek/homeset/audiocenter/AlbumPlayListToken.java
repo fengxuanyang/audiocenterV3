@@ -35,7 +35,7 @@ public class AlbumPlayListToken extends PlayListToken {
     @Override
     public void loadData(final IPlayListLoadListener listener) {
 
-        LogUtil.d(TAG, "getAlbums: " + mTagDetail.getCategoryID() + ":getName" + mTagDetail.getName());
+        LogUtil.d(TAG, "loadData   : " + mTagDetail.getCategoryID() + ":getName" + mTagDetail.getName());
         Subscriber<AlbumResultVO> mloadDataSubscriber = new Subscriber<AlbumResultVO>() {
             @Override
             public void onCompleted() {
@@ -49,6 +49,8 @@ public class AlbumPlayListToken extends PlayListToken {
 
             @Override
             public void onNext(AlbumResultVO tagResult) {
+                LogUtil.d(TAG, "loadData   onNext: ");
+
                 if (tagResult == null) {
                     listener.onLoadData(PLAYLISTMANAGER_RESULT_ERROR_NET, null);
                 } else if (tagResult.getAlbums() == null) {

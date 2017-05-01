@@ -1,5 +1,6 @@
 package com.ragentek.homeset.audiocenter;
 
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
 import com.ragentek.homeset.audiocenter.model.bean.PlayItem;
@@ -9,6 +10,8 @@ import com.ragentek.homeset.audiocenter.service.MediaPlayerManager;
 import com.ragentek.homeset.audiocenter.utils.LogUtil;
 import com.ragentek.homeset.audiocenter.view.fragment.AlbumFragment;
 import com.ragentek.homeset.audiocenter.view.fragment.PlayBaseFragment;
+import com.ragentek.homeset.audiocenter.view.fragment.SingleMusicFragment;
+import com.ragentek.protocol.commons.audio.AlbumVO;
 import com.ragentek.protocol.commons.audio.BaseAudioVO;
 import com.ragentek.protocol.commons.audio.TrackVO;
 import com.ragentek.protocol.messages.http.audio.TrackResultVO;
@@ -23,7 +26,7 @@ import rx.Subscriber;
  * Created by xuanyang.feng on 2017/4/20.
  */
 
-public class AlbumToken extends AudioToken<BaseAudioVO, AlbumToken.AlbumAudioControl> {
+public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl> {
     private static final String TAG = "AlbumToken";
     private int currentPage = 1;
     private static final int PAGE_COUNT = 20;
@@ -44,16 +47,30 @@ public class AlbumToken extends AudioToken<BaseAudioVO, AlbumToken.AlbumAudioCon
 
     @Override
     protected PlayBaseFragment<List<TrackVO>, AlbumAudioControl> getPlayFragment() {
-        AlbumAudioControl mAlbumAudioControl = new AlbumAudioControl();
-        wholeTracks = new ArrayList<>();
+        LogUtil.d(TAG, "getPlayFragment  view: " + this);
+
         //TODO
-        AlbumFragment albumFragment = AlbumFragment.newInstances();
+        wholeTracks = new ArrayList<TrackVO>();
+        currentPlayIndext = 0;
+        currentPage = 1;
+        Fragment view = mActivity.getSupportFragmentManager().findFragmentByTag(this.getClass().getSimpleName());
+        AlbumFragment albumFragment;
+        LogUtil.d(TAG, "getPlayFragment  view: " + view + ",tag::" + this.getClass().getSimpleName());
+
+        if (view == null) {
+            albumFragment = AlbumFragment.newInstances();
+        } else {
+            albumFragment = (AlbumFragment) view;
+        }
+        AlbumAudioControl mAlbumAudioControl = new AlbumAudioControl();
         albumFragment.setAudioControl(mAlbumAudioControl);
         return albumFragment;
     }
 
     @Override
     protected void playAudio(int index) {
+        LogUtil.d(TAG, "getPlayListAsync: " + wholeTracks.size() + ",index::" + index);
+
         if (wholeTracks.size() > index) {
             mMediaPlayer.play(index);
         } else {
@@ -95,11 +112,13 @@ public class AlbumToken extends AudioToken<BaseAudioVO, AlbumToken.AlbumAudioCon
                             item.setTitle(trackvo.getTitle());
                             list.add(item);
                         }
+
                         wholeTracks.addAll(tagResult.getTracks());
                         mIAudioDataChangerListener.onGetData(PLAYLIST_RESULT_SUCCESS, tagResult.getTracks());
-                        mMediaPlayer.addPlayList(list);
                         if (waitingForPlay) {
-                            mMediaPlayer.play(currentPlayIndext);
+                            mMediaPlayer.setPlayList(list, currentPlayIndext);
+
+//                            mMediaPlayer.play(currentPlayIndext);
                             waitingForPlay = false;
                         }
                     }
@@ -111,6 +130,7 @@ public class AlbumToken extends AudioToken<BaseAudioVO, AlbumToken.AlbumAudioCon
         AudioCenterHttpManager.getInstance(mActivity).getTracks(getTagSubscriber, mPlayListItem.getId(), currentPage, PAGE_COUNT);
     }
 
+//
 
     public class AlbumAudioControl implements IAudioControl {
 
@@ -124,8 +144,10 @@ public class AlbumToken extends AudioToken<BaseAudioVO, AlbumToken.AlbumAudioCon
         }
 
 
+        //TODO
         @Override
-        public void setDataChangerListener(PlayBaseFragment.IAudioDataChangerListener listener) {
+        public void setDataChangerListener(AlbumFragment.IAudioDataChangerListener listener) {
+            LogUtil.d(TAG, "setDataChangerListener : " + listener);
             mIAudioDataChangerListener = listener;
         }
     }

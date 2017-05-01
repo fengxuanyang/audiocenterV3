@@ -44,14 +44,14 @@ public class SingleMusicFragment extends PlayBaseFragment<MusicVO, SingleMusicTo
     ProgressBar mProgressBar;
 
     public static SingleMusicFragment newInstence() {
+
         return new SingleMusicFragment();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        LogUtil.d(TAG, "SingleMusicFragment onCreate: " + this);
-
+        LogUtil.d(TAG, "SingleMusicFragment onCreateView: " + this);
         View view = inflater.inflate(R.layout.audioenter_fragment_music_detail, container, false);
         ButterKnife.bind(this, view);
         initView();
@@ -63,6 +63,8 @@ public class SingleMusicFragment extends PlayBaseFragment<MusicVO, SingleMusicTo
     }
 
     private void updateView(MusicVO music) {
+        LogUtil.d(TAG, "SingleMusicFragment updateView: " + music.getSong_name());
+
         albumText.setText(music.getAlbum_name());
         musicName.setText(music.getSong_name());
         singerText.setText(music.getSinger_name());
@@ -73,28 +75,25 @@ public class SingleMusicFragment extends PlayBaseFragment<MusicVO, SingleMusicTo
         }
     }
 
-
     @Override
-    public void onStart() {
-        super.onStart();
+    IAudioDataChangerListener<MusicVO> getIAudioDataChangerListener() {
+        return mIAudioDataChangerListener;
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
+    IAudioDataChangerListener<MusicVO> mIAudioDataChangerListener = new IAudioDataChangerListener<MusicVO>() {
+        @Override
+        public void onGetData(int resultCode, MusicVO data) {
+            updateView(data);
+        }
+    };
 
     @Override
-    public void onDestroy() {
-        LogUtil.d(TAG, "onDestroy: " + this);
+    public void onHiddenChanged(boolean hidden) {
+        LogUtil.d(TAG, "onHiddenChanged hidden: " + hidden);
 
-        super.onDestroy();
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            updateView(mIAudioControl.getData());
+        }
     }
-
-    @Override
-    void onDataChanged(int resultCode, MusicVO data) {
-        updateView(data);
-    }
-
-
 }

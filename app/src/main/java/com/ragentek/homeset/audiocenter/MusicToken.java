@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentActivity;
 import com.ragentek.homeset.audiocenter.model.bean.PlayItem;
 import com.ragentek.homeset.audiocenter.model.bean.PlayListItem;
 import com.ragentek.homeset.audiocenter.service.MediaPlayerManager;
+import com.ragentek.homeset.audiocenter.utils.LogUtil;
 import com.ragentek.homeset.audiocenter.view.fragment.MusicFragment;
 import com.ragentek.homeset.audiocenter.view.fragment.PlayBaseFragment;
 import com.ragentek.protocol.commons.audio.BaseAudioVO;
@@ -17,7 +18,8 @@ import java.util.List;
  * Created by xuanyang.feng on 2017/4/21.
  */
 
-public class MusicToken extends AudioToken<BaseAudioVO, S> {
+public class MusicToken extends AudioToken<BaseAudioVO, MusicToken.MusicAudioControl> {
+    private static final String TAG = "MusicToken";
     private MediaPlayerManager.MediaPlayerHandler mMediaPlayer;
     private PlayListItem mPlayListItem;
     private int currentPage = 1;
@@ -53,9 +55,12 @@ public class MusicToken extends AudioToken<BaseAudioVO, S> {
 
         @Override
         public void setDataChangerListener(PlayBaseFragment.IAudioDataChangerListener listener) {
+//            listener.
         }
 
         public MusicVO getPlayData() {
+            LogUtil.d(TAG, "getPlayData   currentMusic: " + currentMusic.getSong_name());
+
             return currentMusic;
         }
 

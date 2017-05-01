@@ -76,8 +76,6 @@ public class MusicPlayListToken extends PlayListToken {
                             LogUtil.d(TAG, "getCover_url :" + music.getCover_url());
 
                             PlayListItem item = new PlayListItem(Constants.AUDIO_TYPE_SINGLE_MUSIC, mTagDetail.getCategoryID(), music.getId());
-
-//                            PlayListItem item = new PlayListItem(Constants.AUDIO_TYPE_MUSIC, mTagDetail.getCategoryID(), music.getId());
                             item.setAudio(music);
                             item.setFav(music.getFavorite());
                             item.setGroup(Constants.GROUP_MUSIC);

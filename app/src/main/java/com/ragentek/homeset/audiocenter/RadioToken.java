@@ -7,6 +7,7 @@ import com.ragentek.homeset.audiocenter.model.bean.PlayListItem;
 import com.ragentek.homeset.audiocenter.service.MediaPlayerManager;
 import com.ragentek.homeset.audiocenter.view.fragment.MusicFragment;
 import com.ragentek.homeset.audiocenter.view.fragment.PlayBaseFragment;
+import com.ragentek.homeset.audiocenter.view.fragment.RadioFragment;
 import com.ragentek.protocol.commons.audio.BaseAudioVO;
 import com.ragentek.protocol.commons.audio.RadioVO;
 
@@ -32,7 +33,9 @@ public class RadioToken extends AudioToken<BaseAudioVO, RadioToken.RadioAudioCon
 
     @Override
     protected PlayBaseFragment getPlayFragment() {
-        return new MusicFragment();
+        RadioFragment fragment = RadioFragment.newInstances();
+        fragment.setAudioControl(new RadioAudioControl());
+        return fragment;
     }
 
     @Override
@@ -50,6 +53,7 @@ public class RadioToken extends AudioToken<BaseAudioVO, RadioToken.RadioAudioCon
 
         @Override
         public void setDataChangerListener(PlayBaseFragment.IAudioDataChangerListener mListener) {
+//            mListener.
 
         }
 

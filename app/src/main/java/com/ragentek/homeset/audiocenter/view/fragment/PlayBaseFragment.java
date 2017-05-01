@@ -10,19 +10,13 @@ import com.ragentek.homeset.audiocenter.IAudioControl;
  */
 
 public abstract class PlayBaseFragment<T, E extends IAudioControl> extends BaseFragment {
-    E mIAudioControl;
+    abstract IAudioDataChangerListener<T> getIAudioDataChangerListener();
 
-    abstract void onDataChanged(int resultCode, T data);
+    E mIAudioControl;
 
     public void setAudioControl(E control) {
         mIAudioControl = control;
-        mIAudioControl.setDataChangerListener(new IAudioDataChangerListener() {
-
-            @Override
-            public void onGetData(int resultCode, Object data) {
-
-            }
-        });
+        mIAudioControl.setDataChangerListener(getIAudioDataChangerListener());
     }
 
     public interface IAudioDataChangerListener<H> {

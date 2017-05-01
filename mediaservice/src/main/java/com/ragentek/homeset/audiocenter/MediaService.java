@@ -147,7 +147,7 @@ public class MediaService extends Service {
 
         @Override
         public void init() throws RemoteException {
-            init();
+            mService.init();
         }
 
 

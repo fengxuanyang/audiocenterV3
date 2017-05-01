@@ -7,7 +7,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 
-import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -117,14 +116,18 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
 
     private void initMediaPlayer() {
         mMediaPlayerManager = MediaPlayerManager.getInstance(this);
-        mMediaPlayerManager.setMediaPlayerListener(mMediaPlayerListener);
-        mMediaPlayerManager.init();
+//        mMediaPlayerManager.setMediaPlayerListener(mMediaPlayerListener);
+        mMediaPlayerManager.init(mMediaPlayerListener);
     }
 
 
-    private void serviceInitReady() {
+    private void mediaPlayerInitComplete() {
+        LogUtil.d(TAG, "serviceInitReady");
+
         mediaPlayerHandler = MediaPlayerManager.getInstance(AudioPlayActivityV3.this).geMediaPlayerHandler();
         mPlayListToken = PlayListTokenFactory.getPlayListToken(this, mTagDetail, mediaPlayerHandler);
+        LogUtil.d(TAG, "serviceInitReady  mPlayListToken:" + mPlayListToken);
+
         mPlayListToken.addDataChangeListener(new PlayListToken.OnDataChangeListTokenListener() {
             @Override
             public void onDataUpdate(int resultCode, PlayListItem item) {
@@ -273,6 +276,7 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
         if (mediaPlayerHandler != null) {
             mediaPlayerHandler.clearPlayList();
         }
+        mMediaPlayerManager.release();
         mhandler = null;
     }
 
@@ -432,7 +436,7 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
             LogUtil.d(TAG, "MSG:" + msg.what + ",isMediaInitComplete:" + isMediaInitComplete);
             switch (msg.what) {
                 case MSG_MEDIA_INIT_COMPLETE:
-                    serviceInitReady();
+                    mediaPlayerInitComplete();
                     break;
                 case MSG_MEDIA_PLAYLIST_COMPLETE:
 

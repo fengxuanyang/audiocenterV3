@@ -31,6 +31,7 @@ import butterknife.ButterKnife;
 public class RadioFragment extends PlayBaseFragment<RadioVO, RadioToken.RadioAudioControl> {
     private static final String TAG = "MusicFragment";
     private int currentPlayIndex = 0;
+    private RadioVO currentRadioVO;
 
     @BindView(R.id.tv_radio_name)
     TextView radioNameTV;
@@ -52,11 +53,12 @@ public class RadioFragment extends PlayBaseFragment<RadioVO, RadioToken.RadioAud
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.audioenter_fragment_radio_detail, container, false);
         ButterKnife.bind(this, view);
-        updateView();
+        updateView(mIAudioControl.getData());
         return view;
     }
 
-    private void updateView() {
+    private void updateView(RadioVO radioVO) {
+        currentRadioVO = radioVO;
         if (currentRadioVO != null) {
             radioNameTV.setText(currentRadioVO.getName());
             updateAlbumart();
@@ -75,12 +77,17 @@ public class RadioFragment extends PlayBaseFragment<RadioVO, RadioToken.RadioAud
         }
     }
 
-    private RadioVO currentRadioVO;
 
     @Override
-    void onDataChanged(int resultCode, RadioVO data) {
-        currentRadioVO = data;
+    IAudioDataChangerListener<RadioVO> getIAudioDataChangerListener() {
+        return mIAudioDataChangerListener;
     }
 
+    IAudioDataChangerListener<RadioVO> mIAudioDataChangerListener = new IAudioDataChangerListener<RadioVO>() {
 
+        @Override
+        public void onGetData(int resultCode, RadioVO data) {
+            updateView(data);
+        }
+    };
 }

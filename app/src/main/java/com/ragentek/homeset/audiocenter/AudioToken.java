@@ -14,7 +14,7 @@ import com.ragentek.protocol.commons.audio.BaseAudioVO;
 
 import java.util.List;
 
-public abstract class AudioToken<M extends BaseAudioVO, S> {
+public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl> {
     private static final String TAG = "AudioToken";
     public static final int PLAYLIST_RESULT_ERROR_NET = -1;
     public static final int PLAYLIST_RESULT_NONE = 0;
@@ -34,40 +34,46 @@ public abstract class AudioToken<M extends BaseAudioVO, S> {
         mActivity = activity;
     }
 
+
     public void showView() {
-        LogUtil.d(TAG, "show: " + this.getClass().getSimpleName());
-        Fragment view = mActivity.getSupportFragmentManager().findFragmentByTag(this.getClass().getSimpleName());
+        String fragmenttag = this.getClass().getSimpleName();
+        LogUtil.d(TAG, "show: " + fragmenttag);
         FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
-        if (view == null) {
-            //TODO
-            fragment = getPlayFragment();
+        //TODO
+        fragment = getPlayFragment();
+
+        LogUtil.d(TAG, "show  getSimpleName: " + this.getClass().getSimpleName());
+
+        LogUtil.d(TAG, "show  isAdded: " + fragment.isAdded());
+        LogUtil.d(TAG, "show  isDetached: " + fragment.isDetached());
+        LogUtil.d(TAG, "show  isHidden: " + fragment.isHidden());
+        if (!fragment.isAdded()) {
             transaction.replace(R.id.fragment_container, fragment, this.getClass().getSimpleName()).commit();
         } else {
-            fragment = (PlayBaseFragment) view;
-            if (!fragment.isAdded()) {
-                transaction.replace(R.id.fragment_container, fragment, this.getClass().getSimpleName()).commit();
-            } else {
-                transaction.show(fragment).commit();
-            }
+            transaction.show(fragment).commit();
         }
-        //TODO
-    }
 
-    public void startPlay() {
-        playAudio(0);
-    }
-
-    public void startPlay(int indext) {
-        playAudio(indext);
     }
 
     public void hide() {
         LogUtil.d(TAG, "hide: " + this.getClass().getSimpleName());
-        FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
         Fragment view = mActivity.getSupportFragmentManager().findFragmentByTag(this.getClass().getSimpleName());
-        if (view.isAdded()) {
-            transaction.remove(view).commit();
-        }
+        FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
+        LogUtil.d(TAG, "hide  isHidden: " + fragment.isHidden());
+        transaction.hide(view).commit();
+        LogUtil.d(TAG, "hide  isHidden  after: " + view.isHidden());
+
+    }
+
+    public void startPlay() {
+        LogUtil.d(TAG, "startPlay ");
+        playAudio(0);
+    }
+
+    public void startPlay(int indext) {
+        LogUtil.d(TAG, "startPlay indext： " + indext);
+
+        playAudio(indext);
     }
 
 

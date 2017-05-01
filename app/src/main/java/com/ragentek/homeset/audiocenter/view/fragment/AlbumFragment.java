@@ -133,30 +133,46 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
         }
     }
 
-
     @Override
-    void onDataChanged(int resultCode, List<TrackVO> data) {
-        switch (resultCode) {
-            case AudioToken.PLAYLIST_RESULT_SUCCESS: {
-                if (wholePlayList == null) {
-                    wholePlayList = data;
-                } else {
-                    wholePlayList.addAll(data);
-                }
-                updateView();
-            }
-            break;
-            case AudioToken.PLAYLIST_RESULT_NONE: {
-                //TODO
-            }
-            break;
-            case AudioToken.PLAYLIST_RESULT_ERROR_NET: {
-                //TODO
-            }
-            break;
-        }
-
-
+    IAudioDataChangerListener<List<TrackVO>> getIAudioDataChangerListener() {
+        return mIAudioDataChangerListener;
     }
 
+    IAudioDataChangerListener<List<TrackVO>> mIAudioDataChangerListener = new IAudioDataChangerListener<List<TrackVO>>() {
+        @Override
+        public void onGetData(int resultCode, List<TrackVO> data) {
+            LogUtil.d(TAG, "onGetData  resultCode: " + resultCode);
+
+            switch (resultCode) {
+                case AudioToken.PLAYLIST_RESULT_SUCCESS: {
+                    if (wholePlayList == null) {
+                        wholePlayList = data;
+                    } else {
+                        wholePlayList.addAll(data);
+                    }
+                    updateView();
+                }
+                break;
+                case AudioToken.PLAYLIST_RESULT_NONE: {
+                    //TODO
+                }
+                break;
+                case AudioToken.PLAYLIST_RESULT_ERROR_NET: {
+                    //TODO
+                }
+                break;
+            }
+        }
+    };
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        LogUtil.d(TAG, "onHiddenChanged hidden: " + hidden);
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            mSwipeRefreshLayout.setRefreshing(true);
+            wholePlayList = null;
+            currentPlayIndext = 0;
+         }
+    }
 }
