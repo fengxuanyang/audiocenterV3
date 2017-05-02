@@ -96,4 +96,9 @@ public class SingleMusicFragment extends PlayBaseFragment<MusicVO, SingleMusicTo
             updateView(mIAudioControl.getData());
         }
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
 }

@@ -160,6 +160,12 @@ public class PlayListFragment extends DialogFragment {
                 swipeRefresh.setRefreshing(true);
                 mIPlayListControl.getDataAsync();
             }
+
+            @Override
+            public void onUpdata(int currentPage) {
+                swipeRefresh.setRefreshing(false);
+
+            }
         });
     }
 

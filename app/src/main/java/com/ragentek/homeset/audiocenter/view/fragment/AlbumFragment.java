@@ -76,12 +76,15 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
         View view = inflater.inflate(R.layout.audioenter_fragment_album_detail, container, false);
         ButterKnife.bind(this, view);
         inteView();
+
         return view;
     }
 
     private void inteView() {
+
         LogUtil.d(TAG, "inteView  >>: " + SystemClock.currentThreadTimeMillis());
         mSwipeRefreshLayout.setRefreshing(true);
+//        mSwipeRefreshLayout.
         mTrackListAdapter = new TrackListAdapter(this.getContext());
         mTrackListAdapter.setOnItemClickListener(new ListItemBaseAdapter.OnItemClickListener() {
             @Override
@@ -101,11 +104,33 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
         mRecyclerView.addOnScrollListener(new RecycleViewEndlessOnScrollListener() {
             @Override
             public void onLoadMore(int currentPage) {
+                LogUtil.d(TAG, "inteView onLoadMore");
+
+                mSwipeRefreshLayout.setRefreshing(true);
                 mIAudioControl.getMoreData();
+            }
+
+            @Override
+            public void onUpdata(int currentPage) {
+                LogUtil.d(TAG, "onUpdata  ");
+
+                mSwipeRefreshLayout.setRefreshing(false);
+
             }
         });
         LogUtil.d(TAG, "inteView  <<: " + SystemClock.currentThreadTimeMillis());
+        updateData();
+    }
 
+    private void updateData() {
+        List<TrackVO> current = mIAudioControl.getData();
+        if (current == null || current.size() <= 0) {
+            mIAudioControl.setDataChangerListener(getIAudioDataChangerListener());
+        } else {
+            wholePlayList = current;
+            updateView();
+            mIAudioControl.playSellected(currentPlayIndext);
+        }
     }
 
     private void updateView() {
@@ -173,6 +198,9 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
             mSwipeRefreshLayout.setRefreshing(true);
             wholePlayList = null;
             currentPlayIndext = 0;
-         }
+            updateData();
+        } else {
+            mIAudioControl.setDataChangerListener(null);
+        }
     }
 }

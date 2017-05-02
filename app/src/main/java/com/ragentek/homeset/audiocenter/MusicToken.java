@@ -39,7 +39,7 @@ public class MusicToken extends AudioToken<BaseAudioVO, MusicToken.MusicAudioCon
     }
 
     @Override
-    protected void playAudio(int index) {
+    protected void startPlayAudio(int index) {
         currentMusic = (MusicVO) mPlayListItem.getAudio();
         List<PlayItem> list = new ArrayList<>();
         PlayItem playItem = new PlayItem();

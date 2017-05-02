@@ -20,6 +20,7 @@ public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl>
     public static final int PLAYLIST_RESULT_NONE = 0;
     public static final int PLAYLIST_RESULT_SUCCESS = 1;
     FragmentActivity mActivity;
+    private static final int DEFAULT_PLAY_INDEX = 0;
 
 
     PlayBaseFragment fragment = null;
@@ -27,7 +28,7 @@ public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl>
 
     protected abstract PlayBaseFragment getPlayFragment();
 
-    protected abstract void playAudio(int index);
+    protected abstract void startPlayAudio(int index);
 
 
     AudioToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
@@ -48,7 +49,7 @@ public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl>
         LogUtil.d(TAG, "show  isDetached: " + fragment.isDetached());
         LogUtil.d(TAG, "show  isHidden: " + fragment.isHidden());
         if (!fragment.isAdded()) {
-            transaction.replace(R.id.fragment_container, fragment, this.getClass().getSimpleName()).commit();
+            transaction.replace(R.id.fragment_container, fragment, this.getClass().getSimpleName()).show(fragment).commit();
         } else {
             transaction.show(fragment).commit();
         }
@@ -67,14 +68,6 @@ public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl>
 
     public void startPlay() {
         LogUtil.d(TAG, "startPlay ");
-        playAudio(0);
+        startPlayAudio(DEFAULT_PLAY_INDEX);
     }
-
-    public void startPlay(int indext) {
-        LogUtil.d(TAG, "startPlay indext： " + indext);
-
-        playAudio(indext);
-    }
-
-
 }

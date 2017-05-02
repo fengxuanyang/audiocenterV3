@@ -50,7 +50,7 @@ public class SingleMusicToken extends AudioToken<MusicVO, SingleMusicToken.Singl
     }
 
     @Override
-    protected void playAudio(int index) {
+    protected void startPlayAudio(int index) {
         LogUtil.d(TAG, "    playAudio: " + index);
         currentPlayIndext = index;
         PlayItem item = new PlayItem();
@@ -69,7 +69,6 @@ public class SingleMusicToken extends AudioToken<MusicVO, SingleMusicToken.Singl
 
         @Override
         public void setDataChangerListener(PlayBaseFragment.IAudioDataChangerListener mListener) {
-
         }
 
         public MusicVO getData() {

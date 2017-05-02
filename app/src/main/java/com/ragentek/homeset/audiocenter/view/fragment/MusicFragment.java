@@ -95,6 +95,11 @@ public class MusicFragment extends PlayBaseFragment<MusicVO, MusicToken.MusicAud
 //                listListener.onLoadMore();
 //                mSwipeRefreshLayout.setRefreshing(true);
             }
+
+            @Override
+            public void onUpdata(int currentPage) {
+
+            }
         });
     }
 

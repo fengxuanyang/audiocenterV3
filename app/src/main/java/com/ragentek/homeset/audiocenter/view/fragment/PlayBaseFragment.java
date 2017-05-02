@@ -16,7 +16,8 @@ public abstract class PlayBaseFragment<T, E extends IAudioControl> extends BaseF
 
     public void setAudioControl(E control) {
         mIAudioControl = control;
-        mIAudioControl.setDataChangerListener(getIAudioDataChangerListener());
+        //TODO
+//        mIAudioControl.setDataChangerListener(getIAudioDataChangerListener());
     }
 
     public interface IAudioDataChangerListener<H> {

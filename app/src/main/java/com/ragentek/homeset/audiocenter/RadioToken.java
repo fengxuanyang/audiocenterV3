@@ -39,7 +39,7 @@ public class RadioToken extends AudioToken<BaseAudioVO, RadioToken.RadioAudioCon
     }
 
     @Override
-    protected void playAudio(int index) {
+    protected void startPlayAudio(int index) {
         List<PlayItem> list = new ArrayList<>();
         PlayItem item = new PlayItem();
         item.setPlayUrl(radio.getPlay_url());

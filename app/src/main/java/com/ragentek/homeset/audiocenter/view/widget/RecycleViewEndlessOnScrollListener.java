@@ -13,7 +13,7 @@ import com.ragentek.homeset.audiocenter.utils.LogUtil;
  */
 
 public abstract class RecycleViewEndlessOnScrollListener extends RecyclerView.OnScrollListener {
-    private static final String TAG = "RecycleViewEndlessOnScr";
+    private static final String TAG = "RecycleViewScroll";
     private RecyclerView.LayoutManager mLayoutManager;
     private LayoutManagerType layoutManagerType;
     private int currentPage = 0;
@@ -22,15 +22,18 @@ public abstract class RecycleViewEndlessOnScrollListener extends RecyclerView.On
     private int lastVisibleItemPosition;
     private int currentScrollState = 0;
     private boolean loading = false;
+    private boolean isUp = false;
 
+
+    public abstract void onLoadMore(int currentPage);
+
+    public abstract void onUpdata(int currentPage);
 
     @Override
     public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-        LogUtil.d(TAG, "onScrollStateChanged: ");
+        LogUtil.d(TAG, "onScrollStateChanged  isUp: " + isUp);
 
-        super.onScrollStateChanged(recyclerView, newState);
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
-
         currentScrollState = newState;
         int visibleItemCount = layoutManager.getChildCount();
         int totalItemCount = layoutManager.getItemCount();
@@ -43,16 +46,21 @@ public abstract class RecycleViewEndlessOnScrollListener extends RecyclerView.On
                 !loading && lastVisibleItemPosition + 1 == totalItemCount && totalItemCount - visibleItemCount <= lastVisibleItemPosition) {
             LogUtil.d(TAG, "onScrollStateChanged  onLoadMore: ");
             loading = true;
-            onLoadMore(currentPage);
-            currentPage++;
+            if (isUp) {
+                onLoadMore(currentPage);
+                currentPage++;
+            } else {
+                onUpdata(currentPage);
+            }
         }
+
+
     }
 
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-        super.onScrolled(recyclerView, dx, dy);
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
-
+        isUp = dy > 0;
         if (layoutManagerType == null) {
             if (layoutManager instanceof LinearLayoutManager) {
                 layoutManagerType = LayoutManagerType.LinearLayout;
@@ -103,7 +111,6 @@ public abstract class RecycleViewEndlessOnScrollListener extends RecyclerView.On
         return max;
     }
 
-    public abstract void onLoadMore(int currentPage);
 
     public enum LayoutManagerType {
         LinearLayout,

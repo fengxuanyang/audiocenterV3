@@ -36,21 +36,22 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
     private int currentPlayIndext;
     private boolean waitingForPlay = true;
     private List<TrackVO> wholeTracks;
+    private List<PlayItem> wholePlayList = new ArrayList<>();
 
 
     AlbumToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
         super(activity, mediaPlayer, item);
         mMediaPlayer = mediaPlayer;
         mPlayListItem = item;
+        //cache the trackvo
+        wholeTracks = new ArrayList<TrackVO>();
     }
 
 
     @Override
     protected PlayBaseFragment<List<TrackVO>, AlbumAudioControl> getPlayFragment() {
         LogUtil.d(TAG, "getPlayFragment  view: " + this);
-
         //TODO
-        wholeTracks = new ArrayList<TrackVO>();
         currentPlayIndext = 0;
         currentPage = 1;
         Fragment view = mActivity.getSupportFragmentManager().findFragmentByTag(this.getClass().getSimpleName());
@@ -68,12 +69,14 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
     }
 
     @Override
-    protected void playAudio(int index) {
+    protected void startPlayAudio(int index) {
         LogUtil.d(TAG, "getPlayListAsync: " + wholeTracks.size() + ",index::" + index);
-
         if (wholeTracks.size() > index) {
+            waitingForPlay = false;
             mMediaPlayer.play(index);
+            mMediaPlayer.setPlayList(wholePlayList, index);
         } else {
+            waitingForPlay = true;
             getPlayListAsync();
         }
         currentPlayIndext = index;
@@ -82,7 +85,6 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
 
     private void getPlayListAsync() {
         LogUtil.d(TAG, "getPlayListAsync: ");
-        waitingForPlay = true;
 
         Subscriber<TrackResultVO> getTagSubscriber = new Subscriber<TrackResultVO>() {
             @Override
@@ -112,14 +114,14 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
                             item.setTitle(trackvo.getTitle());
                             list.add(item);
                         }
-
                         wholeTracks.addAll(tagResult.getTracks());
                         mIAudioDataChangerListener.onGetData(PLAYLIST_RESULT_SUCCESS, tagResult.getTracks());
                         if (waitingForPlay) {
+                            wholePlayList.addAll(list);
                             mMediaPlayer.setPlayList(list, currentPlayIndext);
-
-//                            mMediaPlayer.play(currentPlayIndext);
                             waitingForPlay = false;
+                        } else {
+                            mMediaPlayer.addPlayList(list);
                         }
                     }
                     currentPage++;
@@ -137,6 +139,10 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
 
         public void playSellected(int position) {
             mMediaPlayer.play(position);
+        }
+
+        public List<TrackVO> getData() {
+            return wholeTracks;
         }
 
         public void getMoreData() {
