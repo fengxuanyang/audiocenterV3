@@ -13,13 +13,13 @@ import com.ragentek.homeset.audiocenter.utils.LogUtil;
  */
 
 public abstract class RecycleViewEndlessOnScrollListener extends RecyclerView.OnScrollListener {
-    private static final String TAG = "RecycleViewScroll";
-    private RecyclerView.LayoutManager mLayoutManager;
+    private static final String TAG = "RecycleViewEndlessOnScrollListener";
     private LayoutManagerType layoutManagerType;
     private int currentPage = 0;
-    private int[] lastPositions;
     private int previousTotal = 0;
     private int lastVisibleItemPosition;
+    private int firstVisibleItemPosition;
+
     private int currentScrollState = 0;
     private boolean loading = false;
     private boolean isUp = false;
@@ -31,12 +31,16 @@ public abstract class RecycleViewEndlessOnScrollListener extends RecyclerView.On
 
     @Override
     public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-        LogUtil.d(TAG, "onScrollStateChanged  isUp: " + isUp);
+        LogUtil.d(TAG, "onScrollStateChanged  isUp: " + isUp + ",firstVisibleItemPosition" + firstVisibleItemPosition);
+        LogUtil.d(TAG, "onScrollStateChanged  currentScrollState : " + currentScrollState);
+
 
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
         currentScrollState = newState;
         int visibleItemCount = layoutManager.getChildCount();
         int totalItemCount = layoutManager.getItemCount();
+        LogUtil.d(TAG, "onScrollStateChanged  totalItemCount - visibleItemCount : " + (totalItemCount - visibleItemCount));
+
         if (loading) {
             if (totalItemCount > previousTotal) {
                 loading = false;
@@ -46,15 +50,11 @@ public abstract class RecycleViewEndlessOnScrollListener extends RecyclerView.On
                 !loading && lastVisibleItemPosition + 1 == totalItemCount && totalItemCount - visibleItemCount <= lastVisibleItemPosition) {
             LogUtil.d(TAG, "onScrollStateChanged  onLoadMore: ");
             loading = true;
-            if (isUp) {
-                onLoadMore(currentPage);
-                currentPage++;
-            } else {
-                onUpdata(currentPage);
-            }
+            onLoadMore(currentPage);
+            currentPage++;
+        } else if (currentScrollState == RecyclerView.SCROLL_STATE_IDLE &&
+                !loading && isUp && firstVisibleItemPosition == 0) {
         }
-
-
     }
 
     @Override
@@ -77,21 +77,36 @@ public abstract class RecycleViewEndlessOnScrollListener extends RecyclerView.On
         switch (layoutManagerType) {
             case LinearLayout:
                 lastVisibleItemPosition = ((LinearLayoutManager) layoutManager).findLastVisibleItemPosition();
+                firstVisibleItemPosition = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
                 break;
             case GridLayout:
                 lastVisibleItemPosition = ((GridLayoutManager) layoutManager).findLastVisibleItemPosition();
+                firstVisibleItemPosition = ((GridLayoutManager) layoutManager).findFirstVisibleItemPosition();
                 break;
             case StaggeredGridLayout:
                 StaggeredGridLayoutManager staggeredGridLayoutManager = (StaggeredGridLayoutManager) layoutManager;
-                if (lastPositions == null) {
-                    lastPositions = new int[staggeredGridLayoutManager.getSpanCount()];
-                }
+                int[] lastPositions = new int[staggeredGridLayoutManager.getSpanCount()];
+                int[] firstPositions = new int[staggeredGridLayoutManager.getSpanCount()];
+
                 staggeredGridLayoutManager.findLastVisibleItemPositions(lastPositions);
+
+                staggeredGridLayoutManager.findFirstVisibleItemPositions(firstPositions);
+                firstVisibleItemPosition = findMin(lastPositions);
                 lastVisibleItemPosition = findMax(lastPositions);
                 break;
         }
 
 
+    }
+
+    private int findMin(int[] lastPositions) {
+        int min = lastPositions[0];
+        for (int value : lastPositions) {
+            if (value < min) {
+                min = value;
+            }
+        }
+        return min;
     }
 
     /**

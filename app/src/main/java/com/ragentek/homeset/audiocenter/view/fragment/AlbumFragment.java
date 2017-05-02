@@ -83,8 +83,10 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
     private void inteView() {
 
         LogUtil.d(TAG, "inteView  >>: " + SystemClock.currentThreadTimeMillis());
-        mSwipeRefreshLayout.setRefreshing(true);
 //        mSwipeRefreshLayout.
+//        mSwipeRefreshLayout.setRefreshing(true);
+//        mSwipeRefreshLayout.
+//        mSwipeRefreshLayout.set
         mTrackListAdapter = new TrackListAdapter(this.getContext());
         mTrackListAdapter.setOnItemClickListener(new ListItemBaseAdapter.OnItemClickListener() {
             @Override
@@ -96,7 +98,6 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
             }
         });
 
-        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addItemDecoration(new RecycleItemDecoration(getActivity(), RecycleItemDecoration.VERTICAL_LIST));
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -106,7 +107,7 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
             public void onLoadMore(int currentPage) {
                 LogUtil.d(TAG, "inteView onLoadMore");
 
-                mSwipeRefreshLayout.setRefreshing(true);
+//                mSwipeRefreshLayout.setRefreshing(true);
                 mIAudioControl.getMoreData();
             }
 
@@ -114,7 +115,7 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
             public void onUpdata(int currentPage) {
                 LogUtil.d(TAG, "onUpdata  ");
 
-                mSwipeRefreshLayout.setRefreshing(false);
+//                mSwipeRefreshLayout.setRefreshing(false);
 
             }
         });
@@ -134,7 +135,7 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
     }
 
     private void updateView() {
-        mSwipeRefreshLayout.setRefreshing(false);
+//        mSwipeRefreshLayout.setRefreshing(false);
         mTrackListAdapter.setDatas(wholePlayList);
         updateTitle();
         updateAlbumart();
@@ -195,7 +196,7 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
         LogUtil.d(TAG, "onHiddenChanged hidden: " + hidden);
         super.onHiddenChanged(hidden);
         if (!hidden) {
-            mSwipeRefreshLayout.setRefreshing(true);
+//            mSwipeRefreshLayout.setRefreshing(true);
             wholePlayList = null;
             currentPlayIndext = 0;
             updateData();
