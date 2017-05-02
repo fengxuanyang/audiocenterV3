@@ -60,7 +60,7 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
     SimpleDraweeView mSimpleDraweeView;
     @BindView(R.id.rv_album_playlist)
     RecyclerView mRecyclerView;
-    @BindView(R.id.swiperefresh_playlist)
+    @BindView(R.id.swiperefresh_album)
     SwipeRefreshLayout mSwipeRefreshLayout;
 
     public static AlbumFragment newInstances() {
@@ -87,6 +87,7 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
 //        mSwipeRefreshLayout.setRefreshing(true);
 //        mSwipeRefreshLayout.
 //        mSwipeRefreshLayout.set
+//        mSwipeRefreshLayout.
         mTrackListAdapter = new TrackListAdapter(this.getContext());
         mTrackListAdapter.setOnItemClickListener(new ListItemBaseAdapter.OnItemClickListener() {
             @Override
@@ -115,7 +116,7 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
             public void onUpdata(int currentPage) {
                 LogUtil.d(TAG, "onUpdata  ");
 
-//                mSwipeRefreshLayout.setRefreshing(false);
+                mSwipeRefreshLayout.setRefreshing(false);
 
             }
         });

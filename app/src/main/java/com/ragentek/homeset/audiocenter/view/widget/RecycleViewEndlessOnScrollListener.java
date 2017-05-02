@@ -31,12 +31,15 @@ public abstract class RecycleViewEndlessOnScrollListener extends RecyclerView.On
 
     @Override
     public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-        LogUtil.d(TAG, "onScrollStateChanged  isUp: " + isUp + ",firstVisibleItemPosition" + firstVisibleItemPosition);
-        LogUtil.d(TAG, "onScrollStateChanged  currentScrollState : " + currentScrollState);
+        LogUtil.d(TAG, "onScrollStateChanged  isUp: " + isUp);
+        LogUtil.d(TAG, "onScrollStateChanged  loading : " + loading);
+        LogUtil.d(TAG, "onScrollStateChanged   firstVisibleItemPosition" + firstVisibleItemPosition);
 
 
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
         currentScrollState = newState;
+        LogUtil.d(TAG, "onScrollStateChanged  currentScrollState : " + currentScrollState);
+
         int visibleItemCount = layoutManager.getChildCount();
         int totalItemCount = layoutManager.getItemCount();
         LogUtil.d(TAG, "onScrollStateChanged  totalItemCount - visibleItemCount : " + (totalItemCount - visibleItemCount));
@@ -53,7 +56,11 @@ public abstract class RecycleViewEndlessOnScrollListener extends RecyclerView.On
             onLoadMore(currentPage);
             currentPage++;
         } else if (currentScrollState == RecyclerView.SCROLL_STATE_IDLE &&
-                !loading && isUp && firstVisibleItemPosition == 0) {
+                !loading && !isUp && firstVisibleItemPosition == 0) {
+            loading = true;
+            onUpdata(currentPage);
+            LogUtil.d(TAG, "onScrollStateChanged  onUpdata: ");
+
         }
     }
 

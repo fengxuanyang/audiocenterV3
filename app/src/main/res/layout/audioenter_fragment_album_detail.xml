@@ -34,23 +34,23 @@
             android:textSize="@dimen/list_item_text_size_big"
             android:textStyle="bold"/>
 
-        <!--
-                <android.support.v4.widget.SwipeRefreshLayout
-                    android:id="@+id/swiperefresh_playlist"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    >
-                </android.support.v4.widget.SwipeRefreshLayout>
-        -->
 
-        <android.support.v7.widget.RecyclerView
-            xmlns:android="http://schemas.android.com/apk/res/android"
-
-            android:id="@+id/rv_album_playlist"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swiperefresh_album"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:dividerHeight="20dp"
-            />
+            >
+
+
+            <android.support.v7.widget.RecyclerView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+
+                android:id="@+id/rv_album_playlist"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:dividerHeight="20dp"
+                />
+        </android.support.v4.widget.SwipeRefreshLayout>
 
     </LinearLayout>
 </RelativeLayout>
