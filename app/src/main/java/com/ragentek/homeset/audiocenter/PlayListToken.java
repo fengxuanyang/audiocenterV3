@@ -110,12 +110,17 @@ public abstract class PlayListToken {
 
     //TODO
     public void playNext() {
-        if (currentPlayIndex < audioTokenList.size()) {
+        if (currentPlayIndex < audioTokenList.size() - 1) {
             currentPlayIndex++;
+
+        } else {
+            currentPlayIndex = 0;
+            LogUtil.d(TAG, ": playNext  max" + currentPlayIndex);
+
         }
-        //TODO  nnext
-        LogUtil.d(TAG, ": playNext" + currentPlayIndex);
         switchAudioToken();
+
+        //TODO  nnext
     }
 
 
@@ -206,10 +211,12 @@ public abstract class PlayListToken {
 
         @Override
         public void onLoadData(int resultCode, List<PlayListItem> resultmessage) {
+            Log.d(TAG, "onLoadData size: " + resultmessage.size());
+
             wholePlayList.addAll(resultmessage);
             for (PlayListItem item : resultmessage) {
                 AudioToken mtoken = AudioTokenFactory.getAudioToken(mActivity, item, mMediaPlayerManager);
-                Log.d(TAG, "onLoadData: " + mtoken);
+                Log.d(TAG, "onLoadData: " + audioTokenList.size());
                 audioTokenList.add(mtoken);
             }
             if (currentPlayIndex == -1) {

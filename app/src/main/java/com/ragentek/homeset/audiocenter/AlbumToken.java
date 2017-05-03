@@ -118,6 +118,7 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
                             list.add(item);
                         }
                         wholeTracks.addAll(tagResult.getTracks());
+
                         mIAudioDataChangerListener.onGetData(PLAYLIST_RESULT_SUCCESS, tagResult.getTracks());
                         if (waitingForPlay) {
                             wholePlayList.addAll(list);

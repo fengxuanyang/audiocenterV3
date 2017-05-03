@@ -179,7 +179,7 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
     IAudioDataChangerListener<List<TrackVO>> mIAudioDataChangerListener = new IAudioDataChangerListener<List<TrackVO>>() {
         @Override
         public void onGetData(int resultCode, List<TrackVO> data) {
-            LogUtil.d(TAG, "onGetData  resultCode: " + resultCode);
+            LogUtil.d(TAG, "onGetData  resultCode: " + resultCode + "" + data.size());
 
             switch (resultCode) {
                 case AudioToken.PLAYLIST_RESULT_SUCCESS: {
