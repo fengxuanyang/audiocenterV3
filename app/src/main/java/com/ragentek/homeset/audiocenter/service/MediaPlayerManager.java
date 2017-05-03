@@ -10,19 +10,17 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.RemoteException;
 
-import com.ragentek.homeset.audiocenter.IMediaPlayerListener;
+import com.ragentek.homeset.audiocenter.IMediaPlayerInitListener;
+import com.ragentek.homeset.audiocenter.IMediaPlayerPlayListener;
 import com.ragentek.homeset.audiocenter.IMediaService;
-import com.ragentek.homeset.audiocenter.MediaServiceInitEvent;
 import com.ragentek.homeset.audiocenter.MyTrack;
 import com.ragentek.homeset.audiocenter.model.bean.PlayItem;
 import com.ragentek.homeset.audiocenter.utils.LogUtil;
 import com.ximalaya.ting.android.opensdk.model.PlayableModel;
 import com.ximalaya.ting.android.opensdk.model.track.Track;
 
-import org.greenrobot.eventbus.EventBus;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,17 +46,15 @@ public class MediaPlayerManager {
     private static MediaPlayerManager mMediaPlayerManager;
     IMediaService mMediaService;
     private static final int SERVICE_CONNECTED = 1;
-    private IMediaPlayerListener mlistener;
-
+    private IMediaPlayerInitListener mInitlistener;
+    private List<MediaPlayerPlayListener> mPlayListeners = new ArrayList<>();
     private Handler mainLhanler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             try {
                 LogUtil.d(TAG, "handleMessage : " + Thread.currentThread().getName());
-
-                mMediaService.setMediaPlayerListener(mlistener);
-                mMediaService.init();
+                mMediaService.init(mInitlistener);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -67,7 +63,6 @@ public class MediaPlayerManager {
 
     private MediaPlayerManager(Context context) {
         this.weakContext = new WeakReference<Context>(context.getApplicationContext());
-//        bindMediaService();
 
     }
 
@@ -83,9 +78,9 @@ public class MediaPlayerManager {
     }
 
 
-    public void init(final IMediaPlayerListener listener) {
+    public void init(final IMediaPlayerInitListener listener) {
         LogUtil.d(TAG, "init " + mIsMediaServiceBound);
-        mlistener = listener;
+        mInitlistener = listener;
         if (mIsMediaServiceBound) {
             mainLhanler.sendEmptyMessage(SERVICE_CONNECTED);
         } else {
@@ -155,11 +150,39 @@ public class MediaPlayerManager {
 
     public class MediaPlayerHandler {
         private IMediaService mMediaService = null;
+        private RemoteMediaPlayerPlayListener mRemoteMediaPlayerPlayListener = new RemoteMediaPlayerPlayListener();
 
         private MediaPlayerHandler(IMediaService service) {
             mMediaService = service;
         }
 
+
+        public void addMeidaPlayListener(MediaPlayerPlayListener listener) {
+
+            if (mPlayListeners.isEmpty()) {
+                try {
+                    mMediaService.addMediaPlayerPlayListener(mRemoteMediaPlayerPlayListener);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            boolean result = mPlayListeners.add(listener);
+
+            LogUtil.d(TAG, "addMeidaPlayListener: " + result);
+        }
+
+        public void removeMeidaPlayListener(MediaPlayerPlayListener listener) {
+            boolean result = mPlayListeners.remove(listener);
+            LogUtil.d(TAG, "removeMeidaPlayListener: " + result);
+            if (mPlayListeners.isEmpty()) {
+                try {
+                    mMediaService.removeMediaPlayerPlayListener(mRemoteMediaPlayerPlayListener);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
         public void clearPlayList() {
             LogUtil.d(TAG, "clearPlayList ");
@@ -279,11 +302,57 @@ public class MediaPlayerManager {
 
             return myTrack;
         }
-    }
+
+        private class RemoteMediaPlayerPlayListener extends IMediaPlayerPlayListener.Stub {
+
+            @Override
+            public void onSoundPrepared() throws RemoteException {
+
+            }
+
+            @Override
+            public void onPlayStart() throws RemoteException {
+                for (MediaPlayerPlayListener listener : mPlayListeners) {
+                    listener.onPlayStart();
+                }
+            }
+
+            @Override
+            public void onPlayProgress(int currPos, int duration) throws RemoteException {
+                for (MediaPlayerPlayListener listener : mPlayListeners) {
+                    listener.onPlayProgress(currPos, duration);
+                }
+            }
+
+            @Override
+            public void onPlayStop() throws RemoteException {
+                for (MediaPlayerPlayListener listener : mPlayListeners) {
+                    listener.onPlayStop();
+                }
+            }
+
+            @Override
+            public void onSoundPlayComplete() throws RemoteException {
+                for (MediaPlayerPlayListener listener : mPlayListeners) {
+                    listener.onSoundPlayComplete();
+                }
+            }
+        }
 
 
-    public interface ServiceBindCallBack {
-        void onMediaServiceBinded();
     }
+
+    public interface MediaPlayerPlayListener {
+
+        void onPlayStart();
+
+        void onPlayStop();
+
+        void onPlayProgress(int currPos, int duration);
+
+
+        void onSoundPlayComplete();
+    }
+
 }
 

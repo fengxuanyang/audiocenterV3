@@ -2,6 +2,7 @@ package com.ragentek.homeset.audiocenter.view.fragment;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -75,19 +76,24 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
         LogUtil.d(TAG, "onCreateView: ");
         View view = inflater.inflate(R.layout.audioenter_fragment_album_detail, container, false);
         ButterKnife.bind(this, view);
+        mIAudioControl.registerMeidaPlayListener();
         inteView();
-
+        updateData();
         return view;
     }
 
-    private void inteView() {
+    @Override
+    public void onDestroyView() {
+        LogUtil.d(TAG, "onDestroyView: ");
 
+        super.onDestroyView();
+        mIAudioControl.unregisterMeidaPlayListener();
+    }
+
+    private void inteView() {
+        wholePlayList = null;
+        currentPlayIndext = 0;
         LogUtil.d(TAG, "inteView  >>: " + SystemClock.currentThreadTimeMillis());
-//        mSwipeRefreshLayout.
-//        mSwipeRefreshLayout.setRefreshing(true);
-//        mSwipeRefreshLayout.
-//        mSwipeRefreshLayout.set
-//        mSwipeRefreshLayout.
         mTrackListAdapter = new TrackListAdapter(this.getContext());
         mTrackListAdapter.setOnItemClickListener(new ListItemBaseAdapter.OnItemClickListener() {
             @Override
@@ -98,30 +104,34 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
                 mIAudioControl.playSellected(currentPlayIndext);
             }
         });
-
+        mSwipeRefreshLayout.setRefreshing(true);
         mRecyclerView.addItemDecoration(new RecycleItemDecoration(getActivity(), RecycleItemDecoration.VERTICAL_LIST));
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mTrackListAdapter);
+//        mSwipeRefreshLayout.stopNestedScroll();
+//        mSwipeRefreshLayout.setNestedScrollingEnabled(false);
         mRecyclerView.addOnScrollListener(new RecycleViewEndlessOnScrollListener() {
             @Override
             public void onLoadMore(int currentPage) {
                 LogUtil.d(TAG, "inteView onLoadMore");
-
-//                mSwipeRefreshLayout.setRefreshing(true);
+                mSwipeRefreshLayout.setRefreshing(true);
                 mIAudioControl.getMoreData();
             }
 
             @Override
             public void onUpdata(int currentPage) {
                 LogUtil.d(TAG, "onUpdata  ");
-
-                mSwipeRefreshLayout.setRefreshing(false);
-
+                mSwipeRefreshLayout.setRefreshing(true);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 1000L);
             }
         });
         LogUtil.d(TAG, "inteView  <<: " + SystemClock.currentThreadTimeMillis());
-        updateData();
     }
 
     private void updateData() {
@@ -136,7 +146,7 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
     }
 
     private void updateView() {
-//        mSwipeRefreshLayout.setRefreshing(false);
+        mSwipeRefreshLayout.setRefreshing(false);
         mTrackListAdapter.setDatas(wholePlayList);
         updateTitle();
         updateAlbumart();
@@ -159,6 +169,7 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
             mSimpleDraweeView.setImageURI(Uri.parse(wholePlayList.get(currentPlayIndext).getCover_url()));
         }
     }
+
 
     @Override
     IAudioDataChangerListener<List<TrackVO>> getIAudioDataChangerListener() {
@@ -190,19 +201,16 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
                 break;
             }
         }
+
+        @Override
+        public void onPlayStartData(int index) {
+            if (index != currentPlayIndext) {
+                currentPlayIndext = index;
+                mTrackListAdapter.updateSellect(index);
+            }
+
+        }
     };
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        LogUtil.d(TAG, "onHiddenChanged hidden: " + hidden);
-        super.onHiddenChanged(hidden);
-        if (!hidden) {
-//            mSwipeRefreshLayout.setRefreshing(true);
-            wholePlayList = null;
-            currentPlayIndext = 0;
-            updateData();
-        } else {
-            mIAudioControl.setDataChangerListener(null);
-        }
-    }
+
 }

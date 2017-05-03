@@ -20,7 +20,19 @@ public abstract class PlayBaseFragment<T, E extends IAudioControl> extends BaseF
 //        mIAudioControl.setDataChangerListener(getIAudioDataChangerListener());
     }
 
+
     public interface IAudioDataChangerListener<H> {
         void onGetData(int resultCode, H data);
+
+        void onPlayStartData(int index);
+
     }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+
+    }
+
+
 }

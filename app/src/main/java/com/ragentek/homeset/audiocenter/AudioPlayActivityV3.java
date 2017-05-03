@@ -116,15 +116,14 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
 
     private void initMediaPlayer() {
         mMediaPlayerManager = MediaPlayerManager.getInstance(this);
-//        mMediaPlayerManager.setMediaPlayerListener(mMediaPlayerListener);
-        mMediaPlayerManager.init(mMediaPlayerListener);
+        mMediaPlayerManager.init(mMediaInitListener);
     }
 
 
     private void mediaPlayerInitComplete() {
         LogUtil.d(TAG, "serviceInitReady");
-
         mediaPlayerHandler = MediaPlayerManager.getInstance(AudioPlayActivityV3.this).geMediaPlayerHandler();
+        mediaPlayerHandler.addMeidaPlayListener(mMediaPlayerPlayListener);
         mPlayListToken = PlayListTokenFactory.getPlayListToken(this, mTagDetail, mediaPlayerHandler);
         LogUtil.d(TAG, "serviceInitReady  mPlayListToken:" + mPlayListToken);
 
@@ -274,8 +273,10 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
         LogUtil.d(TAG, "onDestroy: ");
         super.onDestroy();
         if (mediaPlayerHandler != null) {
+            mediaPlayerHandler.removeMeidaPlayListener(mMediaPlayerPlayListener);
             mediaPlayerHandler.clearPlayList();
         }
+
         mMediaPlayerManager.release();
         mhandler = null;
     }
@@ -297,7 +298,7 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
         playMode.setClickable(clickAble);
     }
 
-    private IMediaPlayerListener mMediaPlayerListener = new IMediaPlayerListener.Stub() {
+    private IMediaPlayerInitListener mMediaInitListener = new IMediaPlayerInitListener.Stub() {
         @Override
         public IBinder asBinder() {
             return super.asBinder();
@@ -313,14 +314,12 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
                 mhandler.sendMessage(msg);
             }
         }
+    };
+
+    private MediaPlayerManager.MediaPlayerPlayListener mMediaPlayerPlayListener = new MediaPlayerManager.MediaPlayerPlayListener() {
 
         @Override
-        public void onSoundPrepared() throws RemoteException {
-            LogUtil.d(TAG, "onSoundPrepared ::");
-        }
-
-        @Override
-        public void onPlayStart() throws RemoteException {
+        public void onPlayStart() {
             LogUtil.i(TAG, "onPlayStart");
             if (mhandler != null) {
                 Message msg = new Message();
@@ -330,7 +329,7 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
         }
 
         @Override
-        public void onPlayProgress(int currPos, int duration) throws RemoteException {
+        public void onPlayProgress(int currPos, int duration) {
             LogUtil.d(TAG, "onPlayProgress :currPos:" + currPos + ",duration:" + duration);
             if (mhandler != null) {
                 mhandler.currPos = currPos;
@@ -342,7 +341,7 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
         }
 
         @Override
-        public void onPlayStop() throws RemoteException {
+        public void onPlayStop() {
             LogUtil.i(TAG, "onPlayStop");
             if (mhandler != null) {
                 Message msg = new Message();
@@ -352,15 +351,16 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
         }
 
         @Override
-        public void onSoundPlayComplete() throws RemoteException {
+        public void onSoundPlayComplete() {
             LogUtil.i(TAG, "onSoundPlayComplete");
-            if (mhandler != null) {
-                Message msg = new Message();
-                msg.what = AudioPlayerHandler.MSG_MEDIA_SOUME_PREPARED;
-                mhandler.sendMessage(msg);
-            }
+//            if (mhandler != null) {
+//                Message msg = new Message();
+//                msg.what = AudioPlayerHandler.MSG_MEDIA_SOUME_PREPARED;
+//                mhandler.sendMessage(msg);
+//            }
         }
     };
+
 
     @Override
     public void onClick(View view) {

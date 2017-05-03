@@ -42,28 +42,21 @@ public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl>
         FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
         //TODO
         fragment = getPlayFragment();
-
         LogUtil.d(TAG, "show  getSimpleName: " + this.getClass().getSimpleName());
-
         LogUtil.d(TAG, "show  isAdded: " + fragment.isAdded());
         LogUtil.d(TAG, "show  isDetached: " + fragment.isDetached());
         LogUtil.d(TAG, "show  isHidden: " + fragment.isHidden());
         if (!fragment.isAdded()) {
-            transaction.replace(R.id.fragment_container, fragment, this.getClass().getSimpleName()).show(fragment).commit();
+            transaction.replace(R.id.fragment_container, fragment).show(fragment).commit();
         } else {
             transaction.show(fragment).commit();
         }
-
     }
 
     public void hide() {
-        LogUtil.d(TAG, "hide: " + this.getClass().getSimpleName());
-        Fragment view = mActivity.getSupportFragmentManager().findFragmentByTag(this.getClass().getSimpleName());
         FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
         LogUtil.d(TAG, "hide  isHidden: " + fragment.isHidden());
-        transaction.hide(view).commit();
-        LogUtil.d(TAG, "hide  isHidden  after: " + view.isHidden());
-
+        transaction.hide(fragment).remove(fragment).commit();
     }
 
     public void startPlay() {

@@ -2,18 +2,19 @@
 package com.ragentek.homeset.audiocenter;
 
 // Declare any non-default types here with import statements
-import com.ragentek.homeset.audiocenter.IMediaPlayerListener;
+import com.ragentek.homeset.audiocenter.IMediaPlayerPlayListener;
+import com.ragentek.homeset.audiocenter.IMediaPlayerInitListener;
 import com.ragentek.homeset.audiocenter.MyTrack;
 import java.util.List;
 
 interface IMediaService {
 
-    void setMediaPlayerListener(in IMediaPlayerListener listener);
-
+    void init(in IMediaPlayerInitListener listener);
+    void addMediaPlayerPlayListener(in IMediaPlayerPlayListener listener);
+    void removeMediaPlayerPlayListener(IMediaPlayerPlayListener listener);
     void addPlayList(in List<MyTrack> list, int startIndex);
     void setPlayList(in List<MyTrack> list, int startIndex);
     List<MyTrack> getPlayList();
-    void init();
 
     void play(int index);
 

@@ -85,12 +85,16 @@ public class SingleMusicFragment extends PlayBaseFragment<MusicVO, SingleMusicTo
         public void onGetData(int resultCode, MusicVO data) {
             updateView(data);
         }
+
+        @Override
+        public void onPlayStartData(int index) {
+
+        }
     };
 
     @Override
     public void onHiddenChanged(boolean hidden) {
         LogUtil.d(TAG, "onHiddenChanged hidden: " + hidden);
-
         super.onHiddenChanged(hidden);
         if (!hidden) {
             updateView(mIAudioControl.getData());

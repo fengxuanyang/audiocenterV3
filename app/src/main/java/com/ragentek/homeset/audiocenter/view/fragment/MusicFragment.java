@@ -114,6 +114,11 @@ public class MusicFragment extends PlayBaseFragment<MusicVO, MusicToken.MusicAud
         public void onGetData(int resultCode, MusicVO data) {
             updateView(data);
         }
+
+        @Override
+        public void onPlayStartData(int index) {
+
+        }
     };
 }
 

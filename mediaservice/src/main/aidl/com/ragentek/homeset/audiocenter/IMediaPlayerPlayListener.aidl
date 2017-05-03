@@ -3,11 +3,9 @@ package com.ragentek.homeset.audiocenter;
 
 // Declare any non-default types here with import statements
 
-interface IMediaPlayerListener {
+interface IMediaPlayerPlayListener {
 
-        void initComplete();
-
-        void onSoundPrepared();
+     void onSoundPrepared();
 
         void onPlayStart();
 

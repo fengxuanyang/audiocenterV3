@@ -89,5 +89,10 @@ public class RadioFragment extends PlayBaseFragment<RadioVO, RadioToken.RadioAud
         public void onGetData(int resultCode, RadioVO data) {
             updateView(data);
         }
+
+        @Override
+        public void onPlayStartData(int index) {
+
+        }
     };
 }

@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -37,44 +36,18 @@ public class MediaServiceTestFragment extends Fragment implements View.OnClickLi
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         mActivity = getActivity();
 
     }
 
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mediaservice, container, false);
-        Log.d(TAG, "onCreateView: ");
+
         initView(view);
         return view;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.d(TAG, "onStart: ");
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume: ");
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.d(TAG, "onPause: ");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.d(TAG, "onStop: ");
     }
 
     private void initView(View view) {
@@ -136,7 +109,7 @@ public class MediaServiceTestFragment extends Fragment implements View.OnClickLi
                     return null;
                 }
             });
-
+ 
         } catch (RemoteException e) {
             e.printStackTrace();
         }

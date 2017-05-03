@@ -1,5 +1,7 @@
 package com.ragentek.homeset.audiocenter;
 
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
@@ -37,6 +39,7 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
     private boolean waitingForPlay = true;
     private List<TrackVO> wholeTracks;
     private List<PlayItem> wholePlayList = new ArrayList<>();
+    private AlbumMediaPlayerPlayListener mAlbumMediaPlayerPlayListener = new AlbumMediaPlayerPlayListener();
 
 
     AlbumToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
@@ -54,6 +57,7 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
         //TODO
         currentPlayIndext = 0;
         currentPage = 1;
+//        mMediaPlayer.addMeidaPlayListener(mAlbumMediaPlayerPlayListener);
         Fragment view = mActivity.getSupportFragmentManager().findFragmentByTag(this.getClass().getSimpleName());
         AlbumFragment albumFragment;
         LogUtil.d(TAG, "getPlayFragment  view: " + view + ",tag::" + this.getClass().getSimpleName());
@@ -73,13 +77,12 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
         LogUtil.d(TAG, "getPlayListAsync: " + wholeTracks.size() + ",index::" + index);
         if (wholeTracks.size() > index) {
             waitingForPlay = false;
-            mMediaPlayer.play(index);
             mMediaPlayer.setPlayList(wholePlayList, index);
         } else {
             waitingForPlay = true;
             getPlayListAsync();
         }
-        currentPlayIndext = index;
+
     }
 
 
@@ -128,27 +131,40 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
                 }
             }
         };
-
         AudioCenterHttpManager.getInstance(mActivity).getTracks(getTagSubscriber, mPlayListItem.getId(), currentPage, PAGE_COUNT);
     }
 
-//
+    private void playSellectedTrack(int position) {
+        LogUtil.d(TAG, "playSellectedTrack : " + position);
+        mMediaPlayer.play(position);
+        currentPlayIndext = position;
+    }
 
     public class AlbumAudioControl implements IAudioControl {
 
 
         public void playSellected(int position) {
-            mMediaPlayer.play(position);
+            playSellectedTrack(position);
         }
 
         public List<TrackVO> getData() {
             return wholeTracks;
         }
 
+        public void registerMeidaPlayListener() {
+            LogUtil.d(TAG, "registerMeidaPlayListener : " + mAlbumMediaPlayerPlayListener);
+
+            mMediaPlayer.addMeidaPlayListener(mAlbumMediaPlayerPlayListener);
+        }
+
+        public void unregisterMeidaPlayListener() {
+            LogUtil.d(TAG, "unregisterMeidaPlayListener : " + mAlbumMediaPlayerPlayListener);
+            mMediaPlayer.removeMeidaPlayListener(mAlbumMediaPlayerPlayListener);
+        }
+
         public void getMoreData() {
             getPlayListAsync();
         }
-
 
         //TODO
         @Override
@@ -159,6 +175,38 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
     }
 
 
+    private class AlbumMediaPlayerPlayListener implements MediaPlayerManager.MediaPlayerPlayListener
+
+    {
+
+
+        @Override
+        public void onPlayStart() {
+            LogUtil.d(TAG, "onPlayStart:  ");
+
+        }
+
+        @Override
+        public void onPlayProgress(int currPos, int duration) {
+            LogUtil.d(TAG, "onPlayProgress:  ");
+
+        }
+
+        @Override
+        public void onPlayStop() {
+            LogUtil.d(TAG, "onPlayStop:  ");
+
+        }
+
+        @Override
+        public void onSoundPlayComplete() {
+            LogUtil.d(TAG, "onSoundPlayComplete:  " + currentPlayIndext);
+            playSellectedTrack(currentPlayIndext + 1);
+            mIAudioDataChangerListener.onPlayStartData(currentPlayIndext);
+        }
+
+
+    }
 }
 
 

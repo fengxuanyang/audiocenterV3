@@ -30,7 +30,8 @@ public class MediaService extends Service {
     private boolean mInitComplete;
     private int currentPlayIndxt;
     private List<Track> currentPlayList = new ArrayList<>();
-    private IMediaPlayerListener mMediaPlayerListener;
+    private IMediaPlayerInitListener mInitListener;
+    private List<IMediaPlayerPlayListener> mPlayListeners = new ArrayList<>();
 
 
     @Override
@@ -42,17 +43,16 @@ public class MediaService extends Service {
         mXimalaya = CommonRequest.getInstanse();
         mXimalaya.init(mContext, XMLY_APPSECRET);
         mInitComplete = false;
-        mMediaPlayerListener = new NullMediaPlayerListener();
     }
 
 
-    private void setMediaPlayerListener(IMediaPlayerListener listener) {
-        Log.d(TAG, "setMediaPlayerListener, listener=" + listener + " mInitComplete=" + mInitComplete);
+    private void setInitListener(IMediaPlayerInitListener listener) {
+        Log.d(TAG, "setInitListener, listener=" + listener + " mInitComplete=" + mInitComplete);
         if (listener == null) {
-            Log.e(TAG, "setMediaPlayerListener listener is null ");
+            Log.e(TAG, "setInitListener listener is null ");
             return;
         }
-        mMediaPlayerListener = listener;
+        mInitListener = listener;
         if (listener != null) {
             if (mInitComplete) {
                 try {
@@ -65,32 +65,61 @@ public class MediaService extends Service {
 
     }
 
-    public void init() {
-        mXMLYPlayerManager = XmPlayerManager.getInstance(mContext);
-        mXMLYPlayerManager.init();
-        mXMLYPlayerManager.addPlayerStatusListener(mPlayerStatusListener);
-        mXMLYPlayerManager.setOnConnectedListerner(new XmPlayerManager.IConnectListener() {
-            @Override
-            public void onConnected() {
-                mXimalaya.setDefaultPagesize(50);
-                Log.d(TAG, "onConnected: " + Thread.currentThread().getName());
-                mInitComplete = true;
-                try {
-                    mMediaPlayerListener.initComplete();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+    private void removeMediaPlayerPlayListener(IMediaPlayerPlayListener listener) {
+        Log.d(TAG, "removeMediaPlayerPlayListener, listener=" + listener + " mInitComplete=" + mInitComplete);
+        if (listener == null) {
+            Log.e(TAG, "removeMediaPlayerPlayListener listener is null ");
+            return;
+        }
+        boolean result = mPlayListeners.remove(listener);
+        Log.e(TAG, "removeMediaPlayerPlayListener  result:" + result);
 
+    }
+
+    private void addMediaPlayerPlayListener(IMediaPlayerPlayListener listener) {
+        Log.d(TAG, "addMediaPlayerPlayListener, listener=" + listener + " mInitComplete=" + mInitComplete);
+        if (listener == null) {
+            Log.e(TAG, "addMediaPlayerPlayListener listener is null ");
+            return;
+        }
+        mPlayListeners.add(listener);
+    }
+
+    public void init() {
+        if (!mInitComplete) {
+            mXMLYPlayerManager = XmPlayerManager.getInstance(mContext);
+            mXMLYPlayerManager.init();
+            mXMLYPlayerManager.addPlayerStatusListener(mPlayerStatusListener);
+            mXMLYPlayerManager.setOnConnectedListerner(new XmPlayerManager.IConnectListener() {
+                @Override
+                public void onConnected() {
+                    mXimalaya.setDefaultPagesize(50);
+                    Log.d(TAG, "onConnected: " + Thread.currentThread().getName());
+                    mInitComplete = true;
+                    try {
+                        mInitListener.initComplete();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+        } else {
+            try {
+                mInitListener.initComplete();
+            } catch (RemoteException e) {
+                e.printStackTrace();
             }
-        });
+        }
+
     }
 
     private void release() {
         Log.d(TAG, "release");
         mXMLYPlayerManager.resetPlayList();
         mXMLYPlayerManager.removePlayerStatusListener(mPlayerStatusListener);
-        mXMLYPlayerManager.release();
-
+        XmPlayerManager.release();
+        mInitComplete = false;
     }
 
     @Override
@@ -126,8 +155,24 @@ public class MediaService extends Service {
         }
 
         @Override
-        public void setMediaPlayerListener(IMediaPlayerListener listener) throws RemoteException {
-            mService.setMediaPlayerListener(listener);
+        public void init(IMediaPlayerInitListener listener) throws RemoteException {
+            mService.setInitListener(listener);
+
+
+            mService.init();
+        }
+
+
+        @Override
+        public void addMediaPlayerPlayListener(IMediaPlayerPlayListener listener) throws RemoteException {
+            Log.d(TAG, "addMediaPlayerPlayListener: " + listener);
+            mService.addMediaPlayerPlayListener(listener);
+        }
+
+        @Override
+        public void removeMediaPlayerPlayListener(IMediaPlayerPlayListener listener) throws RemoteException {
+            mService.removeMediaPlayerPlayListener(listener);
+
         }
 
         @Override
@@ -143,11 +188,6 @@ public class MediaService extends Service {
         @Override
         public List<MyTrack> getPlayList() throws RemoteException {
             return mService.getPlayList();
-        }
-
-        @Override
-        public void init() throws RemoteException {
-            mService.init();
         }
 
 
@@ -306,7 +346,9 @@ public class MediaService extends Service {
         public void onSoundPrepared() {
             Log.d(TAG, "onSoundPrepared");
             try {
-                mMediaPlayerListener.onSoundPrepared();
+                for (IMediaPlayerPlayListener mMediaPlayerListener : mPlayListeners) {
+                    mMediaPlayerListener.onSoundPrepared();
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -321,8 +363,9 @@ public class MediaService extends Service {
         public void onPlayStop() {
             Log.d(TAG, "onPlayStop:");
             try {
-                mMediaPlayerListener.onPlayStop();
-                //
+                for (IMediaPlayerPlayListener mMediaPlayerListener : mPlayListeners) {
+                    mMediaPlayerListener.onPlayStop();
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -332,7 +375,9 @@ public class MediaService extends Service {
         public void onPlayStart() {
             Log.d(TAG, "onPlayStart:");
             try {
-                mMediaPlayerListener.onPlayStart();
+                for (IMediaPlayerPlayListener mMediaPlayerListener : mPlayListeners) {
+                    mMediaPlayerListener.onPlayStart();
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -341,9 +386,11 @@ public class MediaService extends Service {
 
         @Override
         public void onPlayProgress(int currPos, int duration) {
-            Log.d(TAG, "onPlayProgress:" + currPos + ",duration" + duration + " mMediaPlayerListener=" + mMediaPlayerListener);
+            Log.d(TAG, "onPlayProgress:" + currPos + ",duration" + duration);
             try {
-                mMediaPlayerListener.onPlayProgress(currPos, duration);
+                for (IMediaPlayerPlayListener mMediaPlayerListener : mPlayListeners) {
+                    mMediaPlayerListener.onPlayProgress(currPos, duration);
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -353,7 +400,9 @@ public class MediaService extends Service {
         @Override
         public void onPlayPause() {
             try {
-                mMediaPlayerListener.onPlayStop();
+                for (IMediaPlayerPlayListener mMediaPlayerListener : mPlayListeners) {
+                    mMediaPlayerListener.onPlayStop();
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -364,7 +413,9 @@ public class MediaService extends Service {
         public void onSoundPlayComplete() {
             Log.d(TAG, "onSoundPlayComplete");
             try {
-                mMediaPlayerListener.onSoundPlayComplete();
+                for (IMediaPlayerPlayListener mMediaPlayerListener : mPlayListeners) {
+                    mMediaPlayerListener.onSoundPlayComplete();
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -390,38 +441,6 @@ public class MediaService extends Service {
             Log.d(TAG, "onBufferingStop");
         }
     };
-
-    private class NullMediaPlayerListener implements IMediaPlayerListener {
-
-        @Override
-        public void initComplete() throws RemoteException {
-        }
-
-        @Override
-        public void onSoundPrepared() throws RemoteException {
-        }
-
-        @Override
-        public void onPlayStart() throws RemoteException {
-        }
-
-        @Override
-        public void onPlayProgress(int currPos, int duration) throws RemoteException {
-        }
-
-        @Override
-        public void onPlayStop() throws RemoteException {
-        }
-
-        @Override
-        public void onSoundPlayComplete() throws RemoteException {
-        }
-
-        @Override
-        public IBinder asBinder() {
-            return null;
-        }
-    }
 
 
 }

@@ -144,8 +144,8 @@ public class LauncherActivity extends FragmentActivity {
             String isLogined = mDeviceUtils.getLoginFlag();
             LogUtils.d(TAG, "onResume, isRegistered=" + isRegistered + " isLogined=" + isLogined);
             if (isRegistered.equals("0") || isLogined.equals("0")) {
-//                Intent intent = new Intent(LauncherActivity.this, LoginActivity.class);
-//                startActivity(intent);
+                Intent intent = new Intent(LauncherActivity.this, LoginActivity.class);
+                startActivity(intent);
                 return;
             }
         }
