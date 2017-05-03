@@ -46,7 +46,7 @@ public abstract class PlayListToken {
     private MediaPlayerManager.MediaPlayerHandler mMediaPlayerManager;
 
     private PlayListLoadDataListener mPlayListLoadDataListener;
-    private List<OnDataChangeListTokenListener> mDataChangeCallBacks;
+    private List<PlayDataChangeListTokenListener> mDataChangeCallBacks;
 
     private PlayListFragment mPlayListFragment;
     private IPlayListControlHandle mPlayListControlHandle;
@@ -62,17 +62,20 @@ public abstract class PlayListToken {
 
     abstract public void loadData(IPlayListLoadListener listener);
 
-    public interface OnDataChangeListTokenListener {
+    public interface PlayDataChangeListTokenListener {
         void onDataUpdate(int resultCode, PlayListItem item);
 
         void onGetData(int resultCode, List<PlayListItem> data);
+
+        void onPlayStart(PlayListItem data);
+
     }
 
     public PlayListToken(TagDetail tag, FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler handler) {
         mMediaPlayerManager = handler;
         mTagDetail = tag;
         mActivity = activity;
-        mDataChangeCallBacks = new ArrayList<OnDataChangeListTokenListener>();
+        mDataChangeCallBacks = new ArrayList<PlayDataChangeListTokenListener>();
         wholePlayList = new ArrayList<>();
         audioTokenList = new ArrayList<>();
         mPlayListControlHandle = new IPlayListControlHandle();
@@ -85,11 +88,11 @@ public abstract class PlayListToken {
         loadData(mPlayListLoadDataListener);
     }
 
-    public void addDataChangeListener(@NonNull OnDataChangeListTokenListener callBack) {
+    public void addDataChangeListener(@NonNull PlayDataChangeListTokenListener callBack) {
         mDataChangeCallBacks.add(callBack);
     }
 
-    public void removeDataChangeListener(@NonNull OnDataChangeListTokenListener callBack) {
+    public void removeDataChangeListener(@NonNull PlayDataChangeListTokenListener callBack) {
         mDataChangeCallBacks.remove(callBack);
     }
 
@@ -127,7 +130,9 @@ public abstract class PlayListToken {
         }
         audioTokenList.get(currentPlayIndex).startPlay();
         prePlayIndex = currentPlayIndex;
-
+        for (PlayDataChangeListTokenListener dataUpdataCall : mDataChangeCallBacks) {
+            dataUpdataCall.onPlayStart(wholePlayList.get(currentPlayIndex));
+        }
     }
 
 
@@ -178,7 +183,7 @@ public abstract class PlayListToken {
                 //TODO
                 LogUtil.d(TAG, "onNext result: " + result + ",item2BeChanged:" + item2BeChanged);
                 item2BeChanged.updateFav();
-                for (OnDataChangeListTokenListener dataUpdataCall : mDataChangeCallBacks) {
+                for (PlayDataChangeListTokenListener dataUpdataCall : mDataChangeCallBacks) {
                     dataUpdataCall.onDataUpdate(PLAYLISTMANAGER_RESULT_SUCCESS, item2BeChanged);
                 }
             }
@@ -211,21 +216,26 @@ public abstract class PlayListToken {
                 currentPlayIndex = DEFAULT_PLAY_INDEX;
                 switchAudioToken();
             }
-            for (OnDataChangeListTokenListener dataUpdataCall : mDataChangeCallBacks) {
+            for (PlayDataChangeListTokenListener dataUpdataCall : mDataChangeCallBacks) {
                 dataUpdataCall.onGetData(PLAYLISTMANAGER_RESULT_SUCCESS, resultmessage);
             }
         }
     }
 
+    public PlayListItem getCurrentPlayItem() {
+        return wholePlayList.get(currentPlayIndex);
+
+    }
+
     private class IPlayListControlHandle implements IPlayListControl {
 
         @Override
-        public void addDataListener(OnDataChangeListTokenListener listener) {
+        public void addDataListener(PlayDataChangeListTokenListener listener) {
             mDataChangeCallBacks.add(listener);
         }
 
         @Override
-        public void removeDataListener(OnDataChangeListTokenListener listener) {
+        public void removeDataListener(PlayDataChangeListTokenListener listener) {
             mDataChangeCallBacks.remove(listener);
         }
 

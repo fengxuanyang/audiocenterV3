@@ -77,4 +77,33 @@ public class SingleMusicToken extends AudioToken<MusicVO, SingleMusicToken.Singl
 
         }
     }
+
+    private class SingleMusicPlayerPlayListener implements MediaPlayerManager.MediaPlayerPlayListener
+
+    {
+        @Override
+        public void onPlayStart() {
+            LogUtil.d(TAG, "onPlayStart:  ");
+
+        }
+
+        @Override
+        public void onPlayProgress(int currPos, int duration) {
+            LogUtil.d(TAG, "onPlayProgress:  ");
+
+        }
+
+        @Override
+        public void onPlayStop() {
+            LogUtil.d(TAG, "onPlayStop:  ");
+
+        }
+
+        @Override
+        public void onSoundPlayComplete() {
+
+        }
+
+
+    }
 }

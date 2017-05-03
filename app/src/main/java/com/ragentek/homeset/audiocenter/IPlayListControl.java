@@ -10,9 +10,9 @@ import java.util.List;
  */
 
 public interface IPlayListControl {
-    void addDataListener(PlayListToken.OnDataChangeListTokenListener listener);
+    void addDataListener(PlayListToken.PlayDataChangeListTokenListener listener);
 
-    void removeDataListener(PlayListToken.OnDataChangeListTokenListener listener);
+    void removeDataListener(PlayListToken.PlayDataChangeListTokenListener listener);
 
 
     //TODO need add token ?

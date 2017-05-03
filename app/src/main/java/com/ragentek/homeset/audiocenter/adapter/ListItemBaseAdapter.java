@@ -31,13 +31,12 @@ public abstract class ListItemBaseAdapter<T extends List, R extends RecyclerView
     public void updateSellect(int index) {
         LogUtil.d(TAG, "updateSellect  index : " + index);
         LogUtil.d(TAG, "updateSellect  curSellect : " + curSellect);
-
-        int preSellect = curSellect;
+//        int preSellect = curSellect;
         curSellect = index;
         notifyDataSetChanged();
-
-        notifyItemChanged(preSellect);
-        notifyItemChanged(curSellect);
+//
+//        notifyItemChanged(preSellect);
+//        notifyItemChanged(curSellect);
     }
 
 
@@ -69,6 +68,19 @@ public abstract class ListItemBaseAdapter<T extends List, R extends RecyclerView
         notifyDataSetChanged();
     }
 
+    /**
+     * new  data
+     *
+     * @param data
+     */
+    public void updateData(Object data) {
+        LogUtil.d(TAG, "updateData: " + mData.contains(data));
+
+        if (mData.contains(data)) {
+            notifyItemChanged(mData.indexOf(data));
+        }
+        //re init curSellect ,start play from the top
+    }
 
     /**
      * new  data

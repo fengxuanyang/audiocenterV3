@@ -178,8 +178,6 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
     private class AlbumMediaPlayerPlayListener implements MediaPlayerManager.MediaPlayerPlayListener
 
     {
-
-
         @Override
         public void onPlayStart() {
             LogUtil.d(TAG, "onPlayStart:  ");

@@ -30,6 +30,8 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.List;
 
+import static com.ragentek.homeset.audiocenter.PlayListToken.PLAYLISTMANAGER_RESULT_SUCCESS;
+
 
 public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View.OnClickListener {
     private static final String TAG = "AudioPlayActivityV3";
@@ -127,15 +129,23 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
         mPlayListToken = PlayListTokenFactory.getPlayListToken(this, mTagDetail, mediaPlayerHandler);
         LogUtil.d(TAG, "serviceInitReady  mPlayListToken:" + mPlayListToken);
 
-        mPlayListToken.addDataChangeListener(new PlayListToken.OnDataChangeListTokenListener() {
+        mPlayListToken.addDataChangeListener(new PlayListToken.PlayDataChangeListTokenListener() {
             @Override
             public void onDataUpdate(int resultCode, PlayListItem item) {
 
+                if (resultCode == PLAYLISTMANAGER_RESULT_SUCCESS) {
+                    updatePlayControlFavUI(item.getFav());
+                }
             }
 
             @Override
             public void onGetData(int resultCode, List<PlayListItem> data) {
 
+            }
+
+            @Override
+            public void onPlayStart(PlayListItem data) {
+                updatePlayControlFavUI(data.getFav());
             }
         });
         mPlayListToken.init();
@@ -247,6 +257,7 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
     private void setFav() {
         LogUtil.d(TAG, "setFav ");
         mPlayListToken.updateFav2Server();
+
     }
 
 
@@ -353,11 +364,7 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
         @Override
         public void onSoundPlayComplete() {
             LogUtil.i(TAG, "onSoundPlayComplete");
-//            if (mhandler != null) {
-//                Message msg = new Message();
-//                msg.what = AudioPlayerHandler.MSG_MEDIA_SOUME_PREPARED;
-//                mhandler.sendMessage(msg);
-//            }
+
         }
     };
 
@@ -399,7 +406,7 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
             LogUtil.e(TAG, "onUpdate2ServerComplete : " + resultcode);
 
             switch (resultcode) {
-                case PlayListToken.PLAYLISTMANAGER_RESULT_SUCCESS:
+                case PLAYLISTMANAGER_RESULT_SUCCESS:
                     updatePlayControlFavUI(fav);
                     break;
                 case PlayListToken.PLAYLISTMANAGER_RESULT_NONE:

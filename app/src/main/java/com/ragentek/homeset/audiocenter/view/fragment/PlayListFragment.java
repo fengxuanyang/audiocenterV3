@@ -55,6 +55,28 @@ public class PlayListFragment extends DialogFragment {
     TextView listNameTextView;
     @BindView(R.id.swiperefresh_playlist)
     SwipeRefreshLayout swipeRefresh;
+    private PlayListToken.PlayDataChangeListTokenListener mPlayDataChangeListTokenListener = new PlayListToken.PlayDataChangeListTokenListener()
+
+    {
+        @Override
+        public void onDataUpdate(int resultCode, PlayListItem item) {
+            mPlayListAdapter.updateData(item);
+        }
+
+        @Override
+        public void onGetData(int resultCode, List<PlayListItem> data) {
+            swipeRefresh.setRefreshing(false);
+            if (mPlayListAdapter != null && data.size() > 0) {
+                currentPlaylist.addAll(data);
+                mPlayListAdapter.addDatas(data);
+            }
+        }
+
+        @Override
+        public void onPlayStart(PlayListItem data) {
+
+        }
+    };
 
     public static PlayListFragment newInstance(int playindex) {
         PlayListFragment fragment = new PlayListFragment();
@@ -68,21 +90,7 @@ public class PlayListFragment extends DialogFragment {
     public void setPlayControl(IPlayListControl control) {
         LogUtil.d(TAG, "");
         mIPlayListControl = control;
-        mIPlayListControl.addDataListener(new PlayListToken.OnDataChangeListTokenListener() {
-            @Override
-            public void onDataUpdate(int resultCode, PlayListItem item) {
 
-            }
-
-            @Override
-            public void onGetData(int resultCode, List<PlayListItem> data) {
-                //playListAdapter == null also  means  fragment not init
-                if (mPlayListAdapter != null && data.size() > 0) {
-                    currentPlaylist.addAll(data);
-                    mPlayListAdapter.addDatas(data);
-                }
-            }
-        });
     }
 
     @Override
@@ -137,6 +145,7 @@ public class PlayListFragment extends DialogFragment {
         } else {
             mPlayListAdapter.setDatas(currentPlaylist);
         }
+        mIPlayListControl.addDataListener(mPlayDataChangeListTokenListener);
         mPlayListAdapter.updateSellect(playindex);
 
         playlistRV.setHasFixedSize(true);
@@ -169,6 +178,13 @@ public class PlayListFragment extends DialogFragment {
         });
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mIPlayListControl.removeDataListener(mPlayDataChangeListTokenListener);
+
+    }
+
     @OnClick(R.id.tv_close)
     void closeFragment() {
         LogUtil.d(TAG, "closeFragment: ");
@@ -196,12 +212,12 @@ public class PlayListFragment extends DialogFragment {
     private class NULLIPlayListControl implements IPlayListControl {
 
         @Override
-        public void addDataListener(PlayListToken.OnDataChangeListTokenListener listener) {
+        public void addDataListener(PlayListToken.PlayDataChangeListTokenListener listener) {
 
         }
 
         @Override
-        public void removeDataListener(PlayListToken.OnDataChangeListTokenListener listener) {
+        public void removeDataListener(PlayListToken.PlayDataChangeListTokenListener listener) {
 
         }
 
