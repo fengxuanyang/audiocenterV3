@@ -25,7 +25,7 @@ import butterknife.ButterKnife;
  * Created by xuanyang.feng on 2017/3/10.
  */
 
-public class CategoryAdapter extends ListItemBaseAdapter<List<CategoryDetail>, CategoryAdapter.CategoryAdapterViewHolder> {
+public class CategoryAdapter extends ListItemBaseAdapter<CategoryDetail, CategoryAdapter.CategoryAdapterViewHolder> {
     private static final String TAG = "CategoryAdapter";
     List<Integer> colorArray = new ArrayList<>();
 
@@ -50,14 +50,14 @@ public class CategoryAdapter extends ListItemBaseAdapter<List<CategoryDetail>, C
 
     @Override
     public void onBindViewHolder(final CategoryAdapter.CategoryAdapterViewHolder holder, int position) {
-        Log.d(TAG, "onBindViewHolder: " + mData.size());
+        Log.d(TAG, "onBindViewHolder: " + getData().size());
         Log.d(TAG, "onBindViewHolder: " + position);
         Random random = new Random();
         Log.d(TAG, "onBindViewHolder random: " + random.nextInt(colorArray.size()));
 
         holder.categorylayout.setBackgroundColor(mContext.getResources().getColor(colorArray.get(random.nextInt(colorArray.size()))));
-        holder.categoryName.setText(mData.get(position).getName());
-        holder.categoryImage.setImageResource(mData.get(position).getIcon());
+        holder.categoryName.setText(getData().get(position).getName());
+        holder.categoryImage.setImageResource(getData().get(position).getIcon());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,8 +73,8 @@ public class CategoryAdapter extends ListItemBaseAdapter<List<CategoryDetail>, C
     @Override
     public int getItemCount() {
         LogUtil.d(TAG, "getItemCount ");
-        if (mData != null) {
-            return mData.size();
+        if (getData() != null) {
+            return getData().size();
 
         } else return 0;
     }

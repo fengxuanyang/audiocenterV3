@@ -3,7 +3,6 @@ package com.ragentek.homeset.audiocenter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 
@@ -11,7 +10,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ragentek.homeset.audiocenter.model.bean.PlayListItem;
 import com.ragentek.homeset.audiocenter.model.bean.TagDetail;
@@ -33,8 +31,8 @@ import java.util.List;
 import static com.ragentek.homeset.audiocenter.PlayListToken.PLAYLISTMANAGER_RESULT_SUCCESS;
 
 
-public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View.OnClickListener {
-    private static final String TAG = "AudioPlayActivityV3";
+public class AudioPlayActivity extends AudioCenterBaseActivity implements View.OnClickListener {
+    private static final String TAG = "AudioPlayActivity";
 
     private AudioPlayerHandler mhandler = new AudioPlayerHandler();
     private static final String STATEFRAGMENTTAG = "playstatefragment";
@@ -124,15 +122,15 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
 
     private void mediaPlayerInitComplete() {
         LogUtil.d(TAG, "serviceInitReady");
-        mediaPlayerHandler = MediaPlayerManager.getInstance(AudioPlayActivityV3.this).geMediaPlayerHandler();
+        mediaPlayerHandler = MediaPlayerManager.getInstance(AudioPlayActivity.this).geMediaPlayerHandler();
         mediaPlayerHandler.addMeidaPlayListener(mMediaPlayerPlayListener);
         mPlayListToken = PlayListTokenFactory.getPlayListToken(this, mTagDetail, mediaPlayerHandler);
         LogUtil.d(TAG, "serviceInitReady  mPlayListToken:" + mPlayListToken);
-
         mPlayListToken.addDataChangeListener(new PlayListToken.PlayDataChangeListTokenListener() {
             @Override
             public void onDataUpdate(int resultCode, PlayListItem item) {
 
+                //TODO fail result code
                 if (resultCode == PLAYLISTMANAGER_RESULT_SUCCESS) {
                     updatePlayControlFavUI(item.getFav());
                 }
@@ -207,6 +205,33 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
     }
 
     @Override
+    public void onClick(View view) {
+        LogUtil.i(TAG, "onClick:" + view.getId());
+
+        switch (view.getId()) {
+            case (R.id.image_play_next):
+                playNext();
+                break;
+            case (R.id.image_play_pre):
+                playPre();
+                break;
+            case (R.id.image_playorpause):
+                playorpause();
+                break;
+            case (R.id.image_fav):
+                setFav();
+                break;
+            case (R.id.iv_back):
+                doBack();
+                break;
+            case (R.id.image_play_list):
+                showPlayList();
+                break;
+        }
+    }
+
+
+    @Override
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
@@ -222,7 +247,6 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
         finish();
     }
 
-
     private void playPre() {
         LogUtil.d(TAG, "playPre");
         mPlayListToken.playPre();
@@ -232,6 +256,7 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
         LogUtil.d(TAG, "playNext");
         mPlayListToken.playNext();
     }
+
 
     private void showPlayList() {
         LogUtil.d(TAG, "showPlayList");
@@ -260,10 +285,10 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
 
     }
 
-
     private void updatePlayControlFavUI(int fav) {
         favIV.setImageResource(fav == Constants.FAV ? R.drawable.control_fav : R.drawable.control_unfav);
     }
+
 
     private void playorpause() {
         LogUtil.d(TAG, "playorpause:");
@@ -271,7 +296,6 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
         msg.what = AudioPlayerHandler.MSG_MEDIA_PLAY_PAUSE;
         mhandler.sendMessage(msg);
     }
-
 
     @Override
     protected void onPause() {
@@ -292,13 +316,12 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
         mhandler = null;
     }
 
+
     @Subscribe
     public void onAudioFavEvent(final PushAudioFavEvent fav) {
         //TODO
 //        mPlayListToken.updateLocalPlayList();
-
     }
-
 
     //TODO div music and radio
     private void updatePlayControl(boolean clickAble) {
@@ -310,10 +333,6 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
     }
 
     private IMediaPlayerInitListener mMediaInitListener = new IMediaPlayerInitListener.Stub() {
-        @Override
-        public IBinder asBinder() {
-            return super.asBinder();
-        }
 
         @Override
         public void initComplete() throws RemoteException {
@@ -367,60 +386,6 @@ public class AudioPlayActivityV3 extends AudioCenterBaseActivity implements View
 
         }
     };
-
-
-    @Override
-    public void onClick(View view) {
-        LogUtil.i(TAG, "onClick:" + view.getId());
-
-        switch (view.getId()) {
-            case (R.id.image_play_next):
-                playNext();
-                break;
-            case (R.id.image_play_pre):
-                playPre();
-                break;
-            case (R.id.image_playorpause):
-                playorpause();
-                break;
-            case (R.id.image_fav):
-                setFav();
-                break;
-            case (R.id.iv_back):
-                doBack();
-                break;
-            case (R.id.image_play_list):
-                showPlayList();
-                break;
-        }
-
-
-    }
-
-
-    private class PlayListListener implements PlayListManagerListener {
-
-
-        @Override
-        public void onUpdate2ServerComplete(int resultcode, int fav) {
-            LogUtil.e(TAG, "onUpdate2ServerComplete : " + resultcode);
-
-            switch (resultcode) {
-                case PLAYLISTMANAGER_RESULT_SUCCESS:
-                    updatePlayControlFavUI(fav);
-                    break;
-                case PlayListToken.PLAYLISTMANAGER_RESULT_NONE:
-                    LogUtil.e(TAG, "PLAYLISTMANAGER_RESULT_NONE : ");
-                    Toast.makeText(AudioPlayActivityV3.this, "PLAYLISTMANAGER_RESULT_NONE", Toast.LENGTH_SHORT);
-
-                    break;
-                case PlayListToken.PLAYLISTMANAGER_RESULT_ERROR_NET:
-                    Toast.makeText(AudioPlayActivityV3.this, "PLAYLISTMANAGER_RESULT_ERROR_NET", Toast.LENGTH_SHORT);
-                    break;
-            }
-        }
-    }
-
 
     private class AudioPlayerHandler extends Handler {
         private static final int MSG_MEDIA_INIT_COMPLETE = 0;

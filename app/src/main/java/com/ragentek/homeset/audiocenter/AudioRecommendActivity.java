@@ -3,7 +3,6 @@ package com.ragentek.homeset.audiocenter;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -81,7 +80,7 @@ public class AudioRecommendActivity extends AudioCenterBaseActivity {
         mRecommendAdapter.setOnItemClickListener(new ListItemBaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Intent intent = new Intent(AudioRecommendActivity.this, AudioPlayActivityV3.class);
+                Intent intent = new Intent(AudioRecommendActivity.this, AudioPlayActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putSerializable(Constants.CATEGORY_TAG, mRecommendAdapter.getData().get(position));
                 intent.putExtras(bundle);

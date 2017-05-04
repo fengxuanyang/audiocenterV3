@@ -22,7 +22,7 @@ import butterknife.ButterKnife;
  * Created by xuanyang.feng on 2017/3/10.
  */
 
-public class TrackListAdapter extends ListItemBaseAdapter<List<TrackVO>, TrackListAdapter.AlbumItemAdapterViewHolder> {
+public class TrackListAdapter extends ListItemBaseAdapter<TrackVO, TrackListAdapter.AlbumItemAdapterViewHolder> {
     private static final String TAG = "TrackListAdapter";
 
     public TrackListAdapter(Context context) {
@@ -40,7 +40,7 @@ public class TrackListAdapter extends ListItemBaseAdapter<List<TrackVO>, TrackLi
 
     @Override
     public void onBindViewHolder(final TrackListAdapter.AlbumItemAdapterViewHolder holder, int position) {
-        Log.d(TAG, "onBindViewHolder  position : " + position + ",title:" + this.getData().get(position).getTitle());
+        Log.d(TAG, "onBindViewHolder  position : " + position + ",title:" + this.getData().get(position).getTitle() + ",curSellect:" + curSellect);
         holder.itemName.setText(this.getData().get(position).getTitle());
         holder.itemIndex.setText("" + (position + 1));
         if (curSellect == position) {
@@ -65,8 +65,8 @@ public class TrackListAdapter extends ListItemBaseAdapter<List<TrackVO>, TrackLi
     @Override
     public int getItemCount() {
         LogUtil.d(TAG, "getItemCount ");
-        if (mData != null) {
-            return mData.size();
+        if (getData() != null) {
+            return getData().size();
 
         } else return 0;
     }

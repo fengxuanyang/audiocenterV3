@@ -28,7 +28,6 @@ public class RadioToken extends AudioToken<BaseAudioVO, RadioToken.RadioAudioCon
         super(activity, mediaPlayer, item);
         mMediaPlayer = mediaPlayer;
         radio = (RadioVO) item.getAudio();
-
     }
 
     @Override

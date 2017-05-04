@@ -31,10 +31,8 @@ public class AlbumPlayListToken extends PlayListToken {
         super(tag, activity, handler);
     }
 
-
     @Override
     public void loadData(final IPlayListLoadListener listener) {
-
         LogUtil.d(TAG, "loadData   : " + mTagDetail.getCategoryID() + ":getName" + mTagDetail.getName());
         Subscriber<AlbumResultVO> mloadDataSubscriber = new Subscriber<AlbumResultVO>() {
             @Override
@@ -78,7 +76,6 @@ public class AlbumPlayListToken extends PlayListToken {
             item.setAudio(album);
             playListItems.add(item);
         }
-
         return playListItems;
     }
 

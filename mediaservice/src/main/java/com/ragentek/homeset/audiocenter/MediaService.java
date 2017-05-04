@@ -182,6 +182,8 @@ public class MediaService extends Service {
 
         @Override
         public void setPlayList(List<MyTrack> list, int startIndex) throws RemoteException {
+            Log.d(TAG, "setPlayList startIndex: " + startIndex);
+
             mService.setPlayList(list, startIndex);
         }
 

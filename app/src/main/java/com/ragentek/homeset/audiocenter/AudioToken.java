@@ -1,10 +1,8 @@
 package com.ragentek.homeset.audiocenter;
 
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 
-import com.ragentek.homeset.audiocenter.model.bean.PlayItem;
 import com.ragentek.homeset.audiocenter.model.bean.PlayListItem;
 import com.ragentek.homeset.audiocenter.service.MediaPlayerManager;
 import com.ragentek.homeset.audiocenter.utils.LogUtil;
@@ -12,19 +10,16 @@ import com.ragentek.homeset.audiocenter.view.fragment.PlayBaseFragment;
 import com.ragentek.homeset.core.R;
 import com.ragentek.protocol.commons.audio.BaseAudioVO;
 
-import java.util.List;
 
 public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl> {
     private static final String TAG = "AudioToken";
     public static final int PLAYLIST_RESULT_ERROR_NET = -1;
     public static final int PLAYLIST_RESULT_NONE = 0;
     public static final int PLAYLIST_RESULT_SUCCESS = 1;
-    FragmentActivity mActivity;
     private static final int DEFAULT_PLAY_INDEX = 0;
 
-
+    FragmentActivity mActivity;
     PlayBaseFragment fragment = null;
-    private int currentPlayIndex = 0;
 
     protected abstract PlayBaseFragment getPlayFragment();
 

@@ -57,9 +57,9 @@ public abstract class RecycleViewEndlessOnScrollListener extends RecyclerView.On
             currentPage++;
         } else if (currentScrollState == RecyclerView.SCROLL_STATE_IDLE &&
                 !loading && !isUp && firstVisibleItemPosition == 0) {
-            loading = true;
-            onUpdata(currentPage);
-            LogUtil.d(TAG, "onScrollStateChanged  onUpdata: ");
+//            loading = true;
+//            onUpdata(currentPage);
+//            LogUtil.d(TAG, "onScrollStateChanged  onUpdata: ");
 
         }
     }

@@ -44,7 +44,7 @@ public class PlayListFragment extends DialogFragment {
     private int playindex;
     private PlayListAdapter mPlayListAdapter;
     private IPlayListControl mIPlayListControl = new NULLIPlayListControl();
-    private List<PlayListItem> currentPlaylist = new ArrayList<>();
+    private List<PlayListItem> currentPlaylist;
 
 
     @BindView(R.id.rv_playlist)
@@ -109,6 +109,7 @@ public class PlayListFragment extends DialogFragment {
         if (argument != null) {
             playindex = argument.getInt(TAG_PLAYINDEX);
         }
+        currentPlaylist = new ArrayList<>();
     }
 
 
@@ -134,16 +135,13 @@ public class PlayListFragment extends DialogFragment {
                 LogUtil.d(TAG, "onRefresh: ");
             }
         });
-        currentPlaylist = mIPlayListControl.getData();
+        List<PlayListItem> hisotyPlaylist = mIPlayListControl.getData();
         mPlayListAdapter = new PlayListAdapter(mContext, playindex);
-        if (currentPlaylist == null) {
-            //TODO data error wait for
-
-        } else if (currentPlaylist.size() == 0) {
-            //TODO none data
-
-        } else {
+        if (hisotyPlaylist != null && hisotyPlaylist.size() > 0) {
+            currentPlaylist.addAll(hisotyPlaylist);
             mPlayListAdapter.setDatas(currentPlaylist);
+        } else {
+            mIPlayListControl.getDataAsync();
         }
         mIPlayListControl.addDataListener(mPlayDataChangeListTokenListener);
         mPlayListAdapter.updateSellect(playindex);
@@ -152,7 +150,9 @@ public class PlayListFragment extends DialogFragment {
         final LinearLayoutManager mLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         playlistRV.setLayoutManager(mLayoutManager);
         playlistRV.setAdapter(mPlayListAdapter);
-        mPlayListAdapter.setOnItemClickListener(new ListItemBaseAdapter.OnItemClickListener() {
+        mPlayListAdapter.setOnItemClickListener(new ListItemBaseAdapter.OnItemClickListener()
+
+        {
             @Override
             public void onItemClick(View view, int position) {
                 playindex = position;
@@ -163,19 +163,20 @@ public class PlayListFragment extends DialogFragment {
             }
         });
 
-        playlistRV.addOnScrollListener(new RecycleViewEndlessOnScrollListener() {
-            @Override
-            public void onLoadMore(int currentPage) {
-                swipeRefresh.setRefreshing(true);
-                mIPlayListControl.getDataAsync();
-            }
+        playlistRV.addOnScrollListener(new
 
-            @Override
-            public void onUpdata(int currentPage) {
-                swipeRefresh.setRefreshing(false);
+                                               RecycleViewEndlessOnScrollListener() {
+                                                   @Override
+                                                   public void onLoadMore(int currentPage) {
+                                                       swipeRefresh.setRefreshing(true);
+                                                       mIPlayListControl.getDataAsync();
+                                                   }
 
-            }
-        });
+                                                   @Override
+                                                   public void onUpdata(int currentPage) {
+                                                       swipeRefresh.setRefreshing(false);
+                                                   }
+                                               });
     }
 
     @Override

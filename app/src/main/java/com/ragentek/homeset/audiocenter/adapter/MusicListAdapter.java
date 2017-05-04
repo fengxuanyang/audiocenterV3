@@ -21,7 +21,7 @@ import butterknife.ButterKnife;
  * Created by xuanyang.feng on 2017/3/10.
  */
 
-public class MusicListAdapter extends ListItemBaseAdapter<List<MusicVO>, MusicListAdapter.AlbumItemAdapterViewHolder> {
+public class MusicListAdapter extends ListItemBaseAdapter<MusicVO, MusicListAdapter.AlbumItemAdapterViewHolder> {
     private static final String TAG = "TrackListAdapter";
 
     public MusicListAdapter(Context context, int index) {
@@ -67,8 +67,8 @@ public class MusicListAdapter extends ListItemBaseAdapter<List<MusicVO>, MusicLi
     @Override
     public int getItemCount() {
         LogUtil.d(TAG, "getItemCount ");
-        if (mData != null) {
-            return mData.size();
+        if (getData() != null) {
+            return getData().size();
         } else return 0;
     }
 

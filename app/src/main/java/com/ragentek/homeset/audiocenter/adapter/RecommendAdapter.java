@@ -21,7 +21,7 @@ import butterknife.ButterKnife;
  * Created by xuanyang.feng on 2017/3/9.
  */
 
-public class RecommendAdapter extends ListItemBaseAdapter<List<TagDetail>, RecommendAdapter.IndexViewHolder> {
+public class RecommendAdapter extends ListItemBaseAdapter<TagDetail, RecommendAdapter.IndexViewHolder> {
     private static final String TAG = "RecommendAdapter";
 
     public RecommendAdapter(Context context, int initindex) {
@@ -42,8 +42,8 @@ public class RecommendAdapter extends ListItemBaseAdapter<List<TagDetail>, Recom
     public void onBindViewHolder(final IndexViewHolder holder, int position) {
         LogUtil.d(TAG, "" + position);
 //        holder.image.setImageResource(R.drawable.placeholder_disk);
-        holder.image.setImageResource(mData.get(position).getIcon());
-        holder.tv.setText(mData.get(position).getName());
+        holder.image.setImageResource(getData().get(position).getIcon());
+        holder.tv.setText(getData().get(position).getName());
         if (mOnItemClickListener != null) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -65,8 +65,8 @@ public class RecommendAdapter extends ListItemBaseAdapter<List<TagDetail>, Recom
 
     @Override
     public int getItemCount() {
-        if (mData != null) {
-            return mData.size();
+        if (getData() != null) {
+            return getData().size();
         } else return 0;
     }
 

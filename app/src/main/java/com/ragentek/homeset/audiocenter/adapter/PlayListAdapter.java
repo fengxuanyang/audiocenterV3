@@ -18,6 +18,7 @@ import com.ragentek.protocol.commons.audio.MusicVO;
 import com.ragentek.protocol.commons.audio.RadioVO;
 import com.ragentek.protocol.constants.Category;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -27,7 +28,7 @@ import butterknife.ButterKnife;
  * Created by xuanyang.feng on 2017/3/10.
  */
 
-public class PlayListAdapter extends ListItemBaseAdapter<List<PlayListItem>, PlayListAdapter.PlayListItemAdapterViewHolder> {
+public class PlayListAdapter extends ListItemBaseAdapter<PlayListItem, PlayListAdapter.PlayListItemAdapterViewHolder> {
     private static final String TAG = "PlayListAdapter";
 
     public PlayListAdapter(Context context, int index) {
@@ -133,10 +134,10 @@ public class PlayListAdapter extends ListItemBaseAdapter<List<PlayListItem>, Pla
     @Override
     public int getItemCount() {
         LogUtil.d(TAG, "getItemCount ");
-        if (mData != null) {
-            LogUtil.d(TAG, "getItemCount " + mData.size());
+        if (getData() != null) {
+            LogUtil.d(TAG, "getItemCount " + getData().size());
 
-            return mData.size();
+            return getData().size();
 
         } else return 0;
     }

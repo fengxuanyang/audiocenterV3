@@ -27,7 +27,6 @@ import rx.Subscriber;
 public abstract class PlayListToken {
     private static final String TAG = PlayListToken.class.getSimpleName();
     public static final String PLAYLIST_FRAGMENT_TAG = "playlist";
-
     /**
      * load data result code
      */
@@ -50,6 +49,7 @@ public abstract class PlayListToken {
 
     private PlayListFragment mPlayListFragment;
     private IPlayListControlHandle mPlayListControlHandle;
+    private boolean isLoadingData = false;
 
     protected List<PlayListItem> wholePlayList;
     protected List<AudioToken> audioTokenList;
@@ -57,7 +57,7 @@ public abstract class PlayListToken {
     private int prePlayIndex = -1;
     public static final int DEFAULT_PLAY_INDEX = 0;
 
-
+    //TODO  add action  param
     abstract public void updateLocalPlayList(long id);
 
     abstract public void loadData(IPlayListLoadListener listener);
@@ -84,7 +84,12 @@ public abstract class PlayListToken {
 
     public void init() {
         LogUtil.d(TAG, ": init");
+        startLoadMoreData();
+    }
 
+    private void startLoadMoreData() {
+        LogUtil.d(TAG, ": startLoadMoreData");
+        isLoadingData = true;
         loadData(mPlayListLoadDataListener);
     }
 
@@ -112,14 +117,11 @@ public abstract class PlayListToken {
     public void playNext() {
         if (currentPlayIndex < audioTokenList.size() - 1) {
             currentPlayIndex++;
-
         } else {
             currentPlayIndex = 0;
             LogUtil.d(TAG, ": playNext  max" + currentPlayIndex);
-
         }
         switchAudioToken();
-
         //TODO  nnext
     }
 
@@ -143,28 +145,22 @@ public abstract class PlayListToken {
 
     public void showPlayList() {
         LogUtil.d(TAG, "showPlayList");
-        Fragment fragment = mActivity.getSupportFragmentManager().findFragmentByTag(PLAYLIST_FRAGMENT_TAG);
         FragmentTransaction ft = mActivity.getSupportFragmentManager().beginTransaction();
-        LogUtil.d(TAG, "showPlayList  fragment:" + fragment);
-
-        if (fragment != null) {
-            mPlayListFragment = (PlayListFragment) fragment;
-            ft.show(mPlayListFragment).commit();
-        } else {
+        if (mPlayListFragment == null) {
             mPlayListFragment = PlayListFragment.newInstance(currentPlayIndex);
             mPlayListFragment.setPlayControl(mPlayListControlHandle);
-            ft.add(mPlayListFragment, PLAYLIST_FRAGMENT_TAG).show(mPlayListFragment).commit();
         }
+
+        ft.add(mPlayListFragment, PLAYLIST_FRAGMENT_TAG).show(mPlayListFragment).commit();
+
     }
 
 
     private void hideFragment(String tag) {
-        Fragment fragment = mActivity.getSupportFragmentManager().findFragmentByTag(tag);
-        LogUtil.d(TAG, "hideFragment ::" + fragment);
+        LogUtil.d(TAG, "hideFragment ::");
         FragmentTransaction ft = mActivity.getSupportFragmentManager().beginTransaction();
-        if (fragment != null) {
-//            ft.remove(fragment).hide()
-            ft.remove(fragment).hide(fragment).commit();
+        if (mPlayListFragment != null) {
+            ft.remove(mPlayListFragment).hide(mPlayListFragment).commit();
         }
     }
 
@@ -188,6 +184,7 @@ public abstract class PlayListToken {
                 //TODO
                 LogUtil.d(TAG, "onNext result: " + result + ",item2BeChanged:" + item2BeChanged);
                 item2BeChanged.updateFav();
+                //TODO update audio token fav
                 for (PlayDataChangeListTokenListener dataUpdataCall : mDataChangeCallBacks) {
                     dataUpdataCall.onDataUpdate(PLAYLISTMANAGER_RESULT_SUCCESS, item2BeChanged);
                 }
@@ -212,7 +209,7 @@ public abstract class PlayListToken {
         @Override
         public void onLoadData(int resultCode, List<PlayListItem> resultmessage) {
             Log.d(TAG, "onLoadData size: " + resultmessage.size());
-
+            isLoadingData = false;
             wholePlayList.addAll(resultmessage);
             for (PlayListItem item : resultmessage) {
                 AudioToken mtoken = AudioTokenFactory.getAudioToken(mActivity, item, mMediaPlayerManager);
@@ -234,6 +231,7 @@ public abstract class PlayListToken {
 
     }
 
+
     private class IPlayListControlHandle implements IPlayListControl {
 
         @Override
@@ -254,7 +252,9 @@ public abstract class PlayListToken {
         @Override
         public void getDataAsync() {
             LogUtil.d(TAG, ": getDataAsync");
-            loadData(mPlayListLoadDataListener);
+            if (!isLoadingData) {
+                startLoadMoreData();
+            }
         }
 
         @Override

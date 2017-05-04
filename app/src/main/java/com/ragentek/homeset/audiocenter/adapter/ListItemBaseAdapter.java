@@ -6,16 +6,17 @@ import android.view.View;
 
 import com.ragentek.homeset.audiocenter.utils.LogUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by xuanyang.feng on 2017/2/23.
  */
 
-public abstract class ListItemBaseAdapter<T extends List, R extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<R> {
+public abstract class ListItemBaseAdapter<T, R extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<R> {
     private static final String TAG = "ListItemBaseAdapter";
     OnItemClickListener mOnItemClickListener;
-    T mData;
+    private ArrayList mData = new ArrayList<T>();
     Context mContext;
     int curSellect = 0;
 
@@ -44,27 +45,26 @@ public abstract class ListItemBaseAdapter<T extends List, R extends RecyclerView
      * @param data
      * @param start start of items to ba added
      */
-    public void insertDatas(T data, int start) {
+    public void insertDatas(List<T> data, int start) {
         LogUtil.d(TAG, "insertDatas: " + start + ",size" + data.size());
-        if (mData == null) {
-            mData = data;
-        } else {
-            LogUtil.d(TAG, ",size" + mData.size());
-            mData.addAll(start, data);
-        }
+
+        LogUtil.d(TAG, ",size" + mData.size());
+        mData.addAll(start, data);
+
         LogUtil.d(TAG, ",size" + mData.size());
 
         notifyDataSetChanged();
     }
 
-    public void addDatas(T date) {
-        LogUtil.d(TAG, "addDatas: " + date.size());
+    public synchronized void addDatas(List<T> data) {
+        LogUtil.d(TAG, "addDatas  date: " + data.size());
+        LogUtil.d(TAG, "addDatas  mData: " + mData);
 
-        if (mData == null) {
-            mData = date;
-        } else {
-            mData.addAll(date);
-        }
+        LogUtil.d(TAG, "addDatas  mData before: " + mData.size());
+        mData.addAll(data);
+
+        LogUtil.d(TAG, "addDatas  mData after: " + mData.size());
+
         notifyDataSetChanged();
     }
 
@@ -87,9 +87,13 @@ public abstract class ListItemBaseAdapter<T extends List, R extends RecyclerView
      *
      * @param data
      */
-    public void setDatas(T data) {
-        LogUtil.d(TAG, "setDatas: " + data.size());
-        mData = data;
+    public void setDatas(List<T> data) {
+        LogUtil.d(TAG, "setDatas  data: " + data.size());
+
+        mData.clear();
+        mData.addAll(data);
+        LogUtil.d(TAG, "setDatas mData: " + mData.size());
+
         //re init curSellect ,start play from the top
         curSellect = 0;
         notifyDataSetChanged();
@@ -113,7 +117,7 @@ public abstract class ListItemBaseAdapter<T extends List, R extends RecyclerView
         this.mOnItemClickListener = itemClickListener;
     }
 
-    public T getData() {
+    public List<T> getData() {
         return mData;
     }
 

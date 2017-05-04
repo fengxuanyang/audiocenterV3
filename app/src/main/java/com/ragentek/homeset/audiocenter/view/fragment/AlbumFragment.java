@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +50,7 @@ import rx.Subscriber;
  */
 
 public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.AlbumAudioControl> {
-    private ListItemBaseAdapter<List<TrackVO>, TrackListAdapter.AlbumItemAdapterViewHolder> mTrackListAdapter;
+    private ListItemBaseAdapter<TrackVO, TrackListAdapter.AlbumItemAdapterViewHolder> mTrackListAdapter;
     private int currentPage = 1;
     public static final int PAGE_COUNT = 20;
     private int currentPlayIndext = 0;
@@ -69,11 +70,16 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
         return fragment;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         LogUtil.d(TAG, "onCreateView: ");
+        wholePlayList = new ArrayList<>();
         View view = inflater.inflate(R.layout.audioenter_fragment_album_detail, container, false);
         ButterKnife.bind(this, view);
         mIAudioControl.registerMeidaPlayListener();
@@ -91,7 +97,6 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
     }
 
     private void inteView() {
-        wholePlayList = null;
         currentPlayIndext = 0;
         LogUtil.d(TAG, "inteView  >>: " + SystemClock.currentThreadTimeMillis());
         mTrackListAdapter = new TrackListAdapter(this.getContext());
@@ -100,7 +105,6 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
             public void onItemClick(View view, int position) {
                 LogUtil.d(TAG, "onItemClick: " + position);
                 currentPlayIndext = position;
-                mTrackListAdapter.updateSellect(position);
                 mIAudioControl.playSellected(currentPlayIndext);
             }
         });
@@ -109,8 +113,6 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mTrackListAdapter);
-//        mSwipeRefreshLayout.stopNestedScroll();
-//        mSwipeRefreshLayout.setNestedScrollingEnabled(false);
         mRecyclerView.addOnScrollListener(new RecycleViewEndlessOnScrollListener() {
             @Override
             public void onLoadMore(int currentPage) {
@@ -135,19 +137,23 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
     }
 
     private void updateData() {
+        mIAudioControl.setDataChangerListener(getIAudioDataChangerListener());
         List<TrackVO> current = mIAudioControl.getData();
         if (current == null || current.size() <= 0) {
-            mIAudioControl.setDataChangerListener(getIAudioDataChangerListener());
+            mIAudioControl.getMoreData();
         } else {
-            wholePlayList = current;
+            wholePlayList.addAll(current);
+            mTrackListAdapter.setDatas(wholePlayList);
             updateView();
-            mIAudioControl.playSellected(currentPlayIndext);
         }
+
     }
 
     private void updateView() {
+        LogUtil.d(TAG, "updateView  currentPlayIndext: " + currentPlayIndext);
+//        mTrackListAdapter.cu
+        mTrackListAdapter.updateSellect(currentPlayIndext);
         mSwipeRefreshLayout.setRefreshing(false);
-        mTrackListAdapter.setDatas(wholePlayList);
         updateTitle();
         updateAlbumart();
     }
@@ -179,15 +185,12 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
     IAudioDataChangerListener<List<TrackVO>> mIAudioDataChangerListener = new IAudioDataChangerListener<List<TrackVO>>() {
         @Override
         public void onGetData(int resultCode, List<TrackVO> data) {
-            LogUtil.d(TAG, "onGetData  resultCode: " + resultCode + "" + data.size());
+            LogUtil.d(TAG, "onGetData  resultCode: " + resultCode + ",size:" + data.size());
 
             switch (resultCode) {
                 case AudioToken.PLAYLIST_RESULT_SUCCESS: {
-                    if (wholePlayList == null) {
-                        wholePlayList = data;
-                    } else {
-                        wholePlayList.addAll(data);
-                    }
+                    wholePlayList.addAll(data);
+                    mTrackListAdapter.addDatas(data);
                     updateView();
                 }
                 break;
@@ -204,10 +207,11 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
 
         @Override
         public void onPlayStartData(int index) {
+            Log.d(TAG, "onPlayStartData: " + index);
             if (index != currentPlayIndext) {
                 currentPlayIndext = index;
-                mTrackListAdapter.updateSellect(index);
             }
+            mTrackListAdapter.updateSellect(currentPlayIndext);
 
         }
     };

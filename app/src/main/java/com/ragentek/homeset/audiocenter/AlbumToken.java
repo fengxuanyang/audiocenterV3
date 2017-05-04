@@ -40,6 +40,7 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
     private List<TrackVO> wholeTracks;
     private List<PlayItem> wholePlayList = new ArrayList<>();
     private AlbumMediaPlayerPlayListener mAlbumMediaPlayerPlayListener = new AlbumMediaPlayerPlayListener();
+    private boolean isLoadingMore = false;
 
 
     AlbumToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
@@ -53,15 +54,8 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
 
     @Override
     protected PlayBaseFragment<List<TrackVO>, AlbumAudioControl> getPlayFragment() {
-        LogUtil.d(TAG, "getPlayFragment  view: " + this);
-        //TODO
-        currentPlayIndext = 0;
-        currentPage = 1;
-//        mMediaPlayer.addMeidaPlayListener(mAlbumMediaPlayerPlayListener);
         Fragment view = mActivity.getSupportFragmentManager().findFragmentByTag(this.getClass().getSimpleName());
         AlbumFragment albumFragment;
-        LogUtil.d(TAG, "getPlayFragment  view: " + view + ",tag::" + this.getClass().getSimpleName());
-
         if (view == null) {
             albumFragment = AlbumFragment.newInstances();
         } else {
@@ -74,24 +68,32 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
 
     @Override
     protected void startPlayAudio(int index) {
-        LogUtil.d(TAG, "getPlayListAsync: " + wholeTracks.size() + ",index::" + index);
-        if (wholeTracks.size() > index) {
-            waitingForPlay = false;
-            mMediaPlayer.setPlayList(wholePlayList, index);
+        LogUtil.d(TAG, "startPlayAudio: " + wholeTracks.size() + ",index::" + index);
+        LogUtil.d(TAG, "startPlayAudio  wholePlayList: " + wholePlayList.size());
+        if (index <= currentPlayIndext && wholeTracks.size() > currentPlayIndext) {
+            initPlayListAndStart();
         } else {
             waitingForPlay = true;
             getPlayListAsync();
         }
-
     }
 
+    private void initPlayListAndStart() {
+        waitingForPlay = false;
+        mMediaPlayer.setPlayList(wholePlayList, currentPlayIndext);
+        updateSellected();
+    }
+
+    private void updateSellected() {
+        mIAudioDataChangerListener.onPlayStartData(currentPlayIndext);
+    }
 
     private void getPlayListAsync() {
         LogUtil.d(TAG, "getPlayListAsync: ");
-
         Subscriber<TrackResultVO> getTagSubscriber = new Subscriber<TrackResultVO>() {
             @Override
             public void onCompleted() {
+                isLoadingMore = false;
                 LogUtil.d(TAG, "onCompleted : ");
             }
 
@@ -118,12 +120,11 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
                             list.add(item);
                         }
                         wholeTracks.addAll(tagResult.getTracks());
-
+                        LogUtil.d(TAG, "onNext : " + tagResult.getTracks().size());
                         mIAudioDataChangerListener.onGetData(PLAYLIST_RESULT_SUCCESS, tagResult.getTracks());
+                        wholePlayList.addAll(list);
                         if (waitingForPlay) {
-                            wholePlayList.addAll(list);
-                            mMediaPlayer.setPlayList(list, currentPlayIndext);
-                            waitingForPlay = false;
+                            initPlayListAndStart();
                         } else {
                             mMediaPlayer.addPlayList(list);
                         }
@@ -133,12 +134,14 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
             }
         };
         AudioCenterHttpManager.getInstance(mActivity).getTracks(getTagSubscriber, mPlayListItem.getId(), currentPage, PAGE_COUNT);
+        isLoadingMore = true;
     }
 
     private void playSellectedTrack(int position) {
         LogUtil.d(TAG, "playSellectedTrack : " + position);
         mMediaPlayer.play(position);
         currentPlayIndext = position;
+        updateSellected();
     }
 
     public class AlbumAudioControl implements IAudioControl {
@@ -150,6 +153,10 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
 
         public List<TrackVO> getData() {
             return wholeTracks;
+        }
+
+        public int getCurrentPlayIndex() {
+            return currentPlayIndext;
         }
 
         public void registerMeidaPlayListener() {
@@ -164,7 +171,10 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
         }
 
         public void getMoreData() {
-            getPlayListAsync();
+            LogUtil.d(TAG, "getMoreData isLoadingMore: " + isLoadingMore);
+            if (!isLoadingMore) {
+                getPlayListAsync();
+            }
         }
 
         //TODO

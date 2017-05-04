@@ -140,7 +140,7 @@
 
 
         <activity
-            android:name="com.ragentek.homeset.audiocenter.AudioPlayActivityV3"
+            android:name="com.ragentek.homeset.audiocenter.AudioPlayActivity"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.playfav"/>

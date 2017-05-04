@@ -1,6 +1,5 @@
 package com.ragentek.homeset.audiocenter;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -58,7 +57,7 @@ public class CategoryActivity extends AudioCenterBaseActivity {
                 CategoryDetail mCategoryDetail = mcategorys.get(position);
 
                 if (mCategoryDetail.getId() == FAV_ID) {
-                    Intent intent = new Intent(CategoryActivity.this, AudioPlayActivityV3.class);
+                    Intent intent = new Intent(CategoryActivity.this, AudioPlayActivity.class);
                     TagDetail detail = new TagDetail();
                     detail.setCategoryID(Constants.CATEGORY_FAV);
                     detail.setName(getResources().getString(R.string.my_favoriate));
