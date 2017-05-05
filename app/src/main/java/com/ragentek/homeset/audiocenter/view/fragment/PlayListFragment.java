@@ -18,6 +18,7 @@ import com.ragentek.homeset.audiocenter.IPlayListControl;
 import com.ragentek.homeset.audiocenter.PlayListToken;
 import com.ragentek.homeset.audiocenter.adapter.ListItemBaseAdapter;
 import com.ragentek.homeset.audiocenter.adapter.PlayListAdapter;
+import com.ragentek.homeset.audiocenter.model.bean.PlayListDetail;
 import com.ragentek.homeset.audiocenter.model.bean.PlayListItem;
 import com.ragentek.homeset.audiocenter.utils.LogUtil;
 import com.ragentek.homeset.audiocenter.view.widget.RecycleViewEndlessOnScrollListener;
@@ -76,7 +77,30 @@ public class PlayListFragment extends DialogFragment {
         public void onPlayStart(PlayListItem data) {
 
         }
+
+        @Override
+        public void onPlayIndexChanged(int index) {
+            mPlayListAdapter.updateSellect(index);
+        }
     };
+
+    /**
+     * @param index index > =0 .means ,current playlist contains the index .so the action is add
+     *              else  is remove
+     * @param isFac
+     */
+    public void playListNumChanger(int index, boolean isFac) {
+        LogUtil.d(TAG, "playListNumChanger: " + index + ",current:" + PlayListDetail.getCurrnIndex());
+        if (isVisible()) {
+            mPlayListAdapter.notifyDataSetChanged();
+        }
+        if (isFac) {
+            //index >-1 ,in fav means remove
+            if (index > -1) {
+                mPlayListAdapter.updateSellect(index);
+            }
+        }
+    }
 
     public static PlayListFragment newInstance(int playindex) {
         PlayListFragment fragment = new PlayListFragment();
@@ -163,20 +187,18 @@ public class PlayListFragment extends DialogFragment {
             }
         });
 
-        playlistRV.addOnScrollListener(new
+        playlistRV.addOnScrollListener(new RecycleViewEndlessOnScrollListener() {
+            @Override
+            public void onLoadMore(int currentPage) {
+                swipeRefresh.setRefreshing(true);
+                mIPlayListControl.getDataAsync();
+            }
 
-                                               RecycleViewEndlessOnScrollListener() {
-                                                   @Override
-                                                   public void onLoadMore(int currentPage) {
-                                                       swipeRefresh.setRefreshing(true);
-                                                       mIPlayListControl.getDataAsync();
-                                                   }
-
-                                                   @Override
-                                                   public void onUpdata(int currentPage) {
-                                                       swipeRefresh.setRefreshing(false);
-                                                   }
-                                               });
+            @Override
+            public void onUpdata(int currentPage) {
+                swipeRefresh.setRefreshing(false);
+            }
+        });
     }
 
     @Override

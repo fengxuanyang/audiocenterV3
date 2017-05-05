@@ -8,6 +8,7 @@ import com.ragentek.homeset.audiocenter.net.AudioCenterHttpManager;
 import com.ragentek.homeset.audiocenter.service.MediaPlayerManager;
 import com.ragentek.homeset.audiocenter.utils.Constants;
 import com.ragentek.homeset.audiocenter.utils.LogUtil;
+import com.ragentek.homeset.core.task.event.PushAudioFavEvent;
 import com.ragentek.protocol.commons.audio.MusicVO;
 import com.ragentek.protocol.messages.http.audio.MusicResultVO;
 
@@ -32,7 +33,7 @@ public class MusicPlayListToken extends PlayListToken {
 
 
     @Override
-    public void updateLocalPlayList(long id) {
+    public void onLocalPlayListUpdate(int index, PushAudioFavEvent fav) {
 
     }
 

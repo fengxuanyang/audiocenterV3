@@ -9,6 +9,7 @@ import com.ragentek.homeset.audiocenter.net.AudioCenterHttpManager;
 import com.ragentek.homeset.audiocenter.service.MediaPlayerManager;
 import com.ragentek.homeset.audiocenter.utils.Constants;
 import com.ragentek.homeset.audiocenter.utils.LogUtil;
+import com.ragentek.homeset.core.task.event.PushAudioFavEvent;
 import com.ragentek.protocol.commons.audio.AlbumVO;
 import com.ragentek.protocol.messages.http.audio.AlbumResultVO;
 
@@ -29,6 +30,12 @@ public class AlbumPlayListToken extends PlayListToken {
 
     public AlbumPlayListToken(TagDetail tag, FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler handler) {
         super(tag, activity, handler);
+    }
+
+
+    @Override
+    public void onLocalPlayListUpdate(int index, PushAudioFavEvent fav) {
+
     }
 
     @Override
@@ -79,8 +86,5 @@ public class AlbumPlayListToken extends PlayListToken {
         return playListItems;
     }
 
-    @Override
-    public void updateLocalPlayList(long id) {
 
-    }
 }

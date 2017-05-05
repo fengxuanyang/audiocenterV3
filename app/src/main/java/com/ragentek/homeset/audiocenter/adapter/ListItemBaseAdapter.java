@@ -30,12 +30,11 @@ public abstract class ListItemBaseAdapter<T, R extends RecyclerView.ViewHolder> 
     }
 
     public void updateSellect(int index) {
-        LogUtil.d(TAG, "updateSellect  index : " + index);
-        LogUtil.d(TAG, "updateSellect  curSellect : " + curSellect);
-//        int preSellect = curSellect;
+        LogUtil.d(TAG, "updateSellect  index : " + index + "........" + this);
+        LogUtil.d(TAG, "updateSellect before curSellect : " + curSellect);
         curSellect = index;
         notifyDataSetChanged();
-//
+        LogUtil.d(TAG, "updateSellect  curSellect  after: " + curSellect);
 //        notifyItemChanged(preSellect);
 //        notifyItemChanged(curSellect);
     }
@@ -89,13 +88,11 @@ public abstract class ListItemBaseAdapter<T, R extends RecyclerView.ViewHolder> 
      */
     public void setDatas(List<T> data) {
         LogUtil.d(TAG, "setDatas  data: " + data.size());
-
         mData.clear();
         mData.addAll(data);
         LogUtil.d(TAG, "setDatas mData: " + mData.size());
-
         //re init curSellect ,start play from the top
-        curSellect = 0;
+//        curSellect = 0;
         notifyDataSetChanged();
     }
 

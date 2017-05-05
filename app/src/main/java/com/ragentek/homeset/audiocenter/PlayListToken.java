@@ -5,7 +5,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.widget.Switch;
 
+import com.ragentek.homeset.audiocenter.model.bean.PlayItem;
 import com.ragentek.homeset.audiocenter.model.bean.PlayListItem;
 import com.ragentek.homeset.audiocenter.model.bean.TagDetail;
 import com.ragentek.homeset.audiocenter.net.AudioCenterHttpManager;
@@ -13,12 +15,21 @@ import com.ragentek.homeset.audiocenter.service.MediaPlayerManager;
 import com.ragentek.homeset.audiocenter.utils.Constants;
 import com.ragentek.homeset.audiocenter.utils.LogUtil;
 import com.ragentek.homeset.audiocenter.view.fragment.PlayListFragment;
+import com.ragentek.homeset.core.task.event.PushAudioFavEvent;
 import com.ragentek.protocol.commons.audio.BaseAudioVO;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by xuanyang.feng on 2017/4/17.
@@ -53,12 +64,14 @@ public abstract class PlayListToken {
 
     protected List<PlayListItem> wholePlayList;
     protected List<AudioToken> audioTokenList;
+
+
     private int currentPlayIndex = -1;
     private int prePlayIndex = -1;
     public static final int DEFAULT_PLAY_INDEX = 0;
 
     //TODO  add action  param
-    abstract public void updateLocalPlayList(long id);
+    abstract public void onLocalPlayListUpdate(int index, PushAudioFavEvent fav);
 
     abstract public void loadData(IPlayListLoadListener listener);
 
@@ -68,6 +81,8 @@ public abstract class PlayListToken {
         void onGetData(int resultCode, List<PlayListItem> data);
 
         void onPlayStart(PlayListItem data);
+
+        void onPlayIndexChanged(int index);
 
     }
 
@@ -85,12 +100,33 @@ public abstract class PlayListToken {
     public void init() {
         LogUtil.d(TAG, ": init");
         startLoadMoreData();
+        EventBus.getDefault().register(this);
+
+    }
+
+    protected int getCurrentPlayIndex() {
+        return currentPlayIndex;
     }
 
     private void startLoadMoreData() {
         LogUtil.d(TAG, ": startLoadMoreData");
         isLoadingData = true;
         loadData(mPlayListLoadDataListener);
+    }
+
+    protected void addNewPlayListItem(int index, PlayListItem item) {
+        Log.d(TAG, "addNewPlayListItem  index: " + index + ",item" + item.toString());
+        AudioToken mtoken = AudioTokenFactory.getAudioToken(mActivity, item, mMediaPlayerManager);
+        audioTokenList.add(index, mtoken);
+        wholePlayList.add(index, item);
+
+    }
+
+    protected void removePlayListItem(int index) {
+        Log.d(TAG, "removePlayListItem  index: ");
+        audioTokenList.remove(index);
+        wholePlayList.remove(index);
+
     }
 
     public void addDataChangeListener(@NonNull PlayDataChangeListTokenListener callBack) {
@@ -109,6 +145,13 @@ public abstract class PlayListToken {
         if (currentPlayIndex > 0) {
             currentPlayIndex--;
         }
+        LogUtil.d(TAG, ": playPre  currentPlayIndex：" + currentPlayIndex);
+        switchAudioToken();
+    }
+
+    protected void play(int index) {
+
+        currentPlayIndex = index;
         LogUtil.d(TAG, ": playPre  currentPlayIndex：" + currentPlayIndex);
         switchAudioToken();
     }
@@ -198,9 +241,73 @@ public abstract class PlayListToken {
         }
     }
 
+    @Subscribe
+    public void onAudioFavEvent(final PushAudioFavEvent fav) {
+        LogUtil.d(TAG, ": onAudioFavEvent:" + fav.getFavoriteVO().getAudio_id());
+
+        Observable.just(fav)
+                .map(new Func1<PushAudioFavEvent, Integer>() {
+                    @Override
+                    public Integer call(PushAudioFavEvent pushAudioFavEvent) {
+                        int result = isCurrentPlaylistContain(fav.getFavoriteVO().getAudio_id().longValue());
+                        LogUtil.d(TAG, "onAudioFavEvent : updateTheFavState result:" + result);
+                        return result;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer integer) {
+                        if (-1 != integer.intValue()) {
+                            PlayListItem item = wholePlayList.get(integer.intValue());
+                            item.setFav(fav.getAction());
+                            wholePlayList.set(integer.intValue(), item);
+                            final PlayListItem itemChanged = wholePlayList.get(currentPlayIndex);
+                            for (PlayDataChangeListTokenListener dataUpdataCall : mDataChangeCallBacks) {
+                                dataUpdataCall.onDataUpdate(PLAYLISTMANAGER_RESULT_SUCCESS, itemChanged);
+                            }
+                        }
+                        onLocalPlayListUpdate(integer.intValue(), fav);
+                    }
+
+                });
+    }
+
+    /**
+     * @param audioId  audioId
+     * @param favstate favstate
+     * @return -1: current playlist do not  contain the audioId  ,else return the index in the playlist
+     */
+    private int updateLocalFavItem(long audioId, int favstate) {
+        int containIndex = isCurrentPlaylistContain(audioId);
+        if (containIndex != -1) {
+            PlayListItem item = wholePlayList.get(containIndex);
+            item.setFav(favstate);
+            wholePlayList.set(containIndex, item);
+        }
+        return containIndex;
+    }
+
+    /**
+     * @param audioId audioId
+     * @return if contains ,replace the item and return the index,
+     * else return -1
+     */
+    private int isCurrentPlaylistContain(long audioId) {
+        for (int i = 0; i < wholePlayList.size(); i++) {
+            PlayListItem item = wholePlayList.get(i);
+            if (item.getId().longValue() == audioId) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     //TODO
     public void release() {
         LogUtil.d(TAG, ": release");
+        EventBus.getDefault().unregister(this);
     }
 
 
@@ -224,6 +331,13 @@ public abstract class PlayListToken {
                 dataUpdataCall.onGetData(PLAYLISTMANAGER_RESULT_SUCCESS, resultmessage);
             }
         }
+
+        @Override
+        public void playIndexChanger(int index) {
+
+        }
+
+
     }
 
     public PlayListItem getCurrentPlayItem() {

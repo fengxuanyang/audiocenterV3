@@ -150,8 +150,8 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
     }
 
     private void updateView() {
+        currentPlayIndext = mIAudioControl.getCurrentPlayIndex();
         LogUtil.d(TAG, "updateView  currentPlayIndext: " + currentPlayIndext);
-//        mTrackListAdapter.cu
         mTrackListAdapter.updateSellect(currentPlayIndext);
         mSwipeRefreshLayout.setRefreshing(false);
         updateTitle();
@@ -208,9 +208,8 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
         @Override
         public void onPlayStartData(int index) {
             Log.d(TAG, "onPlayStartData: " + index);
-            if (index != currentPlayIndext) {
-                currentPlayIndext = index;
-            }
+            currentPlayIndext = index;
+
             mTrackListAdapter.updateSellect(currentPlayIndext);
 
         }

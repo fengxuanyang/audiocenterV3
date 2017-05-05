@@ -126,12 +126,13 @@ public class AudioPlayActivity extends AudioCenterBaseActivity implements View.O
         mediaPlayerHandler.addMeidaPlayListener(mMediaPlayerPlayListener);
         mPlayListToken = PlayListTokenFactory.getPlayListToken(this, mTagDetail, mediaPlayerHandler);
         LogUtil.d(TAG, "serviceInitReady  mPlayListToken:" + mPlayListToken);
+
         mPlayListToken.addDataChangeListener(new PlayListToken.PlayDataChangeListTokenListener() {
             @Override
             public void onDataUpdate(int resultCode, PlayListItem item) {
 
                 //TODO fail result code
-                if (resultCode == PLAYLISTMANAGER_RESULT_SUCCESS) {
+                if (resultCode == PLAYLISTMANAGER_RESULT_SUCCESS && mPlayListToken.getCurrentPlayItem().getId() == item.getId()) {
                     updatePlayControlFavUI(item.getFav());
                 }
             }
@@ -144,6 +145,11 @@ public class AudioPlayActivity extends AudioCenterBaseActivity implements View.O
             @Override
             public void onPlayStart(PlayListItem data) {
                 updatePlayControlFavUI(data.getFav());
+            }
+
+            @Override
+            public void onPlayIndexChanged(int index) {
+
             }
         });
         mPlayListToken.init();
@@ -311,7 +317,7 @@ public class AudioPlayActivity extends AudioCenterBaseActivity implements View.O
             mediaPlayerHandler.removeMeidaPlayListener(mMediaPlayerPlayListener);
             mediaPlayerHandler.clearPlayList();
         }
-
+        mPlayListToken.release();
         mMediaPlayerManager.release();
         mhandler = null;
     }
