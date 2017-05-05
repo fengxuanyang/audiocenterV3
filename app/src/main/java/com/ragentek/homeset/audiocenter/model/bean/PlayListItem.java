@@ -75,4 +75,9 @@ public class PlayListItem<T> {
     public void setAudio(T t) {
         this.t = t;
     }
+
+    @Override
+    public String toString() {
+        return "audioType:" + audioType + ",categoryType" + categoryType;
+    }
 }

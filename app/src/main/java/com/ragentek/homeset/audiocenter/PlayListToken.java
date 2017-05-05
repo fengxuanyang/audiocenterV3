@@ -116,8 +116,9 @@ public abstract class PlayListToken {
 
     protected void addNewPlayListItem(int index, PlayListItem item) {
         Log.d(TAG, "addNewPlayListItem  index: " + index + ",item" + item.toString());
+        //TODO
         AudioToken mtoken = AudioTokenFactory.getAudioToken(mActivity, item, mMediaPlayerManager);
-        audioTokenList.add(index, mtoken);
+        audioTokenList.add(index, mtoken);        //TODO  remove the last token ,but the token not hid
         wholePlayList.add(index, item);
 
     }
@@ -152,7 +153,7 @@ public abstract class PlayListToken {
     protected void play(int index) {
 
         currentPlayIndex = index;
-        LogUtil.d(TAG, ": playPre  currentPlayIndex：" + currentPlayIndex);
+        LogUtil.d(TAG, ": play  currentPlayIndex：" + currentPlayIndex);
         switchAudioToken();
     }
 

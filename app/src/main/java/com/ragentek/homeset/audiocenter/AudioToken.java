@@ -10,6 +10,8 @@ import com.ragentek.homeset.audiocenter.view.fragment.PlayBaseFragment;
 import com.ragentek.homeset.core.R;
 import com.ragentek.protocol.commons.audio.BaseAudioVO;
 
+import static android.R.attr.fragment;
+
 
 public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl> {
     private static final String TAG = "AudioToken";
@@ -19,7 +21,7 @@ public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl>
     private static final int DEFAULT_PLAY_INDEX = 0;
 
     FragmentActivity mActivity;
-    PlayBaseFragment fragment = null;
+
 
     protected abstract PlayBaseFragment getPlayFragment();
 
@@ -30,28 +32,42 @@ public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl>
         mActivity = activity;
     }
 
+    String fragmentTag = this.getClass().getSimpleName();
+
 
     public void showView() {
-        String fragmenttag = this.getClass().getSimpleName();
-        LogUtil.d(TAG, "show: " + fragmenttag);
+        LogUtil.d(TAG, "show: " + fragmentTag);
         FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
+        PlayBaseFragment fragment = (PlayBaseFragment) mActivity.getSupportFragmentManager().findFragmentByTag(fragmentTag);
+
         //TODO
-        fragment = getPlayFragment();
         LogUtil.d(TAG, "show  getSimpleName: " + this.getClass().getSimpleName());
         LogUtil.d(TAG, "show  isAdded: " + fragment.isAdded());
         LogUtil.d(TAG, "show  isDetached: " + fragment.isDetached());
         LogUtil.d(TAG, "show  isHidden: " + fragment.isHidden());
-        if (!fragment.isAdded()) {
-            transaction.replace(R.id.fragment_container, fragment).show(fragment).commit();
+        if (!getCurrentFragment().isAdded()) {
+            transaction.replace(R.id.fragment_container, fragment, fragmentTag).show(fragment).commit();
         } else {
             transaction.show(fragment).commit();
         }
     }
 
     public void hide() {
+
+
         FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
-        LogUtil.d(TAG, "hide  isHidden: " + fragment.isHidden());
+        PlayBaseFragment fragment = getCurrentFragment();
+        LogUtil.d(TAG, "show  isAdded: " + fragment);
+
         transaction.hide(fragment).remove(fragment).commit();
+    }
+
+    private PlayBaseFragment getCurrentFragment() {
+        PlayBaseFragment fragment = (PlayBaseFragment) mActivity.getSupportFragmentManager().findFragmentByTag(fragmentTag);
+        if (fragment == null) {
+            fragment = getPlayFragment();
+        }
+        return fragment;
     }
 
     public void startPlay() {
