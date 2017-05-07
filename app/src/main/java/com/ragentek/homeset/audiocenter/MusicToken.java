@@ -20,15 +20,13 @@ import java.util.List;
 
 public class MusicToken extends AudioToken<BaseAudioVO, MusicToken.MusicAudioControl> {
     private static final String TAG = "MusicToken";
-    private MediaPlayerManager.MediaPlayerHandler mMediaPlayer;
-    private PlayListItem mPlayListItem;
+
     private int currentPage = 1;
     private MusicVO currentMusic;
 
     MusicToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
         super(activity, mediaPlayer, item);
-        mMediaPlayer = mediaPlayer;
-        mPlayListItem = item;
+        currentMusic = (MusicVO) item.getAudio();
     }
 
     @Override
@@ -48,6 +46,11 @@ public class MusicToken extends AudioToken<BaseAudioVO, MusicToken.MusicAudioCon
         playItem.setTitle(currentMusic.getSong_name());
         list.add(playItem);
         mMediaPlayer.setPlayList(list, currentPage);
+    }
+
+    @Override
+    protected void onSoundPlayComplete() {
+
     }
 
     public class MusicAudioControl implements IAudioControl {

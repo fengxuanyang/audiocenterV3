@@ -37,13 +37,13 @@ android {
 */
     buildTypes {
         debug {
-            buildConfigField "String", "WEBAPI_PATH", '"dev_openapi"'
+            buildConfigField "String", "WEBAPI_PATH", '"dev_webview"'
             buildConfigField "int", "PUSH_PORT", "29000"
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField "String", "WEBAPI_PATH", '"openapi"'
+            buildConfigField "String", "WEBAPI_PATH", '"webview"'
             buildConfigField "int", "PUSH_PORT", "9000"
             signingConfig signingConfigs.MT8735_PLATFORM
         }

@@ -19,14 +19,11 @@ import java.util.List;
  */
 
 public class RadioToken extends AudioToken<BaseAudioVO, RadioToken.RadioAudioControl> {
-    private MediaPlayerManager.MediaPlayerHandler mMediaPlayer;
-    private PlayListItem mPlayListItem;
     private int currentPlayIndext = 1;
     private RadioVO radio;
 
     RadioToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
         super(activity, mediaPlayer, item);
-        mMediaPlayer = mediaPlayer;
         radio = (RadioVO) item.getAudio();
     }
 
@@ -46,6 +43,11 @@ public class RadioToken extends AudioToken<BaseAudioVO, RadioToken.RadioAudioCon
         item.setTitle(radio.getName());
         list.add(item);
         mMediaPlayer.setPlayList(list, currentPlayIndext);
+    }
+
+    @Override
+    protected void onSoundPlayComplete() {
+
     }
 
     public class RadioAudioControl implements IAudioControl {

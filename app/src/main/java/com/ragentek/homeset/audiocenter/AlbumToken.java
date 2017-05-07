@@ -39,7 +39,6 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
     private boolean waitingForPlay = true;
     private List<TrackVO> wholeTracks;
     private List<PlayItem> wholePlayList = new ArrayList<>();
-    private AlbumMediaPlayerPlayListener mAlbumMediaPlayerPlayListener = new AlbumMediaPlayerPlayListener();
     private boolean isLoadingMore = false;
 
 
@@ -76,6 +75,12 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
             waitingForPlay = true;
             getPlayListAsync();
         }
+    }
+
+    @Override
+    protected void onSoundPlayComplete() {
+        playSellectedTrack(currentPlayIndext + 1);
+        mIAudioDataChangerListener.onPlayStartData(currentPlayIndext);
     }
 
     private void initPlayListAndStart() {
@@ -159,16 +164,6 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
             return currentPlayIndext;
         }
 
-        public void registerMeidaPlayListener() {
-            LogUtil.d(TAG, "registerMeidaPlayListener : " + mAlbumMediaPlayerPlayListener);
-
-            mMediaPlayer.addMeidaPlayListener(mAlbumMediaPlayerPlayListener);
-        }
-
-        public void unregisterMeidaPlayListener() {
-            LogUtil.d(TAG, "unregisterMeidaPlayListener : " + mAlbumMediaPlayerPlayListener);
-            mMediaPlayer.removeMeidaPlayListener(mAlbumMediaPlayerPlayListener);
-        }
 
         public void getMoreData() {
             LogUtil.d(TAG, "getMoreData isLoadingMore: " + isLoadingMore);
@@ -185,37 +180,6 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
         }
     }
 
-
-    private class AlbumMediaPlayerPlayListener implements MediaPlayerManager.MediaPlayerPlayListener
-
-    {
-        @Override
-        public void onPlayStart() {
-            LogUtil.d(TAG, "onPlayStart:  ");
-
-        }
-
-        @Override
-        public void onPlayProgress(int currPos, int duration) {
-            LogUtil.d(TAG, "onPlayProgress:  ");
-
-        }
-
-        @Override
-        public void onPlayStop() {
-            LogUtil.d(TAG, "onPlayStop:  ");
-
-        }
-
-        @Override
-        public void onSoundPlayComplete() {
-            LogUtil.d(TAG, "onSoundPlayComplete:  " + currentPlayIndext);
-            playSellectedTrack(currentPlayIndext + 1);
-            mIAudioDataChangerListener.onPlayStartData(currentPlayIndext);
-        }
-
-
-    }
 }
 
 

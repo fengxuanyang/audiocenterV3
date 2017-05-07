@@ -23,14 +23,11 @@ public class SingleMusicToken extends AudioToken<MusicVO, SingleMusicToken.Singl
     private static final String TAG = "SingleMusicToken";
 
     private MusicVO mMusicVO;
-
-    private MediaPlayerManager.MediaPlayerHandler mMediaPlayer;
     private int currentPlayIndext = 0;
 
     SingleMusicToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
         super(activity, mediaPlayer, item);
         LogUtil.d(TAG, " SingleMusicToken: ");
-        mMediaPlayer = mediaPlayer;
         mMusicVO = (MusicVO) item.getAudio();
         LogUtil.d(TAG, " SingleMusicToken  getSong_name: " + mMusicVO.getSong_name());
 
@@ -64,6 +61,11 @@ public class SingleMusicToken extends AudioToken<MusicVO, SingleMusicToken.Singl
         mMediaPlayer.setPlayList(list, currentPlayIndext);
     }
 
+    @Override
+    protected void onSoundPlayComplete() {
+        getAudioPlayStateListener().onComplete();
+    }
+
 
     public class SingleMusicAudioControl implements IAudioControl {
 
@@ -78,32 +80,5 @@ public class SingleMusicToken extends AudioToken<MusicVO, SingleMusicToken.Singl
         }
     }
 
-    private class SingleMusicPlayerPlayListener implements MediaPlayerManager.MediaPlayerPlayListener
 
-    {
-        @Override
-        public void onPlayStart() {
-            LogUtil.d(TAG, "onPlayStart:  ");
-
-        }
-
-        @Override
-        public void onPlayProgress(int currPos, int duration) {
-            LogUtil.d(TAG, "onPlayProgress:  ");
-
-        }
-
-        @Override
-        public void onPlayStop() {
-            LogUtil.d(TAG, "onPlayStop:  ");
-
-        }
-
-        @Override
-        public void onSoundPlayComplete() {
-
-        }
-
-
-    }
 }

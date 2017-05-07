@@ -82,7 +82,6 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
         wholePlayList = new ArrayList<>();
         View view = inflater.inflate(R.layout.audioenter_fragment_album_detail, container, false);
         ButterKnife.bind(this, view);
-        mIAudioControl.registerMeidaPlayListener();
         inteView();
         updateData();
         return view;
@@ -93,7 +92,6 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
         LogUtil.d(TAG, "onDestroyView: ");
 
         super.onDestroyView();
-        mIAudioControl.unregisterMeidaPlayListener();
     }
 
     private void inteView() {

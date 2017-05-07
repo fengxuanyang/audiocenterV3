@@ -60,11 +60,11 @@ public abstract class PlayListToken {
 
     private PlayListFragment mPlayListFragment;
     private IPlayListControlHandle mPlayListControlHandle;
+    private AudioPlayStateListener mAudioPlayStateListener;
     private boolean isLoadingData = false;
 
     protected List<PlayListItem> wholePlayList;
     protected List<AudioToken> audioTokenList;
-
 
     private int currentPlayIndex = -1;
     private int prePlayIndex = -1;
@@ -95,13 +95,13 @@ public abstract class PlayListToken {
         audioTokenList = new ArrayList<>();
         mPlayListControlHandle = new IPlayListControlHandle();
         mPlayListLoadDataListener = new PlayListLoadDataListener();
+        mAudioPlayStateListener = new AudioPlayStateListener();
     }
 
     public void init() {
         LogUtil.d(TAG, ": init");
         startLoadMoreData();
         EventBus.getDefault().register(this);
-
     }
 
     protected int getCurrentPlayIndex() {
@@ -120,14 +120,12 @@ public abstract class PlayListToken {
         AudioToken mtoken = AudioTokenFactory.getAudioToken(mActivity, item, mMediaPlayerManager);
         audioTokenList.add(index, mtoken);        //TODO  remove the last token ,but the token not hid
         wholePlayList.add(index, item);
-
     }
 
     protected void removePlayListItem(int index) {
         Log.d(TAG, "removePlayListItem  index: ");
         audioTokenList.remove(index);
         wholePlayList.remove(index);
-
     }
 
     public void addDataChangeListener(@NonNull PlayDataChangeListTokenListener callBack) {
@@ -151,7 +149,6 @@ public abstract class PlayListToken {
     }
 
     protected void play(int index) {
-
         currentPlayIndex = index;
         LogUtil.d(TAG, ": play  currentPlayIndex：" + currentPlayIndex);
         switchAudioToken();
@@ -179,7 +176,7 @@ public abstract class PlayListToken {
             audioTokenList.get(prePlayIndex).hide();
             audioTokenList.get(currentPlayIndex).showView();
         }
-        audioTokenList.get(currentPlayIndex).startPlay();
+        audioTokenList.get(currentPlayIndex).startPlay(mAudioPlayStateListener);
         prePlayIndex = currentPlayIndex;
         for (PlayDataChangeListTokenListener dataUpdataCall : mDataChangeCallBacks) {
             dataUpdataCall.onPlayStart(wholePlayList.get(currentPlayIndex));
@@ -393,5 +390,19 @@ public abstract class PlayListToken {
             return loadDataState;
         }
     }
+
+    private class AudioPlayStateListener implements AudioToken.AudioPlayStateListener {
+
+        @Override
+        public void onComplete() {
+            playNext();
+        }
+
+        @Override
+        public void onStart() {
+
+        }
+    }
+
 
 }
