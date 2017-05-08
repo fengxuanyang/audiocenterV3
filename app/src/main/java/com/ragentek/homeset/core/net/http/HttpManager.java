@@ -46,7 +46,9 @@ public class HttpManager {
     private static final boolean DEBUG = true;
 
     //    private static final String API_BASE_URL = "http://192.168.12.18:28080";
-    private static final String API_BASE_URL = "http://www.robyun.com/" + BuildConfig.WEBAPI_PATH + "/";
+//    private static final String API_BASE_URL = "http://www.robyun.com/" + BuildConfig.WEBAPI_PATH + "/";
+    public static final String API_BASE_URL = "http://192.168.12.12:8080/atlasyun.webapi/";
+
 
     private static final String HEADER_KEY_CONTENT_TYPE = "Content-type";
     private static final String HEADER_KEY_ACCEPT = "Accept";

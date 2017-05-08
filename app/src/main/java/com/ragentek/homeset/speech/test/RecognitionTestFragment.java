@@ -131,16 +131,6 @@ public class RecognitionTestFragment extends Fragment {
         }
 
         @Override
-        public void onSpeechEnd() throws RemoteException {
-            printLog("onSpeechEnd");
-        }
-
-        @Override
-        public void onRecordEnd() throws RemoteException {
-            printLog("onRecordEnd");
-        }
-
-        @Override
         public void onResult(String result) throws RemoteException {
             printLog("onResult result, result=" + result);
         }

@@ -26,8 +26,11 @@ public class HomesetService extends Service {
     public static final int CASE_START_BACK_TASK = 2;
     public static final int CASE_START_RECOGNITION = 3;
 
-    public static final String DEBUG_START_RECOGNIZE = "adb am broadcast -a ragentek.intent.action.START_RECOGNITION";
-
+    public static final String DEBUG_START_SERVICE = "adb shell am startservice -a ragentek.intent.action.HOMESET_START";
+    public static final String DEBUG_STOP_SERVICE = "adb shell am startservice -a ragentek.intent.action.HOMESET_STOP";
+    public static final String DEBUG_DUMP_SERVICE = "adb shell am startservice -a ragentek.intent.action.HOMESET_DUMP";
+    public static final String DEBUG_START_RECOGNIZE = "adb shell am broadcast -a ragentek.intent.action.START_RECOGNITION";
+    
     /** For instance， com.ragentek.test.MyTask*/
     public static final String DEBUG_STRING_EXTRA_TASK_NAME = "taskName";
 

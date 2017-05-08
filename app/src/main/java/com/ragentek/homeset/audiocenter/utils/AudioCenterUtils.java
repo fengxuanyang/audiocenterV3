@@ -51,44 +51,44 @@ public class AudioCenterUtils {
 
     public static PlayListItem decoratorFavoriteVO(FavoriteVO fav) {
         PlayListItem playlistitem = null;
-        LogUtil.d(TAG, "decoratorFavoriteVO  getId: " + fav.getId() + ",getAudio_id:" + fav.getAudio_id());
+        LogUtil.d(TAG, "decoratorFavoriteVO  getId: " + fav.getId() + ",getAudio_id:" + fav.getAudioId());
         switch (fav.getGroup()) {
             case Category.GROUP.MUSIC_GROUP:
-                playlistitem = new PlayListItem(Constants.AUDIO_TYPE_SINGLE_MUSIC, getCategoryIdFromName(fav.getCategory_name()), fav.getAudio_id());
+                playlistitem = new PlayListItem(Constants.AUDIO_TYPE_SINGLE_MUSIC, getCategoryIdFromName(fav.getCategoryName()), fav.getAudioId());
                 playlistitem.setFav(Constants.FAV);
                 playlistitem.setGroup(fav.getGroup());
                 MusicVO music = new MusicVO();
-                music.setPlay_url(fav.getPlay_url());
-                music.setId(fav.getAudio_id());
-                music.setSinger_name(fav.getAnnouncer());
-                music.setSong_name(fav.getTitle());
-                music.setAlbum_name(fav.getAnnouncer());
-                music.setCover_url(fav.getCover_url());
-                music.setCategory_id(getCategoryIdFromName(fav.getCategory_name()));
+                music.setPlayUrl(fav.getPlayUrl());
+                music.setId(fav.getAudioId());
+                music.setSingerName(fav.getAnnouncer());
+                music.setSongName(fav.getTitle());
+                music.setAlbumName(fav.getAnnouncer());
+                music.setCoverUrl(fav.getCoverUrl());
+                music.setCategoryId(getCategoryIdFromName(fav.getCategoryName()));
                 playlistitem.setAudio(music);
                 break;
             case Category.GROUP.OTHER_GOUP:
-                playlistitem = new PlayListItem(Constants.AUDIO_TYPE_ALBUM, getCategoryIdFromName(fav.getCategory_name()), fav.getAudio_id());
+                playlistitem = new PlayListItem(Constants.AUDIO_TYPE_ALBUM, getCategoryIdFromName(fav.getCategoryName()), fav.getAudioId());
                 playlistitem.setFav(Constants.FAV);
                 playlistitem.setGroup(fav.getGroup());
                 AlbumVO album = new AlbumVO();
-                album.setId(fav.getAudio_id());
+                album.setId(fav.getAudioId());
                 album.setTitle(fav.getTitle());
-                album.setCover_url(fav.getCover_url());
-                album.setCategory_id(getCategoryIdFromName(fav.getCategory_name()));
+                album.setCoverUrl(fav.getCoverUrl());
+                album.setCategoryId(getCategoryIdFromName(fav.getCategoryName()));
                 playlistitem.setAudio(album);
                 break;
             case Category.GROUP.RADIO_GROUP:
-                playlistitem = new PlayListItem(Constants.AUDIO_TYPE_RADIO, getCategoryIdFromName(fav.getCategory_name()), fav.getAudio_id());
+                playlistitem = new PlayListItem(Constants.AUDIO_TYPE_RADIO, getCategoryIdFromName(fav.getCategoryName()), fav.getAudioId());
                 playlistitem.setFav(Constants.FAV);
                 playlistitem.setGroup(fav.getGroup());
                 RadioVO radio = new RadioVO();
-                radio.setPlay_url(fav.getPlay_url());
-                radio.setId(fav.getAudio_id());
+                radio.setPlayUrl(fav.getPlayUrl());
+                radio.setId(fav.getAudioId());
                 radio.setName(fav.getTitle());
                 radio.setDesc(fav.getAnnouncer());
-                radio.setCover_url(fav.getCover_url());
-                radio.setCategory_id(getCategoryIdFromName(fav.getCategory_name()));
+                radio.setCoverUrl(fav.getCoverUrl());
+                radio.setCategoryId(getCategoryIdFromName(fav.getCategoryName()));
                 playlistitem.setAudio(radio);
                 break;
             default:

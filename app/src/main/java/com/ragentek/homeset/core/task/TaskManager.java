@@ -5,6 +5,7 @@ import android.os.Message;
 
 import com.ragentek.homeset.core.base.EngineManager;
 import com.ragentek.homeset.core.task.event.TaskEvent;
+import com.ragentek.homeset.core.task.foreground.SpeechTask;
 import com.ragentek.homeset.core.task.handler.ConnectivityHandler;
 import com.ragentek.homeset.core.task.handler.KeyClickHandler;
 import com.ragentek.homeset.core.task.handler.SpeechHandler;
@@ -83,7 +84,7 @@ public class TaskManager {
 
     // TODO: use for speech test
     public void startRecognition() {
-        mSpeechHandler.startRecognize();
+        mBaseContext.startForegroundTask(SpeechTask.class, new TaskEvent(TaskEvent.TYPE.SYSTEM, this));
     }
 
     public BaseContext getBaseContext() {

@@ -60,7 +60,7 @@ public class SpeechHandler {
         @Override
         public void onResult(String result) throws RemoteException {
             wakeupScreen();
-            mBaseContext.startForegroundTask(SpeechTask.class, new TaskEvent(TaskEvent.TYPE.TOUCH, null));
+            mTaskManager.startRecognition();
         }
 
         private void wakeupScreen() {
@@ -107,16 +107,6 @@ public class SpeechHandler {
         @Override
         public void onVolumeChanged(int value) throws RemoteException {
 //            LogUtils.d(TAG, "onVolumeChanged, value=" + value);
-        }
-
-        @Override
-        public void onSpeechEnd() throws RemoteException {
-
-        }
-
-        @Override
-        public void onRecordEnd() throws RemoteException {
-
         }
 
         @Override

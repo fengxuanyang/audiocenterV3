@@ -70,10 +70,10 @@ public class RadioFragment extends PlayBaseFragment<RadioVO, RadioToken.RadioAud
 
 
     private void updateAlbumart() {
-        if (currentRadioVO.getCover_url() == null) {
+        if (currentRadioVO.getCoverUrl() == null) {
             mSimpleDraweeView.setImageResource(R.drawable.placeholder_disk);
         } else {
-            mSimpleDraweeView.setImageURI(Uri.parse(currentRadioVO.getCover_url()));
+            mSimpleDraweeView.setImageURI(Uri.parse(currentRadioVO.getCoverUrl()));
         }
     }
 

@@ -99,7 +99,6 @@ public abstract class ForegroundTask {
             return;
         }
 
-        setState(STATE_STOP);
         mOnFinishListener.onFinished(this);
     }
 

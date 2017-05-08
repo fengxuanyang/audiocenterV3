@@ -96,7 +96,7 @@ public class PlayListAdapter extends ListItemBaseAdapter<PlayListItem, PlayListA
             case Constants.AUDIO_TYPE_MUSIC:
             case Constants.AUDIO_TYPE_SINGLE_MUSIC:
                 MusicVO music = (MusicVO) item.getAudio();
-                holder.itemAlbum.setText(music.getSong_name());
+                holder.itemAlbum.setText(music.getSongName());
                 break;
             case Constants.AUDIO_TYPE_RADIO:
                 RadioVO radio = (RadioVO) item.getAudio();

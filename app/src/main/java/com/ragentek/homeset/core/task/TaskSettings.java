@@ -7,14 +7,12 @@ import com.ragentek.homeset.core.task.background.LoginTask;
 import com.ragentek.homeset.core.task.background.WeatherUpdateTask;
 import com.ragentek.homeset.core.task.foreground.LauncherTask;
 import com.ragentek.homeset.core.task.foreground.SpeechTask;
-import com.ragentek.homeset.core.task.foreground.TellWeatherTask;
 import com.ragentek.homeset.core.task.foreground.TingTask;
 import com.ragentek.homeset.core.task.foreground.WechatTask;
 import com.ragentek.homeset.core.utils.LogUtils;
 import com.ragentek.homeset.speech.domain.SpeechDomainType;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +37,6 @@ public class TaskSettings {
         registerLauncherTask();
         registerTingTask();
         registerWechatTask();
-        registerTellWeatherTask();
         registerSpeechTask();
     }
 
@@ -54,7 +51,7 @@ public class TaskSettings {
     private void registerTingTask() {
         ForegroundTaskInfo taskInfo = new ForegroundTaskInfo();
         taskInfo.className = TingTask.class;
-        taskInfo.flags = ForegroundTaskInfo.FLAG_CLEAR_ALL;
+//        taskInfo.flags = ForegroundTaskInfo.FLAG_CLEAR_ALL;
         taskInfo.domainTypes = new SpeechDomainType[] {SpeechDomainType.MUSIC,
                 SpeechDomainType.HOMESET_FAVORITE, SpeechDomainType.HOMESET_CROSSTALK, SpeechDomainType.HOMESET_OPERA,
                 SpeechDomainType.HOMESET_STROY, SpeechDomainType.HOMESET_HEALTH, SpeechDomainType.HOMESET_FINACE,
@@ -67,14 +64,6 @@ public class TaskSettings {
         ForegroundTaskInfo taskInfo = new ForegroundTaskInfo();
         taskInfo.className = WechatTask.class;
         taskInfo.domainTypes = new SpeechDomainType[] {SpeechDomainType.TELEPHONE};
-
-        registerForegroundTask(taskInfo);
-    }
-
-    private void registerTellWeatherTask() {
-        ForegroundTaskInfo taskInfo = new ForegroundTaskInfo();
-        taskInfo.className = TellWeatherTask.class;
-        taskInfo.domainTypes = new SpeechDomainType[] {SpeechDomainType.WEATHER};
 
         registerForegroundTask(taskInfo);
     }

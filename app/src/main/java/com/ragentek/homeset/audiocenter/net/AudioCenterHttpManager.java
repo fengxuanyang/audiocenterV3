@@ -3,8 +3,6 @@ package com.ragentek.homeset.audiocenter.net;
 import android.content.Context;
 import android.util.Log;
 
-import com.ragentek.homeset.audiocenter.model.bean.AudioResult;
-import com.ragentek.homeset.audiocenter.utils.LogUtil;
 import com.ragentek.homeset.core.BuildConfig;
 import com.ragentek.homeset.core.utils.DeviceUtils;
 import com.ragentek.protocol.messages.http.audio.AlbumResultVO;
@@ -35,10 +33,10 @@ import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.fastjson.FastJsonConverterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -49,7 +47,10 @@ public class AudioCenterHttpManager {
     private static final int DEFAULT_TIMEOUT = 5;
     //                public static final String BASE_URL = "http://192.168.12.18:28080/openapi/";
     //    public static final String BASE_URL = "http://192.168.12.10:8080/atlasyun.webapi/";
-    public static final String BASE_URL = "http://www.robyun.com/" + BuildConfig.WEBAPI_PATH + "/";
+//    public static final String BASE_URL = "http://www.robyun.com/" + BuildConfig.WEBAPI_PATH + "/";
+    public static final String BASE_URL = "http://192.168.12.12:8080/atlasyun.webapi/";
+
+
     private Retrofit retrofitAudio;
     private static final String TAG = "AudioCenterHttpManager";
     private AudioCenterHttpAPI mAudioCenterHttpAPI;
@@ -93,7 +94,9 @@ public class AudioCenterHttpManager {
         trustAllCerti(mBuilder);
         OkHttpClient okHttpClient = mBuilder.build();
         retrofitAudio = new Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
+//                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(FastJsonConverterFactory.create())
+
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .baseUrl(BASE_URL)
                 .client(okHttpClient)
@@ -105,14 +108,6 @@ public class AudioCenterHttpManager {
     public void getCategory(Subscriber<CategoryResultVO> subscriber) {
         Log.d(TAG, "getCategory: ");
         mAudioCenterHttpAPI.getCategory(uid, did, token)
-                .map(new HttpResultFunc<CategoryResultVO>())
-                .onErrorReturn(new Func1<Throwable, CategoryResultVO>() {
-                    @Override
-                    public CategoryResultVO call(Throwable throwable) {
-                        LogUtil.e("TAG", "getCategory --onErrorReturn:" + throwable.getMessage());
-                        return null;
-                    }
-                })
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -122,15 +117,6 @@ public class AudioCenterHttpManager {
     public void getTag(Subscriber<TagResultVO> subscriber, long category) {
         Log.d(TAG, "getTag: ");
         mAudioCenterHttpAPI.getTag(uid, did, category, token)
-                .map(new HttpResultFunc<TagResultVO>())
-                .onErrorReturn(new Func1<Throwable, TagResultVO>() {
-                    @Override
-                    public TagResultVO call(Throwable throwable) {
-                        LogUtil.e("TAG", "getTag --onErrorReturn:" + throwable.getMessage());
-                        return null;
-                    }
-                })
-
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -140,14 +126,6 @@ public class AudioCenterHttpManager {
     public void getAlbums(Subscriber<AlbumResultVO> subscriber, long category, String tag, int page, int count) {
         Log.d(TAG, "getAlbums: ");
         mAudioCenterHttpAPI.getAlbums(uid, did, category, tag, page, count, token)
-                .map(new HttpResultFunc<AlbumResultVO>())
-                .onErrorReturn(new Func1<Throwable, AlbumResultVO>() {
-                    @Override
-                    public AlbumResultVO call(Throwable throwable) {
-                        LogUtil.e("TAG", "getTag --onErrorReturn:" + throwable.getMessage());
-                        return null;
-                    }
-                })
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -157,14 +135,6 @@ public class AudioCenterHttpManager {
     public void getTracks(Subscriber<TrackResultVO> subscriber, long albumid, int page, int count) {
         Log.d(TAG, "getTracks  albumid:" + albumid);
         mAudioCenterHttpAPI.getTracks(albumid, uid, did, page, count, token)
-                .map(new HttpResultFunc<TrackResultVO>())
-                .onErrorReturn(new Func1<Throwable, TrackResultVO>() {
-                    @Override
-                    public TrackResultVO call(Throwable throwable) {
-                        LogUtil.e("TAG", "getTag --onErrorReturn:" + throwable.getMessage());
-                        return null;
-                    }
-                })
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -174,31 +144,17 @@ public class AudioCenterHttpManager {
     public void getMusics(Subscriber<MusicResultVO> subscriber, String tag, int page, int count) {
         Log.d(TAG, "getTracks  getMusics:" + tag);
         mAudioCenterHttpAPI.getMusics(uid, did, tag, page, count, token)
-                .map(new HttpResultFunc<MusicResultVO>())
-                .onErrorReturn(new Func1<Throwable, MusicResultVO>() {
-                    @Override
-                    public MusicResultVO call(Throwable throwable) {
-                        LogUtil.e("TAG", "getMusics --onErrorReturn:" + throwable.getMessage());
-                        return null;
-                    }
-                })
+
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
- 
+
 
     public void addFavorite(Subscriber<String> subscriber, long id, int category, int group) {
         mAudioCenterHttpAPI.addFavorite(id, did, category, group, token)
-                .map(new HttpResultFunc<String>())
-                .onErrorReturn(new Func1<Throwable, String>() {
-                    @Override
-                    public String call(Throwable throwable) {
-                        LogUtil.e("TAG", "getMusics --onErrorReturn:" + throwable.getMessage());
-                        return null;
-                    }
-                })
+
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -207,14 +163,7 @@ public class AudioCenterHttpManager {
 
     public void removeFavorite(Subscriber<String> subscriber, long id, int category, int group) {
         mAudioCenterHttpAPI.removeFavorite(id, uid, did, category, group, token)
-                .map(new HttpResultFunc<String>())
-                .onErrorReturn(new Func1<Throwable, String>() {
-                    @Override
-                    public String call(Throwable throwable) {
-                        LogUtil.e("TAG", "getMusics --onErrorReturn:" + throwable.getMessage());
-                        return null;
-                    }
-                })
+
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -227,14 +176,7 @@ public class AudioCenterHttpManager {
 //}
     public void getFavorites(Subscriber<FavoriteResultVO> subscriber, int page, int count) {
         mAudioCenterHttpAPI.getFavorites(uid, did, page, count, token)
-                .map(new HttpResultFunc<FavoriteResultVO>())
-                .onErrorReturn(new Func1<Throwable, FavoriteResultVO>() {
-                    @Override
-                    public FavoriteResultVO call(Throwable throwable) {
-                        LogUtil.e("TAG", "getMusics --onErrorReturn:" + throwable.getMessage());
-                        return null;
-                    }
-                })
+
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -243,14 +185,7 @@ public class AudioCenterHttpManager {
 
     public void getRadiosByProvince(Subscriber<RadioResultVO> subscriber) {
         mAudioCenterHttpAPI.getRadiosByProvince(uid, did, token)
-                .map(new HttpResultFunc<RadioResultVO>())
-                .onErrorReturn(new Func1<Throwable, RadioResultVO>() {
-                    @Override
-                    public RadioResultVO call(Throwable throwable) {
-                        LogUtil.e("TAG", "getRadiosByProvince --onErrorReturn:" + throwable.getMessage());
-                        return null;
-                    }
-                })
+
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -259,30 +194,13 @@ public class AudioCenterHttpManager {
 
     public void getRadiosByTAG(Subscriber<RadioResultVO> subscriber, int type, int province, int page, int count) {
         mAudioCenterHttpAPI.getRadiosByTag(uid, did, type, province, page, count, token)
-                .map(new HttpResultFunc<RadioResultVO>())
-                .onErrorReturn(new Func1<Throwable, RadioResultVO>() {
-                    @Override
-                    public RadioResultVO call(Throwable throwable) {
-                        LogUtil.e("TAG", "getRadiosByTAG --onErrorReturn:" + throwable.getMessage());
-                        return null;
-                    }
-                })
+
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    private class HttpResultFunc<T> implements Func1<AudioResult<T>, T> {
-        @Override
-        public T call(AudioResult<T> httpResult) {
-            if (httpResult != null) {
-                return httpResult.getResultMessage();
-            } else {
-                throw new RuntimeException("error");
-            }
-        }
-    }
 
     /**
      * TODO: need to write a service for upload file, because it's request heard type is "multipart/form-data", not "application/x-www-form-urlencoded"

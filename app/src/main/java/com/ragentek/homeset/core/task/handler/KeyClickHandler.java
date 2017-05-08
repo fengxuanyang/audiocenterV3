@@ -12,11 +12,13 @@ import com.ragentek.homeset.core.task.event.TaskEvent;
 import com.ragentek.homeset.core.task.foreground.SpeechTask;
 
 public class KeyClickHandler {
+    private TaskManager mTaskManager;
     private BaseContext mBaseContext;
     private Context mContext;
     private OnKeyClickListener mReceiver = new OnKeyClickListener();
 
     public KeyClickHandler(TaskManager taskManager) {
+        mTaskManager = taskManager;
         mBaseContext = taskManager.getBaseContext();
         mContext = mBaseContext.getAndroidContext();
     }
@@ -35,7 +37,7 @@ public class KeyClickHandler {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            mBaseContext.startForegroundTask(SpeechTask.class, new TaskEvent(TaskEvent.TYPE.TOUCH, null));
+            mTaskManager.startRecognition();
         }
     }
 }

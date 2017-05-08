@@ -120,7 +120,7 @@ public class LoginActivity extends Activity {
     private void registerResult(DeviceRegisterResultVO deviceRegisterResultVO) {
         LogUtils.d(TAG, "registerResult, deviceRegisterResultVO=" + deviceRegisterResultVO);
         if (deviceRegisterResultVO != null) {
-            if (deviceRegisterResultVO.getRes_code() == 0) {
+            if (deviceRegisterResultVO.getResCode() == 0) {
                 LogUtils.d(TAG, "registerResult, register success");
 
                 long did = deviceRegisterResultVO.getDid();
@@ -188,7 +188,7 @@ public class LoginActivity extends Activity {
     private void loginResult(DeviceLoginResultVO deviceLoginResultVO) {
         LogUtils.d(TAG, "loginResult, deviceLoginResultVO=" + deviceLoginResultVO);
         if (deviceLoginResultVO != null) {
-            if (deviceLoginResultVO.getRes_code() == 0) {
+            if (deviceLoginResultVO.getResCode() == 0) {
                 LogUtils.d(TAG, "loginResult, login success");
 
                 mDeviceUtils.setLoginFlag("1");

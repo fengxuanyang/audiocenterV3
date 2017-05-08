@@ -80,7 +80,7 @@ public class SettingActivity extends Activity {
                 LogUtils.d(TAG, "read qrcode from SharedPreferences, qrCode=" + qrCode);
             }
 
-            mQRCodeKeyView.setText(qrCode);
+            mQRCodeKeyView.setText(deviceUtils.getDid() + " / " + deviceUtils.getSN());
             mQRImageView.setImageBitmap(createQRImage(qrCode));
         } catch (WriterException e) {
             e.printStackTrace();

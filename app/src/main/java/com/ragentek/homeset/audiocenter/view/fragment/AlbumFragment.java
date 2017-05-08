@@ -62,7 +62,7 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
     SimpleDraweeView mSimpleDraweeView;
     @BindView(R.id.rv_album_playlist)
     RecyclerView mRecyclerView;
-    @BindView(R.id.swiperefresh_album)
+    @BindView(R.id.swiperefresh_playlist)
     SwipeRefreshLayout mSwipeRefreshLayout;
 
     public static AlbumFragment newInstances() {
@@ -158,7 +158,7 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
 
     private void updateTitle() {
         LogUtil.d(TAG, "updateTitle: ");
-        mAlbumTitle.setText(getCurrentPlayTrack().getAlbum_title());
+        mAlbumTitle.setText(getCurrentPlayTrack().getAlbumTitle());
         mAlbumTitle.getPaint().setFakeBoldText(true);
     }
 
@@ -167,10 +167,10 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
     }
 
     private void updateAlbumart() {
-        if (wholePlayList.get(currentPlayIndext).getCover_url() == null) {
+        if (wholePlayList.get(currentPlayIndext).getCoverUrl() == null) {
             mSimpleDraweeView.setImageResource(R.drawable.placeholder_disk);
         } else {
-            mSimpleDraweeView.setImageURI(Uri.parse(wholePlayList.get(currentPlayIndext).getCover_url()));
+            mSimpleDraweeView.setImageURI(Uri.parse(wholePlayList.get(currentPlayIndext).getCoverUrl()));
         }
     }
 

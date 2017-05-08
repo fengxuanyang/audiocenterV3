@@ -22,13 +22,17 @@ import com.ragentek.homeset.core.utils.LogUtils;
 import com.ragentek.homeset.speech.domain.SpeechBaseDomain;
 import com.ragentek.homeset.speech.domain.SpeechDomainType;
 import com.ragentek.homeset.speech.domain.SpeechDomainUtils;
+import com.ragentek.homeset.speech.domain.SpeechMusicDomain;
 import com.ragentek.protocol.commons.audio.FavoriteVO;
+import com.ragentek.protocol.commons.audio.MusicVO;
 import com.ragentek.protocol.constants.Category;
 import com.ragentek.protocol.constants.MessageType;
 import com.ragentek.protocol.messages.tcp.PushMessagePack;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
+import java.util.ArrayList;
 
 public class TingTask extends ForegroundTask {
     private static final String TAG = "TingTask";
@@ -105,7 +109,7 @@ public class TingTask extends ForegroundTask {
                 if (eventData != null && eventData instanceof CategoryDetail) {
                     CategoryDetail cat = (CategoryDetail) eventData;
                     Intent intent = new Intent();
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     if (cat.getId() == -1) {
                         intent.setClass(mContext, AudioPlayActivity.class);
                         TagDetail tag = new TagDetail();
@@ -145,10 +149,16 @@ public class TingTask extends ForegroundTask {
         Bundle bundle = new Bundle();
 
         int categoryId = -1;
-
         SpeechDomainType type = SpeechDomainUtils.getDomainType(speechDomain);
 
+
         if (type == SpeechDomainType.MUSIC) {
+            SpeechMusicDomain musicDomain = (SpeechMusicDomain) speechDomain;
+            String keywords = getMusicSearchKeyWords(musicDomain);
+            if (!keywords.isEmpty()) {
+                handleMusicSearch(keywords);
+                return;
+            }
             categoryId = Category.ID.MUSIC;
         } else if (type == SpeechDomainType.HOMESET_CROSSTALK) {
             categoryId = Category.ID.CROSS_TALK;
@@ -176,11 +186,45 @@ public class TingTask extends ForegroundTask {
         mContext.startActivity(intent);
     }
 
+    private String getMusicSearchKeyWords(SpeechMusicDomain musicDomain) {
+        StringBuilder stringb = new StringBuilder();
+        if (!musicDomain.semantic.slots.song.isEmpty()) {
+            stringb.append(musicDomain.semantic.slots.song + " ");
+        }
+        if (!musicDomain.semantic.slots.album.isEmpty()) {
+            stringb.append(musicDomain.semantic.slots.album + " ");
+        }
+        if (!musicDomain.semantic.slots.artist.isEmpty()) {
+            stringb.append(musicDomain.semantic.slots.artist + " ");
+        }
+        if (!musicDomain.semantic.slots.category.isEmpty()) {
+            stringb.append(musicDomain.semantic.slots.category + " ");
+        }
+        return stringb.toString();
+    }
+
+
+    private void handleMusicSearch(String keywords) {
+        TagDetail tag = new TagDetail();
+        tag.setCategoryID(Constants.CATEGORY_MUSIC_SEARCH);
+        tag.setName(mContext.getResources().getString(R.string.search_music));
+        tag.setKeywords(keywords);
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(Constants.CATEGORY_TAG, tag);
+        bundle.putString(Constants.TASKEVENT_TYPE, Constants.TASKEVENT_TYPE_SPEECH);
+
+        Intent intent = new Intent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.setClass(mContext, AudioPlayActivity.class);
+        intent.putExtras(bundle);
+        mContext.startActivity(intent);
+    }
+
     @Subscribe
     public void onEventBackHome(BackHomeEvent backhomeevent) {
         LogUtils.d(TAG, "onEventBackHome =" + backhomeevent);
-        onStop();
-        finish();
+        mBaseContext.startForegroundTask(LauncherTask.class, new TaskEvent(TaskEvent.TYPE.TOUCH, null));
     }
 
     private void registerPushMessage() {
@@ -209,6 +253,7 @@ public class TingTask extends ForegroundTask {
                 }
             }
         }
+
     }
 
     private void receiveAudioFavouritePushMsg(PushMessagePack messagePack) {

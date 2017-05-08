@@ -16,9 +16,7 @@ import com.ragentek.homeset.speech.domain.SpeechDomainUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -46,7 +44,7 @@ public class ForegroundTaskStack {
     private HandlerThread mNewThread;
     private WorkHandler mWorkHandler;
     private int mState;
-    private OnFinishListener mOnTaskFinished =  new ForegroundTaskFinishListener();
+    private OnFinishListener mOnTaskFinished = new ForegroundTaskFinishListener();
 
     /* Task cache map */
     private HashMap<Class, ForegroundTask> mTaskCache = new HashMap<Class, ForegroundTask>();
@@ -65,6 +63,7 @@ public class ForegroundTaskStack {
         protected ForegroundTaskInfo taskInfo;
         protected ForegroundTask task;
     }
+
     private Stack<TaskRecorder> mTaskStack = new Stack<TaskRecorder>();
 
     public ForegroundTaskStack(BaseContext baseContext, TaskSettings settings) {
@@ -150,9 +149,10 @@ public class ForegroundTaskStack {
     }
 
     private void handleTaskStart(MsgObject msgObject) {
-        goto_end: {
+        goto_end:
+        {
             TaskRecorder topTaskRecorder = peakTopTaskRecorder();
-            if(topTaskRecorder == null) {
+            if (topTaskRecorder == null) {
                 startAndPushStack(msgObject);
                 break goto_end;
             }
@@ -190,7 +190,12 @@ public class ForegroundTaskStack {
             }
         }
 
-        startAndPushStack(msgObject);
+        TaskRecorder recorder = findTaskRecorder(msgObject.taskInfo);
+        if (recorder != null) {
+            startAndMoveToTop(recorder, msgObject);
+        } else {
+            startAndPushStack(msgObject);
+        }
     }
 
     private void stopAndClearAllTask() {
@@ -215,6 +220,25 @@ public class ForegroundTaskStack {
         mTaskStack.pop();
 
         LogUtils.event(TAG, "stop " + topTask.getClass().getSimpleName());
+    }
+
+    private TaskRecorder findTaskRecorder(ForegroundTaskInfo taskInfo) {
+        for (TaskRecorder recorder : mTaskStack) {
+            if (recorder.taskInfo.className.equals(taskInfo.className)) {
+                return recorder;
+            }
+        }
+
+        return null;
+    }
+
+    private void startAndMoveToTop(TaskRecorder recorder, MsgObject msgObject) {
+        recorder.task.startCommand(msgObject.event);
+
+        mTaskStack.remove(recorder);
+        mTaskStack.push(recorder);
+
+        LogUtils.event(TAG, "restart " + peakTopTask().getClass().getSimpleName() + ", taskEvent=" + msgObject.event);
     }
 
     private void startAndPushStack(MsgObject msgObject) {
@@ -243,7 +267,7 @@ public class ForegroundTaskStack {
     private ForegroundTask newForegroundTask(Class taskClass) {
         Exception exception;
         try {
-            Constructor constructor = taskClass.getConstructor(new Class[] {BaseContext.class, OnFinishListener.class});
+            Constructor constructor = taskClass.getConstructor(new Class[]{BaseContext.class, OnFinishListener.class});
             constructor.setAccessible(true);
             ForegroundTask task = (ForegroundTask) constructor.newInstance(mBaseContext, mOnTaskFinished);
             return task;
@@ -263,6 +287,7 @@ public class ForegroundTaskStack {
 
     private void handleTaskFinished(ForegroundTask task) {
         LogUtils.event(TAG, "finish " + task.getClass().getSimpleName());
+        task.stop();
 
         ForegroundTask topTask = peakTopTask();
         if (task == null) {
@@ -325,7 +350,7 @@ public class ForegroundTaskStack {
     }
 
     private void clearTaskStack() {
-        while(!isTaskStackEmpty()) {
+        while (!isTaskStackEmpty()) {
             TaskRecorder recorder = mTaskStack.pop();
             recorder.task.stop();
         }
@@ -372,20 +397,20 @@ public class ForegroundTaskStack {
             return false;
         }
 
-        startTask(taskInfo.className, new TaskEvent(TaskEvent.TYPE.SPEECH,domain));
+        startTask(taskInfo.className, new TaskEvent(TaskEvent.TYPE.SPEECH, domain));
         return true;
     }
 
     protected ForegroundTask peakTopTask() {
         TaskRecorder recorder = peakTopTaskRecorder();
-        if(recorder == null) {
+        if (recorder == null) {
             return null;
         }
         return recorder.task;
     }
 
     protected TaskRecorder peakTopTaskRecorder() {
-        if(isTaskStackEmpty()) {
+        if (isTaskStackEmpty()) {
             return null;
         }
         return mTaskStack.peek();
@@ -452,7 +477,7 @@ public class ForegroundTaskStack {
         }
 
         StringBuilder builder = new StringBuilder();
-        for(TaskRecorder recorder: mTaskStack) {
+        for (TaskRecorder recorder : mTaskStack) {
             builder.append('[');
             builder.append("task=").append(recorder.task);
             builder.append(']');
@@ -460,7 +485,7 @@ public class ForegroundTaskStack {
         }
 
         builder.delete(builder.length() - 1, builder.length());
-        return  builder.toString();
+        return builder.toString();
     }
 
     private String dumpTaskCache() {
@@ -476,8 +501,8 @@ public class ForegroundTaskStack {
             builder.append(task).append(',');
         }
 
-        builder.delete(builder.length()-1, builder.length());
-        return  builder.toString();
+        builder.delete(builder.length() - 1, builder.length());
+        return builder.toString();
     }
 
     public String stateToString(int state) {

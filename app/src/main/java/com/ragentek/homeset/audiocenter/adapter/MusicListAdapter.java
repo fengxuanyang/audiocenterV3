@@ -42,8 +42,8 @@ public class MusicListAdapter extends ListItemBaseAdapter<MusicVO, MusicListAdap
 
     @Override
     public void onBindViewHolder(final MusicListAdapter.AlbumItemAdapterViewHolder holder, int position) {
-        Log.d(TAG, "onBindViewHolder  position : " + this.getData().get(position).getSong_name());
-        holder.itemName.setText(this.getData().get(position).getSong_name());
+        Log.d(TAG, "onBindViewHolder  position : " + this.getData().get(position).getSongName());
+        holder.itemName.setText(this.getData().get(position).getSongName());
         holder.itemIndex.setText("" + (position + 1));
         if (curSellect > -1 && curSellect == position) {
             holder.itemName.setTextColor(mContext.getResources().getColor(R.color.colorOrange));

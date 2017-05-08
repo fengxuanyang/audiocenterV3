@@ -59,13 +59,15 @@ public class MediaServiceTestActivity extends AppCompatActivity {
 
     private void switchFragment() {
         android.support.v4.app.Fragment frag = this.getSupportFragmentManager().findFragmentByTag(fragTag);
+        Log.d(TAG, "switchFragment: " + frag);
+
         index++;
         Log.d(TAG, "switchFragment: ");
         if (frag == null) {
             addFragment(testFragment);
         } else {
             removeFragment(frag);
-
+            addFragment(testFragment);
         }
     }
 
@@ -73,21 +75,22 @@ public class MediaServiceTestActivity extends AppCompatActivity {
         Log.d(TAG, "removeFragment: " + frag.isAdded());
         android.support.v4.app.FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         if (frag.isAdded()) {
-            transaction.hide(frag).remove(frag).commit();
+            transaction.remove(frag).commit();
         }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Log.d(TAG, "after removeFragment: " + frag.isAdded());
+
     }
 
     private void addFragment(android.support.v4.app.Fragment frag) {
-        Log.d(TAG, "showFragment: " + frag.isAdded());
+        Log.d(TAG, "addFragment: " + frag.isAdded());
         android.support.v4.app.FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
-        if (!frag.isAdded()) {
-//            transaction.replace(R.id.fragment_container, testFragment, fragTag).commit();
-
-            transaction.add(R.id.fragment_container, testFragment, fragTag)
-                    .show(frag)
-                    .commit();
-        } else {
-
-        }
+        transaction.add(R.id.fragment_container, testFragment, fragTag)
+                .show(frag)
+                .commit();
     }
 }

@@ -38,8 +38,8 @@ public class RadioToken extends AudioToken<BaseAudioVO, RadioToken.RadioAudioCon
     protected void startPlayAudio(int index) {
         List<PlayItem> list = new ArrayList<>();
         PlayItem item = new PlayItem();
-        item.setPlayUrl(radio.getPlay_url());
-        item.setCoverUrl(radio.getCover_url());
+        item.setPlayUrl(radio.getPlayUrl());
+        item.setCoverUrl(radio.getCoverUrl());
         item.setTitle(radio.getName());
         list.add(item);
         mMediaPlayer.setPlayList(list, currentPlayIndext);

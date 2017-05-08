@@ -158,6 +158,7 @@ public class MediaPlayerManager {
 
 
         public void addMeidaPlayListener(MediaPlayerPlayListener listener) {
+            LogUtil.d(TAG, "addMeidaPlayListener: ");
 
             if (mPlayListeners.isEmpty()) {
                 try {

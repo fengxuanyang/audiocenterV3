@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.alibaba.fastjson.JSON;
 import com.ragentek.homeset.audiocenter.model.bean.CategoryDetail;
 import com.ragentek.homeset.core.R;
 import com.ragentek.homeset.core.net.http.HttpManager;
@@ -20,7 +19,6 @@ import com.ragentek.homeset.ui.launcher.adapter.SpacesItemDecoration;
 import com.ragentek.homeset.ui.utils.LogUtils;
 import com.ragentek.protocol.commons.audio.CategoryVO;
 import com.ragentek.protocol.constants.Category;
-import com.ragentek.protocol.messages.http.APIResultVO;
 import com.ragentek.protocol.messages.http.audio.CategoryResultVO;
 
 import org.greenrobot.eventbus.EventBus;
@@ -118,7 +116,7 @@ public class TingCategoryFragment extends Fragment {
 
         mAudioApi.queryAudioCategory(uid, did, atoken)
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<APIResultVO>() {
+                .subscribe(new Subscriber<CategoryResultVO>() {
                     @Override
                     public void onCompleted() {
                         LogUtils.d(TAG, "getAudioCategoryData, onCompleted");
@@ -137,28 +135,27 @@ public class TingCategoryFragment extends Fragment {
                     }
 
                     @Override
-                    public void onNext(APIResultVO apiResultVO) {
-                        LogUtils.d(TAG, "getAudioCategoryData, onNext, apiResultVO=" + apiResultVO);
-                        if (apiResultVO != null) {
-                            int resCode = apiResultVO.getRes_code();
+                    public void onNext(CategoryResultVO categoryResultVO) {
+                        LogUtils.d(TAG, "getAudioCategoryData, onNext, categoryResultVO=" + categoryResultVO);
+                        LogUtils.d(TAG, "getAudioCategoryData, onNext, categoryResultVO=" + categoryResultVO.toString());
+                        LogUtils.d(TAG, "getAudioCategoryData, onNext, categoryResultVO=" + categoryResultVO.toJSONString());
+                        LogUtils.d(TAG, "getAudioCategoryData, onNext, categoryResultVO=" + categoryResultVO.getCategories());
+                        LogUtils.d(TAG, "getAudioCategoryData, onNext, categoryResultVO=" + categoryResultVO.getResMsg());
+                        LogUtils.d(TAG, "getAudioCategoryData, onNext, categoryResultVO=" + categoryResultVO.getResCode());
+
+                        if (categoryResultVO != null) {
+                            int resCode = categoryResultVO.getResCode();
                             if (resCode == 0) {
-                                String objString = JSON.toJSONString(apiResultVO.getRes_msg());
-                                CategoryResultVO categoryResultVO = JSON.parseObject(objString, CategoryResultVO.class);
-                                LogUtils.d(TAG, "getAudioCategoryData, onNext, categoryResultVO=" + categoryResultVO);
-
                                 mAudioCategorys.clear();
-
-                                if (categoryResultVO != null) {
-                                    for (CategoryVO category : categoryResultVO.getCategories()) {
-                                        CategoryDetail cat = decoratorCategory(category);
-                                        mAudioCategorys.add(cat);
-                                    }
-                                    CategoryDetail favcat = new CategoryDetail();
-                                    favcat.setIcon(R.drawable.favorite);
-                                    favcat.setSize(4);
-                                    favcat.setName(getResources().getString(R.string.my_favoriate));
-                                    mAudioCategorys.add(favcat);
+                                for (CategoryVO category : categoryResultVO.getCategories()) {
+                                    CategoryDetail cat = decoratorCategory(category);
+                                    mAudioCategorys.add(cat);
                                 }
+                                CategoryDetail favcat = new CategoryDetail();
+                                favcat.setIcon(R.drawable.favorite);
+                                favcat.setSize(4);
+                                favcat.setName(getResources().getString(R.string.my_favoriate));
+                                mAudioCategorys.add(favcat);
                             }
                         }
                     }

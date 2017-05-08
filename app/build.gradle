@@ -4,10 +4,10 @@ apply plugin: 'org.greenrobot.greendao'
 
 android {
     signingConfigs {
-        MT8735_PLATFORM {
+        MT8735_PLATFORM_M {
             keyAlias 'platform'
             keyPassword 'android'
-            storeFile file('mt8735-platform.keystore')
+            storeFile file('mt8735-platform-6.0.keystore')
             storePassword 'android'
         }
     }
@@ -22,7 +22,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 24
         versionCode 1
-        versionName "1.0"
+        versionName "0.1"
         multiDexEnabled true
     }
 
@@ -37,15 +37,24 @@ android {
 */
     buildTypes {
         debug {
-            buildConfigField "String", "WEBAPI_PATH", '"dev_webview"'
+            manifestPlaceholders = [AMAP_APIKEY: "d5aa9e7179301e7d10c69404afb4af26"]
+            buildConfigField "String", "WEBAPI_PATH", '"dev_openapi"'
             buildConfigField "int", "PUSH_PORT", "29000"
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField "String", "WEBAPI_PATH", '"webview"'
+            manifestPlaceholders = [AMAP_APIKEY: "8f9128008c9f704381d070d30ee025e1"]
+            buildConfigField "String", "WEBAPI_PATH", '"openapi"'
             buildConfigField "int", "PUSH_PORT", "9000"
-            signingConfig signingConfigs.MT8735_PLATFORM
+            signingConfig signingConfigs.MT8735_PLATFORM_M
+        }
+    }
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def oldFile = output.outputFile
+            def releaseApkName = 'HomeSet' + '_' + defaultConfig.versionCode + "." + defaultConfig.versionName + '_' + variant.buildType.name + '.apk'
+            output.outputFile = new File(oldFile.parent, releaseApkName)
         }
     }
 
@@ -96,7 +105,7 @@ android {
         compile 'com.google.code.gson:gson:2.8.0'
         compile 'com.android.support:recyclerview-v7:24.0.0'
         compile 'com.mcxiaoke.viewpagerindicator:library:2.4.1'
-//        compile('ragentek:atlasyun.common:0.0.1-SNAPSHOT') {
+//        compile('ragentek:atlasyun.common:1.0.1-SNAPSHOT') {
 //            exclude group: 'junit'
 //        }
         compile 'com.android.support:multidex:1.0.0'

@@ -41,9 +41,9 @@ public class MusicToken extends AudioToken<BaseAudioVO, MusicToken.MusicAudioCon
         currentMusic = (MusicVO) mPlayListItem.getAudio();
         List<PlayItem> list = new ArrayList<>();
         PlayItem playItem = new PlayItem();
-        playItem.setPlayUrl(currentMusic.getPlay_url());
-        playItem.setCoverUrl(currentMusic.getCover_url());
-        playItem.setTitle(currentMusic.getSong_name());
+        playItem.setPlayUrl(currentMusic.getPlayUrl());
+        playItem.setCoverUrl(currentMusic.getCoverUrl());
+        playItem.setTitle(currentMusic.getSongName());
         list.add(playItem);
         mMediaPlayer.setPlayList(list, currentPage);
     }
@@ -62,7 +62,7 @@ public class MusicToken extends AudioToken<BaseAudioVO, MusicToken.MusicAudioCon
         }
 
         public MusicVO getPlayData() {
-            LogUtil.d(TAG, "getPlayData   currentMusic: " + currentMusic.getSong_name());
+            LogUtil.d(TAG, "getPlayData   currentMusic: " + currentMusic.getSongName());
 
             return currentMusic;
         }

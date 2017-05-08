@@ -93,7 +93,7 @@ public class CategoryActivity extends AudioCenterBaseActivity {
     }
 
     private void getData() {
-        Subscriber getCategory = new Subscriber<CategoryResultVO>() {
+        Subscriber subscriberGetCategory = new Subscriber<CategoryResultVO>() {
             @Override
             public void onCompleted() {
                 Log.d(TAG, "onCompleted: ");
@@ -123,7 +123,7 @@ public class CategoryActivity extends AudioCenterBaseActivity {
                 }
             }
         };
-        AudioCenterHttpManager.getInstance(this).getCategory(getCategory);
+        AudioCenterHttpManager.getInstance(this).getCategory(subscriberGetCategory);
     }
 
     private CategoryDetail decoratorCategory(CategoryVO catov) {

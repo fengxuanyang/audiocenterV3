@@ -109,7 +109,7 @@ public class LauncherActivity extends FragmentActivity {
         if (speechOperationCall) {
             mViewPager.setCurrentItem(PAGE_CONTACT);
         } else {
-            mViewPager.setCurrentItem(PAGE_TING_CATEGORY);
+            mViewPager.setCurrentItem(PAGE_WEATHER);
         }
         mViewPager.addOnPageChangeListener(new PageChange());
 

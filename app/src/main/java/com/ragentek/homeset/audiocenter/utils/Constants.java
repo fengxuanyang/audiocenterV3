@@ -24,6 +24,7 @@ public class Constants {
     public static final int AUDIO_TYPE_RADIO = 3;
     public static final int AUDIO_TYPE_SINGLE_MUSIC = 4; //only for fav music
     public static final int CATEGORY_FAV = -1;
+    public static final int CATEGORY_MUSIC_SEARCH = -2;
 
     public static final int AUDIO_TYPE_ERROR = -1;
 

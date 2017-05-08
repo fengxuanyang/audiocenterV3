@@ -29,7 +29,7 @@ public class SingleMusicToken extends AudioToken<MusicVO, SingleMusicToken.Singl
         super(activity, mediaPlayer, item);
         LogUtil.d(TAG, " SingleMusicToken: ");
         mMusicVO = (MusicVO) item.getAudio();
-        LogUtil.d(TAG, " SingleMusicToken  getSong_name: " + mMusicVO.getSong_name());
+        LogUtil.d(TAG, " SingleMusicToken  getSong_name: " + mMusicVO.getSongName());
 
     }
 
@@ -51,9 +51,9 @@ public class SingleMusicToken extends AudioToken<MusicVO, SingleMusicToken.Singl
         LogUtil.d(TAG, "    playAudio: " + index);
         currentPlayIndext = index;
         PlayItem item = new PlayItem();
-        item.setPlayUrl(mMusicVO.getPlay_url());
-        item.setCoverUrl(mMusicVO.getCover_url());
-        item.setTitle(mMusicVO.getSong_name());
+        item.setPlayUrl(mMusicVO.getPlayUrl());
+        item.setCoverUrl(mMusicVO.getCoverUrl());
+        item.setTitle(mMusicVO.getSongName());
 
         List<PlayItem> list = new ArrayList<>();
         list.add(item);
@@ -74,7 +74,7 @@ public class SingleMusicToken extends AudioToken<MusicVO, SingleMusicToken.Singl
         }
 
         public MusicVO getData() {
-            LogUtil.d(TAG, "getPlayData   currentMusic: " + mMusicVO.getSong_name());
+            LogUtil.d(TAG, "getPlayData   currentMusic: " + mMusicVO.getSongName());
             return mMusicVO;
 
         }

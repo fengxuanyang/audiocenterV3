@@ -79,5 +79,17 @@
     <string name="net_error">网络异常</string>
     <string name="none_fav_data">没有收藏</string>
     <string name="data_error">数据异常</string>
+    <string-array name="speech_result_tips">
+        <item>不理解你的意思，你可以说：挺我喜欢的</item>
+        <item>不理解你的意思，你可以说：我要听相声</item>
+        <item>不理解你的意思，你可以说：我要听健康</item>
+        <item>不理解你的意思，你可以说：我要听曲艺</item>
+        <item>不理解你的意思，你可以说：我要听故事</item>
+        <item>不理解你的意思，你可以说：我要听广播</item>
+        <item>不理解你的意思，你可以说：今天的天气</item>
+        <item>不理解你的意思，你可以说：我要打电话</item>
+        <item>不理解你的意思，你可以说：我要听歌</item>
+    </string-array>
+    <string name="search_music">音乐搜索</string>
 
 </resources>

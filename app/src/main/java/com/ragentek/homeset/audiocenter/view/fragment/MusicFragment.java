@@ -60,14 +60,14 @@ public class MusicFragment extends PlayBaseFragment<MusicVO, MusicToken.MusicAud
     }
 
     private void updateView(MusicVO music) {
-        String cover = music.getCover_url();
+        String cover = music.getCoverUrl();
         LogUtil.d(TAG, "updateAlbumart coverUri: " + cover);
         if (cover == null) {
             mSimpleDraweeView.setImageResource(R.drawable.placeholder_disk);
         } else {
             mSimpleDraweeView.setImageURI(Uri.parse(cover));
         }
-        mAlbumTitle.setText(music.getAlbum_name());
+        mAlbumTitle.setText(music.getAlbumName());
         mAlbumTitle.getPaint().setFakeBoldText(true);
     }
 

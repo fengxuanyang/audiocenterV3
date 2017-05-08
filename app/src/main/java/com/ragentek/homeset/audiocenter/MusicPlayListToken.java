@@ -55,7 +55,6 @@ public class MusicPlayListToken extends PlayListToken {
             @Override
             public void onError(Throwable e) {
                 LogUtil.e(TAG, "getTAGMusics onError: " + e.getMessage());
-
             }
 
             @Override
@@ -72,9 +71,9 @@ public class MusicPlayListToken extends PlayListToken {
                     List<MusicVO> filterred = new ArrayList<>();
                     for (int i = 0; i < tagResult.getMusics().size(); i++) {
                         MusicVO music = tagResult.getMusics().get(i);
-                        if (music != null && music.getSong_name() != null) {
-                            LogUtil.d(TAG, "getTAGMusics :" + music.getSong_name());
-                            LogUtil.d(TAG, "getCover_url :" + music.getCover_url());
+                        if (music != null && music.getSongName() != null) {
+                            LogUtil.d(TAG, "getTAGMusics :" + music.getSongName());
+                            LogUtil.d(TAG, "getCover_url :" + music.getCoverUrl());
 
                             PlayListItem item = new PlayListItem(Constants.AUDIO_TYPE_SINGLE_MUSIC, mTagDetail.getCategoryID(), music.getId());
                             item.setAudio(music);
@@ -82,7 +81,7 @@ public class MusicPlayListToken extends PlayListToken {
                             item.setGroup(Constants.GROUP_MUSIC);
                             playListItems.add(item);
                             filterred.add(music);
-                            LogUtil.d(TAG, "add :i:" + i + "" + music.getSong_name() + "" + music.getPlay_url());
+                            LogUtil.d(TAG, "add :i:" + i + "" + music.getSongName() + "" + music.getPlayUrl());
                         }
                     }
                     listener.onLoadData(PLAYLISTMANAGER_RESULT_SUCCESS, playListItems);

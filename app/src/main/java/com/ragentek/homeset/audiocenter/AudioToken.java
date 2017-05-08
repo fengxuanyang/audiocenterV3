@@ -1,5 +1,6 @@
 package com.ragentek.homeset.audiocenter;
 
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 
@@ -19,7 +20,7 @@ public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl>
     public static final int PLAYLIST_RESULT_NONE = 0;
     public static final int PLAYLIST_RESULT_SUCCESS = 1;
     private static final int DEFAULT_PLAY_INDEX = 0;
-    private final String FRAGMENT_TAG = this.getClass().getSimpleName();
+    private final String FRAGMENT_TAG = "fxy";// this.getClass().getSimpleName();
     FragmentActivity mActivity;
     MediaPlayerManager.MediaPlayerHandler mMediaPlayer;
     PlayListItem mPlayListItem;
@@ -42,39 +43,42 @@ public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl>
         mAudioTokenMediaPlayerPlayListener = new AudioTokenMediaPlayerPlayListener();
     }
 
+//    PlayBaseFragment basefragment;
 
     public void showView() {
         LogUtil.d(TAG, "show: " + FRAGMENT_TAG);
         FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
-        PlayBaseFragment fragment = getCurrentFragment();
+        Fragment basefragment = getCurrentFragment();
         mMediaPlayer.addMeidaPlayListener(mAudioTokenMediaPlayerPlayListener);
-        LogUtil.d(TAG, "show  isAdded: " + fragment.isAdded());
-        LogUtil.d(TAG, "show  isDetached: " + fragment.isDetached());
-        LogUtil.d(TAG, "show  isHidden: " + fragment.isHidden());
-        if (!getCurrentFragment().isAdded()) {
-            transaction.replace(R.id.fragment_container, fragment, FRAGMENT_TAG).show(fragment).commit();
-        } else {
-            transaction.show(fragment).commit();
-        }
+        LogUtil.d(TAG, "show  isAdded: " + basefragment.isAdded());
+        LogUtil.d(TAG, "show  isDetached: " + basefragment.isDetached());
+        LogUtil.d(TAG, "show  isHidden: " + basefragment.isHidden());
+        LogUtil.d(TAG, "show  isHidden: " + basefragment.getTag());
+
+        transaction.add(R.id.fragment_container, basefragment, "fxy").show(basefragment).commit();
+
     }
 
     public void hide() {
         FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
-        PlayBaseFragment fragment = getCurrentFragment();
-        LogUtil.d(TAG, "hide  isAdded: " + fragment);
-        transaction.hide(fragment).remove(fragment).commit();
+        Fragment basefragment = getCurrentFragment();
+
+        LogUtil.d(TAG, "before hide  isAdded: " + basefragment);
+        LogUtil.d(TAG, "  hide  isAdded: " + basefragment.isAdded());
+        transaction.remove(basefragment).hide(basefragment).commit();
         mMediaPlayer.removeMeidaPlayListener(mAudioTokenMediaPlayerPlayListener);
+        LogUtil.d(TAG, "after hide  isAdded: " + basefragment.isAdded());
 
     }
 
     private PlayBaseFragment getCurrentFragment() {
-        PlayBaseFragment fragment = (PlayBaseFragment) mActivity.getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+        Fragment fragment = mActivity.getSupportFragmentManager().findFragmentByTag("fxy");
         LogUtil.d(TAG, "getCurrentFragment  fragment: " + fragment);
-
+        LogUtil.d(TAG, "getCurrentFragment  FRAGMENT_TAG: " + FRAGMENT_TAG);
         if (fragment == null) {
             fragment = getPlayFragment();
         }
-        return fragment;
+        return (PlayBaseFragment) fragment;
     }
 
 

@@ -38,8 +38,7 @@
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="8f9128008c9f704381d070d30ee025e1"/>
-        <!--For local test: d5aa9e7179301e7d10c69404afb4af26-->
+            android:value="${AMAP_APIKEY}"/>
 
         <service
             android:name="com.ragentek.homeset.core.HomesetService"
@@ -123,6 +122,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.ragentek.homeset.ui.speech.SpeechActivity"
+            android:theme="@style/SpeechTheme"
+            android:screenOrientation="landscape"
+            android:launchMode="singleTop"/>
 
         <!--  audio center -->
         <activity
@@ -141,16 +145,19 @@
 
         <activity
             android:name="com.ragentek.homeset.audiocenter.AudioPlayActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="landscape">
             <intent-filter>
-                <action android:name="android.intent.action.playfav"/>
-                <action android:name="android.intent.action.playtag"/>
-                <action android:name="android.intent.action.playradio"/>
-                <action android:name="android.intent.action.playmusic"/>
+                <action android:name="android.intent.action.playfav" />
+                <action android:name="android.intent.action.playtag" />
+                <action android:name="android.intent.action.playradio" />
+                <action android:name="android.intent.action.playmusic" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <service android:name="com.ragentek.homeset.audiocenter.service.DownloadService"/>
 
         <receiver android:name="com.ragentek.homeset.ui.login.LoginReceiver">
             <intent-filter>

@@ -11,7 +11,6 @@ import android.widget.ListView;
 
 import com.ragentek.homeset.core.HomesetService;
 import com.ragentek.homeset.core.task.foreground.LauncherTask;
-import com.ragentek.homeset.core.task.foreground.TellWeatherTask;
 import com.ragentek.homeset.core.task.foreground.TingTask;
 import com.ragentek.homeset.core.task.foreground.WechatTask;
 
@@ -22,7 +21,6 @@ public class ForeTaskListFragment extends ListFragment {
     private static final int LAUNCHER_TASK = 1;
     private static final int TING_TASK = 2;
     private static final int WECHAT_TASK= 3;
-    private static final int TELLWEATHER_TASK= 3;
 
     private Activity mActivity;
 
@@ -30,7 +28,6 @@ public class ForeTaskListFragment extends ListFragment {
             new SampleConfig(LAUNCHER_TASK, "LauncherTask", LauncherTask.class),
             new SampleConfig(TING_TASK, "TingTask", TingTask.class),
             new SampleConfig(WECHAT_TASK, "WechatTask", WechatTask.class),
-            new SampleConfig(TELLWEATHER_TASK, "TellWeatherTask", TellWeatherTask.class),
     };
 
     private static class SampleConfig {

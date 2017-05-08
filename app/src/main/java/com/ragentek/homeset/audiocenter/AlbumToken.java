@@ -31,7 +31,7 @@ import rx.Subscriber;
 public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl> {
     private static final String TAG = "AlbumToken";
     private int currentPage = 1;
-    private static final int PAGE_COUNT = 20;
+    private static final int PAGE_COUNT = 2;
     private PlayBaseFragment.IAudioDataChangerListener<List<TrackVO>> mIAudioDataChangerListener;
     private MediaPlayerManager.MediaPlayerHandler mMediaPlayer;
     private PlayListItem mPlayListItem;
@@ -53,13 +53,9 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
 
     @Override
     protected PlayBaseFragment<List<TrackVO>, AlbumAudioControl> getPlayFragment() {
-        Fragment view = mActivity.getSupportFragmentManager().findFragmentByTag(this.getClass().getSimpleName());
-        AlbumFragment albumFragment;
-        if (view == null) {
-            albumFragment = AlbumFragment.newInstances();
-        } else {
-            albumFragment = (AlbumFragment) view;
-        }
+
+        PlayBaseFragment albumFragment = AlbumFragment.newInstances();
+
         AlbumAudioControl mAlbumAudioControl = new AlbumAudioControl();
         albumFragment.setAudioControl(mAlbumAudioControl);
         return albumFragment;
@@ -116,14 +112,23 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
                     if (tagResult.getTracks() != null) {
                         for (int i = 0; i < tagResult.getTracks().size(); i++) {
                             TrackVO trackvo = tagResult.getTracks().get(i);
-                            LogUtil.d(TAG, "onNext : " + trackvo.getTitle());
+                            LogUtil.d(TAG, "onNext : " + trackvo);
+                            LogUtil.d(TAG, "onNext getDuration: " + trackvo.getDuration());
+
+                            LogUtil.d(TAG, "onNext getTitle: " + trackvo.getTitle());
+                            LogUtil.d(TAG, "onNext getPlayUrl : " + trackvo.getPlayUrl());
+                            LogUtil.d(TAG, "onNext getPlayHdurl : " + trackvo.getPlayHdurl());
+                            LogUtil.d(TAG, "onNext getAlbumTitle: " + trackvo.getAlbumTitle());
+
                             PlayItem item = new PlayItem();
-                            item.setPlayUrl(trackvo.getPlay_url());
-                            item.setDuration(trackvo.getDuration());
-                            item.setCoverUrl(trackvo.getCover_url());
+                            item.setPlayUrl(trackvo.getPlayUrl());
+                            item.setDuration(trackvo.getDuration().intValue());
+                            item.setCoverUrl(trackvo.getCoverUrl());
                             item.setTitle(trackvo.getTitle());
                             list.add(item);
                         }
+                        LogUtil.d(TAG, "onNext addAll: ");
+
                         wholeTracks.addAll(tagResult.getTracks());
                         LogUtil.d(TAG, "onNext : " + tagResult.getTracks().size());
                         mIAudioDataChangerListener.onGetData(PLAYLIST_RESULT_SUCCESS, tagResult.getTracks());

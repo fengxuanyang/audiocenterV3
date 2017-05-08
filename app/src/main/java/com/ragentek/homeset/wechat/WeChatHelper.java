@@ -6,6 +6,7 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.ragentek.homeset.core.utils.SystemPropertiesInvoke;
 import com.ragentek.homeset.wechat.domain.WeChatException;
 import com.ragentek.homeset.wechat.domain.WeChatInfo;
 
@@ -17,11 +18,13 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,13 +64,13 @@ public class WeChatHelper {
 
     public void open() throws WeChatException {
         long startTime = System.currentTimeMillis();
-        Log.d(TAG, "opne startTime:" + startTime);
+        Log.d(TAG, "opne startTime:"+ startTime);
         close();
 
         StringBuilder cmd = new StringBuilder();
         cmd.append("homesetparser");
-        Log.d(TAG, "set ctl.start open " + cmd.toString());
-        //
+        Log.d(TAG, "set ctl.start open "+cmd.toString());
+       //
         WeChatUtils.exec(cmd.toString());
 
         mCurrWxUin = getCurrWxUin();
@@ -76,12 +79,12 @@ public class WeChatHelper {
         // copyDbfromWx(mCurrWxUin);
         mSqlHelper = new SqlCipherHelper(mContext, DB_NAME, hook);
         long endTime = System.currentTimeMillis();
-        long interval = endTime - startTime;
-        Log.d(TAG, "open endTime:" + endTime + ", interval:" + interval);
+        long interval = endTime-startTime;
+        Log.d(TAG, "open endTime:"+endTime+", interval:"+interval);
     }
 
-    public void close() {
-        if (mSqlHelper != null) {
+    public void close(){
+        if(mSqlHelper != null) {
             mSqlHelper.close();
             mSqlHelper = null;
         }
@@ -90,9 +93,9 @@ public class WeChatHelper {
     public List<WeChatInfo> selectConact() {
         List<WeChatInfo> weChatInfos = new ArrayList<WeChatInfo>();
         long startTime = System.currentTimeMillis();
-        Log.d(TAG, "selectConact startTime:" + startTime);
+        Log.d(TAG, "selectConact startTime:"+ startTime);
         try {
-            Log.d(TAG, "mDbPassword:" + mDbPassword);
+            Log.d(TAG, "mDbPassword:"+mDbPassword);
             //打开数据库连接
             SQLiteDatabase db = mSqlHelper.getReadableDatabase(mDbPassword);
             //查询所有联系人（verifyFlag!=0:公众号等类型，群里面非好友的类型为4，未知类型2）
@@ -117,29 +120,29 @@ public class WeChatHelper {
 
                 weChatInfos.add(weChatInfo);
 
-                Log.i(TAG, "userName:" + userName + " alias:" + alias + "conRemark:" + conRemark + " nickName:" + nickName);
-                Log.i(TAG, "iconUrl:" + iconUrl);
+                Log.i(TAG, "userName:"+userName+" alias:"+alias+"conRemark:"+conRemark+" nickName:"+nickName);
+                Log.i(TAG, "iconUrl:"+iconUrl);
             }
             cursor.close();
             db.close();
         } catch (Exception e) {
             Log.e(TAG, "读取数据库信息失败" + e.toString());
             e.printStackTrace();
-        } finally {
+        }finally {
 
             long endTime = System.currentTimeMillis();
-            long interval = endTime - startTime;
-            Log.d(TAG, "selectConact endTime:" + endTime + ", interval:" + interval);
+            long interval = endTime-startTime;
+            Log.d(TAG, "selectConact endTime:"+endTime+", interval:"+interval);
 
             return weChatInfos;
         }
 
     }
 
-    public void startVoip(String username) {
+    public void startVoip(String username){
         long currentTimeMillis = System.currentTimeMillis();
         Intent intent = new Intent();
-        intent.setClassName("com.tencent.mm", "com.tencent.mm.plugin.voip.ui.VideoActivity");
+        intent.setClassName("com.tencent.mm","com.tencent.mm.plugin.voip.ui.VideoActivity");
         intent.putExtra("Voip_User", username);
         intent.putExtra("Voip_Outcall", true);
         intent.putExtra("Voip_VideoCall", true);
@@ -151,7 +154,7 @@ public class WeChatHelper {
         mContext.startActivity(intent);
     }
 
-    public void startMutilVoip() {
+    public void startMutilVoip(){
         Intent intent = new Intent();
         intent.setClassName("com.tencent.mm", "com.tencent.mm.plugin.multitalk.ui.MultiTalkSelectContactUI");
         intent.putExtra("chatroomName", "7671027932@chatroom");
@@ -167,7 +170,7 @@ public class WeChatHelper {
      * 微信的uid存储在SharedPreferences里面
      * 存储位置\data\data\com.tencent.mm\shared_prefs\auth_info_key_prefs.xml
      */
-    private String getCurrWxUin() throws WeChatException {
+    private String getCurrWxUin() throws WeChatException{
         File file = new File(WX_SP_UIN_PATH);
         try {
             FileInputStream in = new FileInputStream(file);
@@ -189,8 +192,8 @@ public class WeChatHelper {
         return null;
     }
 
-    private void copyDbfromWx(String uin) throws WeChatException {
-        String cacheFoldeName = WeChatUtils.md5("mm" + uin);
+    private void copyDbfromWx(String uin) throws WeChatException{
+        String cacheFoldeName = WeChatUtils.md5("mm"+uin);
 
         StringBuilder wxFileBuilder = new StringBuilder();
         wxFileBuilder.append(WX_DB_DIR_PATH);
@@ -201,7 +204,7 @@ public class WeChatHelper {
 
         //1.chmod 777 EnMircoMsg.db for permission
         File source = new File(wxFileBuilder.toString());
-        File dest = new File(mContext.getFilesDir() + "/" + DB_NAME);
+        File dest = new File(mContext.getFilesDir()+"/"+DB_NAME);
 
         FileChannel inputChannel = null;
         FileChannel outputChannel = null;
@@ -217,10 +220,10 @@ public class WeChatHelper {
             throw new WeChatException(e.toString());
         } finally {
             try {
-                if (inputChannel != null) {
+                if(inputChannel !=null) {
                     inputChannel.close();
                 }
-                if (outputChannel != null) {
+                if(outputChannel != null) {
                     outputChannel.close();
                 }
             } catch (IOException e) {
@@ -229,7 +232,6 @@ public class WeChatHelper {
 
         }
     }
-
     /**
      * 获取手机的imei码
      *
@@ -238,10 +240,10 @@ public class WeChatHelper {
     private void initPhoneIMEI() {
         TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         mPhoneIMEI = tm.getDeviceId();
-        if (mPhoneIMEI == null) {
+        if(mPhoneIMEI == null){
             mPhoneIMEI = "1234567890ABCDEF";
-        } else {
-            Log.d(TAG, "mPhoneIMEI:" + mPhoneIMEI);
+        }else{
+            Log.d(TAG, "mPhoneIMEI:"+mPhoneIMEI);
         }
     }
 

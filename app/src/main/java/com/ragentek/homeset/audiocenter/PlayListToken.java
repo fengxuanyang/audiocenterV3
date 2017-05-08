@@ -241,13 +241,13 @@ public abstract class PlayListToken {
 
     @Subscribe
     public void onAudioFavEvent(final PushAudioFavEvent fav) {
-        LogUtil.d(TAG, ": onAudioFavEvent:" + fav.getFavoriteVO().getAudio_id());
+        LogUtil.d(TAG, ": onAudioFavEvent:" + fav.getFavoriteVO().getAudioId());
 
         Observable.just(fav)
                 .map(new Func1<PushAudioFavEvent, Integer>() {
                     @Override
                     public Integer call(PushAudioFavEvent pushAudioFavEvent) {
-                        int result = isCurrentPlaylistContain(fav.getFavoriteVO().getAudio_id().longValue());
+                        int result = isCurrentPlaylistContain(fav.getFavoriteVO().getAudioId().longValue());
                         LogUtil.d(TAG, "onAudioFavEvent : updateTheFavState result:" + result);
                         return result;
                     }

@@ -10,8 +10,17 @@ public class TagDetail implements Serializable {
     private String name;
     private int icon;
     private int categoryID;
+    private String keywords;
     private int radioType;//for radio
     private int province;//for radio
+    public String getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
+    }
+
 
     public int getRadioType() {
         return radioType;
@@ -22,6 +31,7 @@ public class TagDetail implements Serializable {
     }
 
 
+
     public int getProvince() {
         return province;
     }
@@ -29,6 +39,7 @@ public class TagDetail implements Serializable {
     public void setProvince(int province) {
         this.province = province;
     }
+
 
 
     public int getCategoryID() {
@@ -58,8 +69,5 @@ public class TagDetail implements Serializable {
         return icon;
     }
 
-    @Override
-    public String toString() {
-        return "name:" + name + ",categoryID:" + categoryID + ",icon" + icon + ",radioType:" + radioType + ",province:" + province;
-    }
+
 }

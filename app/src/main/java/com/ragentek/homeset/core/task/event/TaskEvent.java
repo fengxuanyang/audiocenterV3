@@ -7,6 +7,7 @@ public class TaskEvent {
         NULL,
         TOUCH,
         SPEECH,
+        SYSTEM
     }
     private TYPE type = TYPE.NULL;
 

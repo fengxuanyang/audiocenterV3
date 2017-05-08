@@ -63,15 +63,15 @@ public class SingleMusicFragment extends PlayBaseFragment<MusicVO, SingleMusicTo
     }
 
     private void updateView(MusicVO music) {
-        LogUtil.d(TAG, "SingleMusicFragment updateView: " + music.getSong_name());
+        LogUtil.d(TAG, "SingleMusicFragment updateView: " + music.getSongName());
 
-        albumText.setText(music.getAlbum_name());
-        musicName.setText(music.getSong_name());
-        singerText.setText(music.getSinger_name());
-        if (music.getCover_url() == null) {
+        albumText.setText(music.getAlbumName());
+        musicName.setText(music.getSongName());
+        singerText.setText(music.getSingerName());
+        if (music.getCoverUrl() == null) {
             mSimpleDraweeView.setImageResource(R.drawable.placeholder_disk);
         } else {
-            mSimpleDraweeView.setImageURI(Uri.parse(music.getCover_url()));
+            mSimpleDraweeView.setImageURI(Uri.parse(music.getCoverUrl()));
         }
     }
 
