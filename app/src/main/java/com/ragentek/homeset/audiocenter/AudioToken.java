@@ -20,7 +20,7 @@ public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl>
     public static final int PLAYLIST_RESULT_NONE = 0;
     public static final int PLAYLIST_RESULT_SUCCESS = 1;
     private static final int DEFAULT_PLAY_INDEX = 0;
-    private final String FRAGMENT_TAG = "fxy";// this.getClass().getSimpleName();
+    protected final String FRAGMENT_TAG = this.getClass().getSimpleName();// ;
     FragmentActivity mActivity;
     MediaPlayerManager.MediaPlayerHandler mMediaPlayer;
     PlayListItem mPlayListItem;
@@ -46,24 +46,18 @@ public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl>
 //    PlayBaseFragment basefragment;
 
     public void showView() {
-        LogUtil.d(TAG, "show: " + FRAGMENT_TAG);
         FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
-        Fragment basefragment = getCurrentFragment();
+        Fragment basefragment = getPlayFragment();
         mMediaPlayer.addMeidaPlayListener(mAudioTokenMediaPlayerPlayListener);
-        LogUtil.d(TAG, "show  isAdded: " + basefragment.isAdded());
-        LogUtil.d(TAG, "show  isDetached: " + basefragment.isDetached());
-        LogUtil.d(TAG, "show  isHidden: " + basefragment.isHidden());
-        LogUtil.d(TAG, "show  isHidden: " + basefragment.getTag());
-
-        transaction.add(R.id.fragment_container, basefragment, "fxy").show(basefragment).commit();
+        transaction.replace(R.id.fragment_container, basefragment, FRAGMENT_TAG).show(basefragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
 
     }
 
     public void hide() {
         FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
         Fragment basefragment = getCurrentFragment();
-
-        LogUtil.d(TAG, "before hide  isAdded: " + basefragment);
         LogUtil.d(TAG, "  hide  isAdded: " + basefragment.isAdded());
         transaction.remove(basefragment).hide(basefragment).commit();
         mMediaPlayer.removeMeidaPlayListener(mAudioTokenMediaPlayerPlayListener);
@@ -72,9 +66,8 @@ public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl>
     }
 
     private PlayBaseFragment getCurrentFragment() {
-        Fragment fragment = mActivity.getSupportFragmentManager().findFragmentByTag("fxy");
+        Fragment fragment = mActivity.getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
         LogUtil.d(TAG, "getCurrentFragment  fragment: " + fragment);
-        LogUtil.d(TAG, "getCurrentFragment  FRAGMENT_TAG: " + FRAGMENT_TAG);
         if (fragment == null) {
             fragment = getPlayFragment();
         }

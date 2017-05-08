@@ -77,11 +77,11 @@ public class MediaServiceTestActivity extends AppCompatActivity {
         if (frag.isAdded()) {
             transaction.remove(frag).commit();
         }
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         Log.d(TAG, "after removeFragment: " + frag.isAdded());
 
     }
@@ -89,8 +89,10 @@ public class MediaServiceTestActivity extends AppCompatActivity {
     private void addFragment(android.support.v4.app.Fragment frag) {
         Log.d(TAG, "addFragment: " + frag.isAdded());
         android.support.v4.app.FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.fragment_container, testFragment, fragTag)
-                .show(frag)
-                .commit();
+        transaction.replace(R.id.fragment_container, testFragment, fragTag)
+                .show(frag);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
     }
 }

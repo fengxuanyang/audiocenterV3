@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 /**
  * Created by xuanyang.feng on 2017/4/24.
@@ -77,11 +78,15 @@ public class MediaServiceTestFragment extends Fragment implements View.OnClickLi
         Log.d(TAG, "onStop: ");
     }
 
+    TextView pausTV;
+
     private void initView(View view) {
         startButton = (Button) view.findViewById(R.id.button_service_start);
         startButton.setOnClickListener(this);
         initButton = (Button) view.findViewById(R.id.button_service_init);
         initButton.setOnClickListener(this);
+
+        pausTV = (TextView) view.findViewById(R.id.textview_service_start);
 
         pausButton = (Button) view.findViewById(R.id.button_service_pause);
         pausButton.setOnClickListener(this);

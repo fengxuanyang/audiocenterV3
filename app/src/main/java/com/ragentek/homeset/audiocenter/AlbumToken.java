@@ -53,9 +53,13 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
 
     @Override
     protected PlayBaseFragment<List<TrackVO>, AlbumAudioControl> getPlayFragment() {
-
-        PlayBaseFragment albumFragment = AlbumFragment.newInstances();
-
+        Fragment view = mActivity.getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+        AlbumFragment albumFragment;
+        if (view == null) {
+            albumFragment = AlbumFragment.newInstances();
+        } else {
+            albumFragment = (AlbumFragment) view;
+        }
         AlbumAudioControl mAlbumAudioControl = new AlbumAudioControl();
         albumFragment.setAudioControl(mAlbumAudioControl);
         return albumFragment;
