@@ -27,6 +27,8 @@ android {
     }
 
 /*
+adb shell am broadcast -a ragentek.intent.action.START_RECOGNITION
+
      Business Version:
          WEBAPI_PATH: openapi
          PUSH_PORT: 9000
@@ -56,7 +58,6 @@ android {
             output.outputFile = new File(oldFile.parent, releaseApkName)
         }
     }
-
     sourceSets {
         main {
             jniLibs.srcDirs = ['libs']
