@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.ragentek.homeset.core.BuildConfig;
+import com.ragentek.homeset.core.net.http.HttpManager;
 import com.ragentek.homeset.core.utils.DeviceUtils;
 import com.ragentek.protocol.messages.http.audio.AlbumResultVO;
 import com.ragentek.protocol.messages.http.audio.CategoryResultVO;
@@ -48,7 +49,7 @@ public class AudioCenterHttpManager {
     //                public static final String BASE_URL = "http://192.168.12.18:28080/openapi/";
     //    public static final String BASE_URL = "http://192.168.12.10:8080/atlasyun.webapi/";
 //    public static final String BASE_URL = "http://www.robyun.com/" + BuildConfig.WEBAPI_PATH + "/";
-    public static final String BASE_URL = "http://192.168.12.12:8080/atlasyun.webapi/";
+//    public static final String BASE_URL = "http://192.168.12.12:8080/atlasyun.webapi/";
 
 
     private Retrofit retrofitAudio;
@@ -94,11 +95,9 @@ public class AudioCenterHttpManager {
         trustAllCerti(mBuilder);
         OkHttpClient okHttpClient = mBuilder.build();
         retrofitAudio = new Retrofit.Builder()
-//                .addConverterFactory(GsonConverterFactory.create())
                 .addConverterFactory(FastJsonConverterFactory.create())
-
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .baseUrl(BASE_URL)
+                .baseUrl(HttpManager.API_BASE_URL)
                 .client(okHttpClient)
                 .build();
         mAudioCenterHttpAPI = retrofitAudio.create(AudioCenterHttpAPI.class);

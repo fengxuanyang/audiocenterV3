@@ -30,7 +30,6 @@ public class SingleMusicToken extends AudioToken<MusicVO, SingleMusicToken.Singl
         LogUtil.d(TAG, " SingleMusicToken: ");
         mMusicVO = (MusicVO) item.getAudio();
         LogUtil.d(TAG, " SingleMusicToken  getSong_name: " + mMusicVO.getSongName());
-
     }
 
     @Override
@@ -67,17 +66,18 @@ public class SingleMusicToken extends AudioToken<MusicVO, SingleMusicToken.Singl
     }
 
 
-    public class SingleMusicAudioControl implements IAudioControl {
+    public class SingleMusicAudioControl implements IAudioControl<MusicVO> {
 
         @Override
         public void setDataChangerListener(PlayBaseFragment.IAudioDataChangerListener mListener) {
         }
 
-        public MusicVO getData() {
-            LogUtil.d(TAG, "getPlayData   currentMusic: " + mMusicVO.getSongName());
+        @Override
+        public MusicVO getPlayData() {
             return mMusicVO;
-
         }
+
+
     }
 
 

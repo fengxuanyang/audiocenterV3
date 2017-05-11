@@ -43,8 +43,6 @@ public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl>
         mAudioTokenMediaPlayerPlayListener = new AudioTokenMediaPlayerPlayListener();
     }
 
-//    PlayBaseFragment basefragment;
-
     public void showView() {
         FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
         Fragment basefragment = getPlayFragment();
@@ -52,31 +50,24 @@ public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl>
         transaction.replace(R.id.fragment_container, basefragment, FRAGMENT_TAG).show(basefragment);
         transaction.addToBackStack(null);
         transaction.commit();
-
     }
 
     public void hide() {
         FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
         Fragment basefragment = getCurrentFragment();
-        LogUtil.d(TAG, "  hide  isAdded: " + basefragment.isAdded());
         transaction.remove(basefragment).hide(basefragment).commit();
         mMediaPlayer.removeMeidaPlayListener(mAudioTokenMediaPlayerPlayListener);
-        LogUtil.d(TAG, "after hide  isAdded: " + basefragment.isAdded());
-
     }
 
     private PlayBaseFragment getCurrentFragment() {
         Fragment fragment = mActivity.getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
-        LogUtil.d(TAG, "getCurrentFragment  fragment: " + fragment);
         if (fragment == null) {
             fragment = getPlayFragment();
         }
         return (PlayBaseFragment) fragment;
     }
 
-
     public void startPlay(AudioPlayStateListener audioPlayStateListener) {
-        LogUtil.d(TAG, "startPlay ");
         mAudioPlayStateListener = audioPlayStateListener;
         startPlayAudio(DEFAULT_PLAY_INDEX);
     }
@@ -91,19 +82,16 @@ public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl>
         @Override
         public void onPlayStart() {
             LogUtil.d(TAG, "onPlayStart:  ");
-
         }
 
         @Override
         public void onPlayProgress(int currPos, int duration) {
             LogUtil.d(TAG, "onPlayProgress:  ");
-
         }
 
         @Override
         public void onPlayStop() {
             LogUtil.d(TAG, "onPlayStop:  ");
-
         }
 
         @Override
@@ -117,6 +105,5 @@ public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl>
         void onComplete();
 
         void onStart();
-
     }
 }

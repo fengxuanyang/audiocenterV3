@@ -53,7 +53,7 @@ public class RadioFragment extends PlayBaseFragment<RadioVO, RadioToken.RadioAud
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.audioenter_fragment_radio_detail, container, false);
         ButterKnife.bind(this, view);
-        updateView(mIAudioControl.getData());
+        updateView(mIAudioControl.getPlayData());
         return view;
     }
 

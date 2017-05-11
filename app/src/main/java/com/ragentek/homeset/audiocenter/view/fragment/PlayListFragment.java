@@ -80,7 +80,9 @@ public class PlayListFragment extends DialogFragment {
 
         @Override
         public void onPlayIndexChanged(int index) {
-            mPlayListAdapter.updateSellect(index);
+            LogUtil.d(TAG, "onPlayIndexChanged: " + index);
+            playindex = index;
+            mPlayListAdapter.updateSellect(playindex);
         }
     };
 
@@ -104,10 +106,6 @@ public class PlayListFragment extends DialogFragment {
 
     public static PlayListFragment newInstance(int playindex) {
         PlayListFragment fragment = new PlayListFragment();
-        Bundle b = new Bundle();
-        b.putInt(PlayListFragment.TAG_PLAYINDEX, playindex);
-        fragment.setArguments(b);
-
         return fragment;
     }
 
@@ -129,10 +127,7 @@ public class PlayListFragment extends DialogFragment {
         LogUtil.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NO_FRAME, R.style.BottomDialog);
-        Bundle argument = getArguments();
-        if (argument != null) {
-            playindex = argument.getInt(TAG_PLAYINDEX);
-        }
+
         currentPlaylist = new ArrayList<>();
     }
 
@@ -160,6 +155,7 @@ public class PlayListFragment extends DialogFragment {
             }
         });
         List<PlayListItem> hisotyPlaylist = mIPlayListControl.getData();
+        playindex = mIPlayListControl.getCurrentPlayIndex();
         mPlayListAdapter = new PlayListAdapter(mContext, playindex);
         if (hisotyPlaylist != null && hisotyPlaylist.size() > 0) {
             currentPlaylist.addAll(hisotyPlaylist);
@@ -168,7 +164,6 @@ public class PlayListFragment extends DialogFragment {
             mIPlayListControl.getDataAsync();
         }
         mIPlayListControl.addDataListener(mPlayDataChangeListTokenListener);
-        mPlayListAdapter.updateSellect(playindex);
 
         playlistRV.setHasFixedSize(true);
         final LinearLayoutManager mLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);

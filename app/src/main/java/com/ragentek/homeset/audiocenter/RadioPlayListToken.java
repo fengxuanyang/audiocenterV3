@@ -25,7 +25,7 @@ import static com.ragentek.homeset.audiocenter.view.fragment.AlbumFragment.PAGE_
 
 public class RadioPlayListToken extends PlayListToken {
     private static final String TAG = "RadioPlayListToken";
-    private int currentPage = 0;
+    private int currentPage = 1;
 
     public RadioPlayListToken(TagDetail tag, FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler handler) {
         super(tag, activity, handler);
@@ -39,23 +39,8 @@ public class RadioPlayListToken extends PlayListToken {
 
     @Override
     public void loadData(IPlayListLoadListener listener) {
-
+        getTAGRadio(listener);
     }
-
-
-//    @Override
-//    public void loadMore() {
-//        if (isInitted) {
-//            getTAGRadio();
-//            return;
-//        }
-//        LogUtil.e(TAG, "loadMore error not init isInitted: " + isInitted);
-//    }
-//
-//    @Override
-//    void updateLocalPlayList() {
-//
-//    }
 
 
     private void getTAGRadio(final IPlayListLoadListener listener) {

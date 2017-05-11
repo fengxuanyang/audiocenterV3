@@ -59,7 +59,7 @@ public class SingleMusicFragment extends PlayBaseFragment<MusicVO, SingleMusicTo
     }
 
     private void initView() {
-        updateView(mIAudioControl.getData());
+        updateView(mIAudioControl.getPlayData());
     }
 
     private void updateView(MusicVO music) {
@@ -97,7 +97,7 @@ public class SingleMusicFragment extends PlayBaseFragment<MusicVO, SingleMusicTo
         LogUtil.d(TAG, "onHiddenChanged hidden: " + hidden);
         super.onHiddenChanged(hidden);
         if (!hidden) {
-            updateView(mIAudioControl.getData());
+            updateView(mIAudioControl.getPlayData());
         }
     }
 

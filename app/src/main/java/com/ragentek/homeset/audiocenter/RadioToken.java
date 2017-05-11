@@ -19,7 +19,7 @@ import java.util.List;
  */
 
 public class RadioToken extends AudioToken<BaseAudioVO, RadioToken.RadioAudioControl> {
-    private int currentPlayIndext = 1;
+    private int currentPlayIndext = 0;
     private RadioVO radio;
 
     RadioToken(FragmentActivity activity, MediaPlayerManager.MediaPlayerHandler mediaPlayer, PlayListItem item) {
@@ -50,15 +50,14 @@ public class RadioToken extends AudioToken<BaseAudioVO, RadioToken.RadioAudioCon
 
     }
 
-    public class RadioAudioControl implements IAudioControl {
+    public class RadioAudioControl implements IAudioControl<RadioVO> {
 
         @Override
         public void setDataChangerListener(PlayBaseFragment.IAudioDataChangerListener mListener) {
-//            mListener.
 
         }
 
-        public RadioVO getData() {
+        public RadioVO getPlayData() {
             return radio;
 
         }

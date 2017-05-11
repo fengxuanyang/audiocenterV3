@@ -13,8 +13,7 @@ public interface IPlayListControl {
     void addDataListener(PlayListToken.PlayDataChangeListTokenListener listener);
 
     void removeDataListener(PlayListToken.PlayDataChangeListTokenListener listener);
-
-
+    
     //TODO need add token ?
     void getDataAsync();
 

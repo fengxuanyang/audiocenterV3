@@ -53,17 +53,16 @@ public class MusicToken extends AudioToken<BaseAudioVO, MusicToken.MusicAudioCon
 
     }
 
-    public class MusicAudioControl implements IAudioControl {
+    public class MusicAudioControl implements IAudioControl<MusicVO> {
 
 
         @Override
         public void setDataChangerListener(PlayBaseFragment.IAudioDataChangerListener listener) {
-//            listener.
         }
 
+        @Override
         public MusicVO getPlayData() {
             LogUtil.d(TAG, "getPlayData   currentMusic: " + currentMusic.getSongName());
-
             return currentMusic;
         }
 

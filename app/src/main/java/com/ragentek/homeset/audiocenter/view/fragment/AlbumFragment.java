@@ -136,7 +136,7 @@ public class AlbumFragment extends PlayBaseFragment<List<TrackVO>, AlbumToken.Al
 
     private void updateData() {
         mIAudioControl.setDataChangerListener(getIAudioDataChangerListener());
-        List<TrackVO> current = mIAudioControl.getData();
+        List<TrackVO> current = mIAudioControl.getPlayData();
         if (current == null || current.size() <= 0) {
             mIAudioControl.getMoreData();
         } else {

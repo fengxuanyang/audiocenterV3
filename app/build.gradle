@@ -30,7 +30,6 @@ android {
      Business Version:
          WEBAPI_PATH: openapi
          PUSH_PORT: 9000
-
      Develop Version:
          WEBAPI_PATH: dev_openapi
          PUSH_PORT: 29000

@@ -8,6 +8,7 @@ import android.os.RemoteException;
 
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -60,6 +61,7 @@ public class AudioPlayActivity extends AudioCenterBaseActivity implements View.O
     private TextView currenttime;
     private TextView totaltime;
     private MediaPlayerManager mMediaPlayerManager;
+    private ProgressBar mTopProgressBar;
 
 
     @Override
@@ -139,49 +141,44 @@ public class AudioPlayActivity extends AudioCenterBaseActivity implements View.O
 
             @Override
             public void onGetData(int resultCode, List<PlayListItem> data) {
+                LogUtil.d(TAG, "onGetData   :" + resultCode);
 
             }
 
             @Override
             public void onPlayStart(PlayListItem data) {
+                mTopProgressBar.setVisibility(View.GONE);
                 updatePlayControlFavUI(data.getFav());
             }
 
             @Override
             public void onPlayIndexChanged(int index) {
-
+                LogUtil.d(TAG, "onPlayIndexChanged   :" + index);
             }
         });
         mPlayListToken.init();
     }
 
     private void initView() {
+        mTopProgressBar = (ProgressBar) this.findViewById(R.id.top_progressbar);
         playNext = (ImageWithText) this.findViewById(R.id.image_play_next);
         playNext.setOnClickListener(this);
         playPre = (ImageWithText) this.findViewById(R.id.image_play_pre);
         playPre.setOnClickListener(this);
-
         playList = (ImageWithText) this.findViewById(R.id.image_play_list);
         playList.setOnClickListener(this);
-
         playorpause = (ImageWithText) this.findViewById(R.id.image_playorpause);
         playorpause.setOnClickListener(this);
-
         favIV = (ImageWithText) this.findViewById(R.id.image_fav);
         favIV.setOnClickListener(this);
         playMode = (ImageWithText) this.findViewById(R.id.image_play_mode);
-
         backIV = (ImageView) this.findViewById(R.id.iv_back);
         backIV.setOnClickListener(this);
-
-
         audioName = (TextView) this.findViewById(R.id.audio_name);
         audioName.setText(mTagDetail.getName());
-
         playSeeBar = (SeekBar) this.findViewById(R.id.play_seek);
         currenttime = (TextView) this.findViewById(R.id.tv_play_currenttime);
         totaltime = (TextView) this.findViewById(R.id.tv_play_totaltime);
-
         updatePlayControl(false);
         playSeeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override

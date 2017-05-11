@@ -31,7 +31,7 @@ import rx.Subscriber;
 public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl> {
     private static final String TAG = "AlbumToken";
     private int currentPage = 1;
-    private static final int PAGE_COUNT = 2;
+    private static final int PAGE_COUNT = 20;
     private PlayBaseFragment.IAudioDataChangerListener<List<TrackVO>> mIAudioDataChangerListener;
     private MediaPlayerManager.MediaPlayerHandler mMediaPlayer;
     private PlayListItem mPlayListItem;
@@ -67,8 +67,6 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
 
     @Override
     protected void startPlayAudio(int index) {
-        LogUtil.d(TAG, "startPlayAudio: " + wholeTracks.size() + ",index::" + index);
-        LogUtil.d(TAG, "startPlayAudio  wholePlayList: " + wholePlayList.size());
         if (index <= currentPlayIndext && wholeTracks.size() > currentPlayIndext) {
             initPlayListAndStart();
         } else {
@@ -131,10 +129,7 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
                             item.setTitle(trackvo.getTitle());
                             list.add(item);
                         }
-                        LogUtil.d(TAG, "onNext addAll: ");
-
                         wholeTracks.addAll(tagResult.getTracks());
-                        LogUtil.d(TAG, "onNext : " + tagResult.getTracks().size());
                         mIAudioDataChangerListener.onGetData(PLAYLIST_RESULT_SUCCESS, tagResult.getTracks());
                         wholePlayList.addAll(list);
                         if (waitingForPlay) {
@@ -158,14 +153,14 @@ public class AlbumToken extends AudioToken<AlbumVO, AlbumToken.AlbumAudioControl
         updateSellected();
     }
 
-    public class AlbumAudioControl implements IAudioControl {
+    public class AlbumAudioControl implements IAudioControl<List<TrackVO>> {
 
 
         public void playSellected(int position) {
             playSellectedTrack(position);
         }
 
-        public List<TrackVO> getData() {
+        public List<TrackVO> getPlayData() {
             return wholeTracks;
         }
 

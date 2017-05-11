@@ -158,7 +158,7 @@ public class MediaPlayerManager {
 
 
         public void addMeidaPlayListener(MediaPlayerPlayListener listener) {
-            LogUtil.d(TAG, "addMeidaPlayListener: ");
+            LogUtil.d(TAG, "addMeidaPlayListener: " + mPlayListeners.size());
 
             if (mPlayListeners.isEmpty()) {
                 try {
@@ -169,13 +169,17 @@ public class MediaPlayerManager {
 
             }
             boolean result = mPlayListeners.add(listener);
+            LogUtil.d(TAG, "after addMeidaPlayListener: " + mPlayListeners.size());
 
             LogUtil.d(TAG, "addMeidaPlayListener: " + result);
         }
 
         public void removeMeidaPlayListener(MediaPlayerPlayListener listener) {
+            LogUtil.d(TAG, "removeMeidaPlayListener: " + mPlayListeners.size());
+
             boolean result = mPlayListeners.remove(listener);
-            LogUtil.d(TAG, "removeMeidaPlayListener: " + result);
+            LogUtil.d(TAG, "remove MeidaPlayListener: " + result);
+
             if (mPlayListeners.isEmpty()) {
                 try {
                     mMediaService.removeMediaPlayerPlayListener(mRemoteMediaPlayerPlayListener);
@@ -183,12 +187,22 @@ public class MediaPlayerManager {
                     e.printStackTrace();
                 }
             }
+            LogUtil.d(TAG, " after removeMeidaPlayListener: " + mPlayListeners.size());
+
         }
 
         public void clearPlayList() {
             LogUtil.d(TAG, "clearPlayList ");
             try {
                 mMediaService.clearPlayList();
+                if (!mPlayListeners.isEmpty()) {
+                    try {
+                        mPlayListeners.clear();
+                        mMediaService.removeMediaPlayerPlayListener(mRemoteMediaPlayerPlayListener);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

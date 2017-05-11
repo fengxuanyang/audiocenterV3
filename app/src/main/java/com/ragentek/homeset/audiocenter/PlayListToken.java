@@ -155,7 +155,8 @@ public abstract class PlayListToken {
     }
 
     //TODO
-    public void playNext() {
+    public void
+    playNext() {
         if (currentPlayIndex < audioTokenList.size() - 1) {
             currentPlayIndex++;
         } else {
@@ -180,19 +181,22 @@ public abstract class PlayListToken {
         prePlayIndex = currentPlayIndex;
         for (PlayDataChangeListTokenListener dataUpdataCall : mDataChangeCallBacks) {
             dataUpdataCall.onPlayStart(wholePlayList.get(currentPlayIndex));
+            dataUpdataCall.onPlayIndexChanged(currentPlayIndex);
         }
     }
 
 
     public void showPlayList() {
-        LogUtil.d(TAG, "showPlayList");
+        LogUtil.d(TAG, "showPlayList" + mPlayListFragment);
         FragmentTransaction ft = mActivity.getSupportFragmentManager().beginTransaction();
         if (mPlayListFragment == null) {
             mPlayListFragment = PlayListFragment.newInstance(currentPlayIndex);
             mPlayListFragment.setPlayControl(mPlayListControlHandle);
         }
 
-        ft.add(mPlayListFragment, PLAYLIST_FRAGMENT_TAG).show(mPlayListFragment).commit();
+        ft.add(mPlayListFragment, PLAYLIST_FRAGMENT_TAG).show(mPlayListFragment);
+        ft.addToBackStack(null);
+        ft.commit();
 
     }
 
@@ -332,7 +336,10 @@ public abstract class PlayListToken {
 
         @Override
         public void playIndexChanger(int index) {
-
+            Log.d(TAG, "playIndexChanger size: ");
+            for (PlayDataChangeListTokenListener dataUpdataCall : mDataChangeCallBacks) {
+                dataUpdataCall.onPlayIndexChanged(index);
+            }
         }
 
 
