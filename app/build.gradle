@@ -34,7 +34,7 @@ adb shell am broadcast -a ragentek.intent.action.START_RECOGNITION
          PUSH_PORT: 9000
      Develop Version:
          WEBAPI_PATH: dev_openapi
-         PUSH_PORT: 29000
+         PUSH_PORT: 29000AudioPlayActivity
 */
     buildTypes {
         debug {

@@ -73,6 +73,11 @@ public interface AudioCenterHttpAPI {
     @GET("radio/tag")
     Observable<RadioResultVO> getRadiosByTag
     (@Query("uid") int uid, @Query("did") int did, @Query("radio_type") int type, @Query("province") int province, @Query("page") int page, @Query("count") int count, @Query("atoken") String atoken);
+
+    @GET("music/search")
+    Observable<MusicResultVO> searchMusics
+            (@Query("key") String key, @Query("uid") int uid, @Query("did") int did
+                    , @Query("page") int page, @Query("count") int count, @Query("atoken") String atoken);
 }
 
 

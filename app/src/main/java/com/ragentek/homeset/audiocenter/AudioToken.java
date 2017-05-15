@@ -81,6 +81,7 @@ public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl>
     {
         @Override
         public void onPlayStart() {
+            mAudioPlayStateListener.onStart();
             LogUtil.d(TAG, "onPlayStart:  ");
         }
 
@@ -97,7 +98,7 @@ public abstract class AudioToken<M extends BaseAudioVO, S extends IAudioControl>
         @Override
         public void onSoundPlayComplete() {
             LogUtil.d(TAG, "onSoundPlayComplete:  ");
-            onSoundPlayComplete();
+            mAudioPlayStateListener.onComplete();
         }
     }
 

@@ -128,16 +128,13 @@ public class MediaPlayerManager {
 
     private class MediaServiceConnection implements ServiceConnection {
 
-
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mMediaService = IMediaService.Stub.asInterface(service);
             mMediaPlayerhandler = new MediaPlayerHandler(mMediaService);
             mIsMediaServiceBound = true;
             mainLhanler.sendEmptyMessage(SERVICE_CONNECTED);
-
             LogUtil.d(TAG, "onServiceConnected: " + mIsMediaServiceBound);
-
         }
 
         @Override
@@ -145,7 +142,6 @@ public class MediaPlayerManager {
             LogUtil.d(TAG, "onServiceDisconnected: ");
             mIsMediaServiceBound = false;
         }
-
     }
 
     public class MediaPlayerHandler {
@@ -159,18 +155,15 @@ public class MediaPlayerManager {
 
         public void addMeidaPlayListener(MediaPlayerPlayListener listener) {
             LogUtil.d(TAG, "addMeidaPlayListener: " + mPlayListeners.size());
-
             if (mPlayListeners.isEmpty()) {
                 try {
                     mMediaService.addMediaPlayerPlayListener(mRemoteMediaPlayerPlayListener);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
-
             }
             boolean result = mPlayListeners.add(listener);
             LogUtil.d(TAG, "after addMeidaPlayListener: " + mPlayListeners.size());
-
             LogUtil.d(TAG, "addMeidaPlayListener: " + result);
         }
 
@@ -248,7 +241,6 @@ public class MediaPlayerManager {
             }
         }
 
-
         public void seekToByPercent(float percent) {
             LogUtil.d(TAG, "seekToByPercent :" + percent);
             try {
@@ -257,7 +249,6 @@ public class MediaPlayerManager {
                 e.printStackTrace();
             }
         }
-
 
         public void pause() {
             LogUtil.d(TAG, "playOrPause ");

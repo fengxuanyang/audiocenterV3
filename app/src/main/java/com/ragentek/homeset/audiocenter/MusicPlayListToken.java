@@ -39,9 +39,62 @@ public class MusicPlayListToken extends PlayListToken {
 
     @Override
     public void loadData(IPlayListLoadListener listener) {
-        getTAGMusic(listener);
+        if (mTagDetail.getCategoryID() == Constants.CATEGORY_MUSIC_SEARCH) {
+            searchMusic(listener, mTagDetail.getKeywords());
+        } else {
+            getTAGMusic(listener);
+        }
     }
 
+    private void searchMusic(final IPlayListLoadListener listener, String keywords) {
+        LogUtil.d(TAG, "searchMusics: " + mTagDetail.getCategoryID() + ":getName" + mTagDetail.getName() + ",keywords:" + keywords);
+        final Subscriber<MusicResultVO> mloadDataSubscriber = new Subscriber<MusicResultVO>() {
+            @Override
+            public void onCompleted() {
+                LogUtil.d(TAG, "searchMusics onCompleted: ");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                LogUtil.e(TAG, "searchMusics onError: " + e.getMessage());
+
+            }
+
+            @Override
+            public void onNext(MusicResultVO tagResult) {
+                if (tagResult == null) {
+                    listener.onLoadData(PLAYLISTMANAGER_RESULT_ERROR_NET, null);
+                } else if (tagResult.getMusics() == null) {
+                    listener.onLoadData(PLAYLISTMANAGER_RESULT_NONE, null);
+                } else {
+                    currentPage++;
+                    //for audio playlist  start
+                    List<PlayListItem> playListItems = new ArrayList<PlayListItem>();
+                    //filterred is used for musicplayfragment
+                    List<MusicVO> filterred = new ArrayList<>();
+                    for (int i = 0; i < tagResult.getMusics().size(); i++) {
+                        MusicVO music = tagResult.getMusics().get(i);
+                        if (music != null && music.getSongName() != null) {
+                            LogUtil.d(TAG, "getTAGMusics :" + music.getSongName());
+                            LogUtil.d(TAG, "getCover_url :" + music.getCoverUrl());
+
+                            PlayListItem item = new PlayListItem(Constants.AUDIO_TYPE_SINGLE_MUSIC, mTagDetail.getCategoryID(), music.getId());
+                            item.setAudio(music);
+                            item.setFav(music.getFavorite());
+                            item.setGroup(Constants.GROUP_MUSIC);
+                            playListItems.add(item);
+                            filterred.add(music);
+                            LogUtil.d(TAG, "add :i:" + i + "" + music.getSongName() + "" + music.getPlayUrl());
+                        }
+                    }
+                    listener.onLoadData(PLAYLISTMANAGER_RESULT_SUCCESS, playListItems);
+                }
+            }
+
+        };
+        AudioCenterHttpManager.getInstance(mActivity).searchMusics(mloadDataSubscriber, keywords, 1, PAGE_COUNT);
+
+    }
 
     private void getTAGMusic(final IPlayListLoadListener listener) {
         LogUtil.d(TAG, "getTAGMusics: " + mTagDetail.getCategoryID() + ":getName" + mTagDetail.getName());

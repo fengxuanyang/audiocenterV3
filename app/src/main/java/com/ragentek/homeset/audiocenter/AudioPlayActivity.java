@@ -75,6 +75,17 @@ public class AudioPlayActivity extends AudioCenterBaseActivity implements View.O
         initPlayToken();
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        LogUtil.d(TAG, "onNewIntent: ");
+        super.onNewIntent(intent);
+        mTagDetail= null;
+        setIntent(intent);
+        initExtraData();
+        initMediaPlayer();
+        initPlayToken();
+    }
+
     //TODO
     private void initPlayToken() {
 //        PlayListTokenFactory.getPlayListToken()

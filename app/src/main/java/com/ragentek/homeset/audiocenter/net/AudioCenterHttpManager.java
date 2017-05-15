@@ -3,6 +3,7 @@ package com.ragentek.homeset.audiocenter.net;
 import android.content.Context;
 import android.util.Log;
 
+import com.ragentek.homeset.audiocenter.utils.LogUtil;
 import com.ragentek.homeset.core.BuildConfig;
 import com.ragentek.homeset.core.net.http.HttpManager;
 import com.ragentek.homeset.core.utils.DeviceUtils;
@@ -199,7 +200,15 @@ public class AudioCenterHttpManager {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
+    public void searchMusics(Subscriber<MusicResultVO> subscriber, String key, int page, int count) {
+        LogUtil.e("TAG", "searchMusics  :" + key);
 
+        mAudioCenterHttpAPI.searchMusics(key, uid, did, page, count, token)
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
 
     /**
      * TODO: need to write a service for upload file, because it's request heard type is "multipart/form-data", not "application/x-www-form-urlencoded"

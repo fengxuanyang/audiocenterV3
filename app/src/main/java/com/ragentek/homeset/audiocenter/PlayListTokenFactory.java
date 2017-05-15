@@ -17,7 +17,6 @@ public class PlayListTokenFactory {
 
     public static PlayListToken getPlayListToken(FragmentActivity activity, TagDetail tag, MediaPlayerManager.MediaPlayerHandler handler) {
         PlayListToken token = null;
-
         switch (tag.getCategoryID()) {
             case Category.ID.CROSS_TALK:
             case Category.ID.CHINA_ART:
@@ -36,6 +35,10 @@ public class PlayListTokenFactory {
             case Constants.CATEGORY_FAV:
                 token = new FavPlayListToken(tag, activity, handler);
                 break;
+            case Constants.CATEGORY_MUSIC_SEARCH:
+                token = new MusicPlayListToken(tag, activity, handler);
+                break;
+
             default:
                 LogUtil.e(TAG, "bo not contain " + tag.toString());
         }
